@@ -1,0 +1,81 @@
+package commands.administrator;
+
+import java.awt.Color;
+
+import commands.CommandManager;
+import configuration.constants.Command;
+import dao.database.Dao;
+import dao.pojo.ChannelJoinPojo;
+import dao.pojo.GuildPojo;
+import factory.DaoFactory;
+import listeners.commands.AdministratorListener;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import proxy.ProxyEmbed;
+import proxy.ProxyUtils;
+
+public class JoinEmbed extends AdministratorListener implements CommandManager {
+
+    private GuildMessageReceivedEvent event;
+    private GuildPojo guild;
+
+    public JoinEmbed(GuildMessageReceivedEvent event, GuildPojo guild) {
+        super(event, guild);
+        this.event = event;
+        this.guild = guild;
+    }
+
+    @Override
+    public void execute() {
+        if (guild.getChannelJoin() != null) {
+
+            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
+            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+
+            if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("on")) {
+
+                if (channelJoin.getEmbed()) {
+                    ProxyUtils.sendMessage(event, "Welcoming embed has already been **enabled**.");
+
+                } else if (!channelJoin.getEmbed()) {
+                    channelJoin.setEmbed(true);
+                    channelJoinDao.update(channelJoin);
+                    ProxyUtils.sendMessage(event, "Welcoming embed is now **enabled**.");
+                }
+            } else if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("off")) {
+
+                if (!channelJoin.getEmbed()) {
+                    ProxyUtils.sendMessage(event, "Welcoming embed has already been **disabled**.");
+
+                } else if (channelJoin.getEmbed()) {
+                    channelJoin.setEmbed(false);
+                    channelJoinDao.update(channelJoin);
+                    ProxyUtils.sendMessage(event, "Welcoming embed is now **disabled**, you will no longer receive an embed when a member joins the server.");
+                }
+            } else {
+                ProxyUtils.sendMessage(event, "Please specify **on** or **off**.");
+            }
+        } else {
+            ProxyUtils.sendMessage(event, "In order to create a welcoming embed, please select your welcoming channel first using **" + guild.getPrefix()
+                    + Command.JOINCHAN.getName() + " #aTextChannel**.");
+        }
+    }
+
+    @Override
+    public void help(boolean embedState) {
+        if (embedState) {
+            ProxyEmbed embed = new ProxyEmbed();
+            // @formatter:off
+            embed.help(Command.JOINEMBED.getName(),
+                    "Set the welcoming embed.\n\n"
+                    + "Example:\n\n`"
+                    + guild.getPrefix() + Command.JOINEMBED.getName() + " on` *enables the welcoming embed*.\n`"
+                    + guild.getPrefix() + Command.JOINEMBED.getName() + " off` *disables the welcoming embed*.",
+                    Color.ORANGE);
+            // @formatter:on
+            ProxyUtils.sendEmbed(event, embed);
+        } else {
+            ProxyUtils.sendMessage(event, "Set the welcoming embed. **Example:** `" + guild.getPrefix() + Command.JOINEMBED.getName() + " on` *enables the welcoming embed*.");
+        }
+    }
+
+}
