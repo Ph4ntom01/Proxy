@@ -136,13 +136,13 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelJoin.getEmbed()) {
                 channelJoin.setEmbed(false);
                 channelJoinDao.update(channelJoin);
-                ProxyUtils.sendMessage(event, "Welcoming embed is now **disabled**, you will no longer receive an embed when a member joins the server.");
+                ProxyUtils.sendMessage(event, "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Welcoming embed has already been **disabled**.");
+                ProxyUtils.sendMessage(event, "Welcoming box has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the welcoming embed, please select your welcoming channel first using **" + guild.getPrefix()
-                    + Command.JOINCHAN.getName() + " #aTextChannel** and enable the embed by using **" + guild.getPrefix() + Command.JOINEMBED.getName() + " on**.");
+            ProxyUtils.sendMessage(event, "In order to disable the welcoming box, please select your welcoming channel first using **" + guild.getPrefix()
+                    + Command.JOINCHAN.getName() + " #aTextChannel** and enable the box by using **" + guild.getPrefix() + Command.JOINEMBED.getName() + " on**.");
         }
     }
 
@@ -188,13 +188,13 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelLeave.getEmbed()) {
                 channelLeave.setEmbed(false);
                 channelLeaveDao.update(channelLeave);
-                ProxyUtils.sendMessage(event, "Leaving embed is now **disabled**, you will no longer receive an embed when a member leaves the server.");
+                ProxyUtils.sendMessage(event, "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Leaving embed has already been **disabled**.");
+                ProxyUtils.sendMessage(event, "Leaving box has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the leaving embed, please select your leaving channel first using **" + guild.getPrefix()
-                    + Command.LEAVECHAN.getName() + " #aTextChannel** and enable the embed by using **" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on**.");
+            ProxyUtils.sendMessage(event, "In order to disable the leaving box, please select your leaving channel first using **" + guild.getPrefix() + Command.LEAVECHAN.getName()
+                    + " #aTextChannel** and enable the box by using **" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on**.");
         }
     }
 
