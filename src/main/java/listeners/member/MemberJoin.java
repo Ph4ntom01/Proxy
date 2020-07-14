@@ -79,13 +79,19 @@ public class MemberJoin extends ListenerAdapter {
             try {
                 if (channelJoin.getMessage() != null && !channelJoin.getEmbed()) {
                     event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
-                }
-                if (channelJoin.getEmbed()) {
+
+                } else if (channelJoin.getMessage() != null && channelJoin.getEmbed()) {
                     event.getGuild().retrieveMemberById(event.getMember().getId()).queueAfter(1, TimeUnit.SECONDS, member -> {
                         ProxyEmbed embed = new ProxyEmbed();
                         embed.memberJoin(member);
                         event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(embed.getEmbed().build())
                                 .append(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
+                    });
+                } else if (channelJoin.getMessage() == null && channelJoin.getEmbed()) {
+                    event.getGuild().retrieveMemberById(event.getMember().getId()).queueAfter(1, TimeUnit.SECONDS, member -> {
+                        ProxyEmbed embed = new ProxyEmbed();
+                        embed.memberJoin(member);
+                        event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(embed.getEmbed().build()).queue();
                     });
                 }
             } catch (InsufficientPermissionException e) {
