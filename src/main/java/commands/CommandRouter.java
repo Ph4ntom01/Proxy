@@ -24,12 +24,14 @@ public class CommandRouter extends ListenerAdapter {
 
             String[] args = ProxyUtils.getArgs(event);
             GuildPojo guild = ProxyUtils.getGuildFromCache(event.getGuild());
+            StringBuilder firstArg = new StringBuilder(args[0]);
 
-            if (!args[0].isEmpty() && args[0].startsWith(guild.getPrefix())) {
-                String userInput = args[0].replace(guild.getPrefix(), "");
+            if (firstArg.toString().regionMatches(0, guild.getPrefix(), 0, guild.getPrefix().length())) {
+                firstArg.replace(0, guild.getPrefix().length(), "");
+                String userCommand = firstArg.toString();
 
-                if (Commands.getInstance().containsKey(userInput)) {
-                    Command command = Commands.getInstance().get(userInput);
+                if (Commands.getInstance().containsKey(userCommand)) {
+                    Command command = Commands.getInstance().get(userCommand);
                     Permissions permission = command.getPermission();
                     MemberPojo author = ProxyUtils.getMemberFromCache(event.getMember());
 
