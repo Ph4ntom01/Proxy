@@ -27,6 +27,7 @@ import commands.moderator.VoiceKick;
 import commands.moderator.VoiceMute;
 import commands.moderator.VoiceUnmute;
 import commands.user.Adminlist;
+import commands.user.Avatar;
 import commands.user.Banlist;
 import commands.user.ControlGate;
 import commands.user.GuildInfo;
@@ -256,6 +257,11 @@ public class HelpListener {
             else if (command == Command.MEMBER_INFO) {
                 MemberInfo memberInfoCmd = new MemberInfo(event, guild);
                 memberInfoCmd.help(true);
+            }
+
+            else if (command == Command.AVATAR) {
+                Avatar avatarCmd = new Avatar(event, guild);
+                avatarCmd.help(true);
             }
 
             else if (command == Command.TEXTCHAN_INFO) {

@@ -1,6 +1,7 @@
 package listeners.commands;
 
 import commands.user.Adminlist;
+import commands.user.Avatar;
 import commands.user.Banlist;
 import commands.user.ControlGate;
 import commands.user.GuildInfo;
@@ -63,6 +64,16 @@ public class UserListener {
             } else {
                 MemberInfo memberInfoCmd = new MemberInfo(event, guild);
                 memberInfoCmd.help(false);
+            }
+
+        } else if (command == Command.AVATAR) {
+
+            if (args.length == 2) {
+                Avatar avatarCmd = new Avatar(event, guild);
+                avatarCmd.execute();
+            } else {
+                Avatar avatarCmd = new Avatar(event, guild);
+                avatarCmd.help(false);
             }
 
         } else if (command == Command.TEXTCHAN_INFO) {

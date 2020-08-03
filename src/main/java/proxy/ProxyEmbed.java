@@ -314,6 +314,14 @@ public class ProxyEmbed {
         // @formatter:on
     }
 
+    public void avatar(Member member) {
+        String avatarUrl = member.getUser().getEffectiveAvatarUrl();
+        embed = new EmbedBuilder();
+        embed.setColor(Color.GREEN);
+        embed.setTitle("*" + member.getEffectiveName() + "'s* avatar");
+        embed.setImage(avatarUrl + "?size=512");
+    }
+
     public void memberJoin(Member member) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
@@ -425,12 +433,14 @@ public class ProxyEmbed {
         embed = new EmbedBuilder();
         embed.setColor(Color.YELLOW);
         embed.setTitle("__**" + StringUtils.capitalize(Command.DISABLE.getName()) + "**__");
+        // @formatter:off
         embed.addField("",
                 "`" + Command.JOINCHAN.getName() + "` " + "`" + Command.JOINMESSAGE.getName() + "` " + "`" + Command.JOINEMBED.getName() + "` " + "`" + Command.LEAVECHAN.getName()
-                        + "` " + "`" + Command.LEAVEMESSAGE.getName() + "` " + "`" + Command.LEAVEEMBED.getName() + "` " + "`" + Command.DEFROLE.getName() + "` " + "`"
-                        + Command.SHIELD.getName() + "`",
+                + "` " + "`" + Command.LEAVEMESSAGE.getName() + "` " + "`" + Command.LEAVEEMBED.getName() + "` " + "`" + Command.DEFROLE.getName() + "` " + "`"
+                + Command.SHIELD.getName() + "`",
                 false);
-        embed.addField("How to use", "`" + prefix + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`", false);
+        // @formatter:on
+        embed.addField("", "Example: `" + prefix + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`", false);
     }
 
     public void controlGate(Guild gld, ChannelJoinPojo channelJoin, ChannelLeavePojo channelLeave) {
