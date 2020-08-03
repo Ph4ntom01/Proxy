@@ -12,7 +12,7 @@
 |-|-|
 |Administration|`prefix` `setadmin` `setmodo` `setuser` `joinchan` `joinmsg` `joinbox` `leavechan` `leavemsg` `leavebox` `defrole` `shield` `disable`|
 |Moderation|`clean` `slowmode` `lock` `unlock` `voicekick` `voicemute` `voiceunmute` `kick` `ban` `softban` `unban` `purge` `resetchan`|
-|Utility|`ping` `uptime` `server` `member` `textchan` `controlgate` `banlist` `modolist` `adminlist`|
+|Utility|`ping` `uptime` `server` `member` `avatar` `textchan` `controlgate` `banlist` `modolist` `adminlist`|
 |Memes|`issou`|
 
 ## **How to activate the shield**
