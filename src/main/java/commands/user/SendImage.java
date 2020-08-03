@@ -6,7 +6,6 @@ import java.util.Random;
 
 import commands.CommandManager;
 import configuration.constants.Command;
-import configuration.constants.Folder;
 import dao.pojo.GuildPojo;
 import listeners.commands.UserListener;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -56,7 +55,7 @@ public class SendImage extends UserListener implements CommandManager {
          * 
          * Just use "/".
          */
-        for (String pathTmp : image.getPath().split(Folder.ROOT.getName())) {
+        for (String pathTmp : image.getPath().split("/")) {
             if (pathTmp.contains(".png") || pathTmp.contains(".jpg") || pathTmp.contains(".jpeg") || pathTmp.contains(".gif")) {
                 embed.setImage("attachment://" + pathTmp);
                 embed.setFooter(event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl());
