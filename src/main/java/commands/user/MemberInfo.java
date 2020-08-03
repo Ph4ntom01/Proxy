@@ -42,13 +42,11 @@ public class MemberInfo extends UserListener implements CommandManager {
                         ProxyUtils.sendEmbed(event, embed);
                     }
                 } else {
-                    event.getGuild().retrieveMemberById(member.getId()).queue(user -> {
-                        MemberPojo mentionnedMember = ProxyUtils.getMemberFromCache(user);
-                        List<Permissions> permissions = Lists.newArrayList(Permissions.values());
-                        ProxyEmbed embed = new ProxyEmbed();
-                        embed.memberInfo(member, permissions.stream().filter(permission -> permission.getLevel() == mentionnedMember.getPermLevel()).findFirst().orElse(null));
-                        ProxyUtils.sendEmbed(event, embed);
-                    });
+                    MemberPojo mentionnedMember = ProxyUtils.getMemberFromCache(member);
+                    List<Permissions> permissions = Lists.newArrayList(Permissions.values());
+                    ProxyEmbed embed = new ProxyEmbed();
+                    embed.memberInfo(member, permissions.stream().filter(permission -> permission.getLevel() == mentionnedMember.getPermLevel()).findFirst().orElse(null));
+                    ProxyUtils.sendEmbed(event, embed);
                 }
             }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
 
