@@ -33,7 +33,8 @@ public class Shield extends AdministratorListener implements CommandManager {
                     ProxyUtils.sendMessage(event, message);
                 } else {
                     String message = (days == 0)
-                            ? "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + guild.getShield() + "** days ago."
+                            ? "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + guild.getShield() + "** "
+                                    + ProxyUtils.day(guild.getShield()) + " ago."
                             : "Shield is now set to **" + days + "** " + ProxyUtils.day(days) + ".";
                     Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
                     guild.setShield(days);

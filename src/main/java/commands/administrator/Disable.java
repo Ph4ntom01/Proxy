@@ -215,7 +215,8 @@ public class Disable extends AdministratorListener implements CommandManager {
             int oldShield = guild.getShield();
             guild.setShield(0);
             guildDao.update(guild);
-            ProxyUtils.sendMessage(event, "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + oldShield + "** days ago.");
+            ProxyUtils.sendMessage(event, "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + oldShield + "** "
+                    + ProxyUtils.day(oldShield) + " ago.");
         } else {
             ProxyUtils.sendMessage(event, "Shield has already been **disabled**.");
         }
