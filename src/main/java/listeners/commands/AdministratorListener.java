@@ -145,7 +145,7 @@ public class AdministratorListener {
                 disableCmd.execute();
             } else {
                 Disable disableCmd = new Disable(event, guild);
-                disableCmd.help(false);
+                disableCmd.execute();
             }
         }
     }
