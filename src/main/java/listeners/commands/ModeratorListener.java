@@ -3,13 +3,11 @@ package listeners.commands;
 import commands.moderator.Bans;
 import commands.moderator.Clean;
 import commands.moderator.Kick;
-import commands.moderator.Lock;
 import commands.moderator.Purge;
 import commands.moderator.ResetChan;
 import commands.moderator.Slowmode;
 import commands.moderator.Softban;
 import commands.moderator.Unban;
-import commands.moderator.Unlock;
 import commands.moderator.VoiceKick;
 import commands.moderator.VoiceMute;
 import commands.moderator.VoiceUnmute;
@@ -46,7 +44,7 @@ public class ModeratorListener {
 
     public void route() {
 
-        String[] args = ProxyUtils.getArgs(event);
+        String[] args = ProxyUtils.getArgs(event.getMessage());
 
         if (command == Command.CLEAN) {
 
@@ -66,26 +64,6 @@ public class ModeratorListener {
             } else {
                 Slowmode slowmodeCmd = new Slowmode(event, guild);
                 slowmodeCmd.execute();
-            }
-
-        } else if (command == Command.LOCK) {
-
-            if (args.length == 2) {
-                Lock lockCmd = new Lock(event, guild);
-                lockCmd.execute();
-            } else {
-                Lock lockCmd = new Lock(event, guild);
-                lockCmd.help(false);
-            }
-
-        } else if (command == Command.UNLOCK) {
-
-            if (args.length == 2) {
-                Unlock unlockCmd = new Unlock(event, guild);
-                unlockCmd.execute();
-            } else {
-                Unlock unlockCmd = new Unlock(event, guild);
-                unlockCmd.help(false);
             }
 
         } else if (command == Command.VOICEKICK) {
