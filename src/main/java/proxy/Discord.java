@@ -49,8 +49,8 @@ public class Discord {
     }
 
     private void addEventListeners(JDABuilder builder) {
-        builder.addEventListeners(new Ready(), new GuildJoin(), new GuildLeave(), new MemberJoin(), new MemberLeave(), new MemberName(), new GuildChannelDelete(),
-                new GuildRoleDelete(), new GuildUpdateName(), new GuildUpdateOwner(), new CommandRouter());
+        builder.addEventListeners(new Ready(), new GuildJoin(), new GuildLeave(), new MemberJoin(), new MemberLeave(), new MemberName(), new GuildChannelDelete(), new GuildRoleDelete(),
+                new GuildUpdateName(), new GuildUpdateOwner(), new CommandRouter());
     }
 
     private void build(JDABuilder builder) {
