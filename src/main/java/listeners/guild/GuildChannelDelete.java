@@ -34,6 +34,11 @@ public class GuildChannelDelete extends ListenerAdapter {
                 guildDao.update(guild);
                 channelLeaveDao.delete(channelLeave);
             }
+            if (event.getChannel().getId().equals(guild.getChannelControl())) {
+                Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
+                guild.setChannelControl(null);
+                guildDao.update(guild);
+            }
         }
     }
 
