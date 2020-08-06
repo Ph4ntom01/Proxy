@@ -7,14 +7,20 @@
 
 ## **Commands**
 
-***For more information about a specific command, use !help [command]***
+_For more information about a specific command, use !help [command]_
 
 |Categories|Commands|
 |-|-|
-|Administration|`prefix` `setadmin` `setmodo` `setuser` `joinchan` `joinmsg` `joinbox` `leavechan` `leavemsg` `leavebox` `defrole` `shield` `disable`|
-|Moderation|`clean` `slowmode` `lock` `unlock` `voicekick` `voicemute` `voiceunmute` `kick` `ban` `softban` `unban` `purge` `resetchan`|
+|Administration|`prefix` `setadmin` `setmodo` `setuser` `joinchan` `joinmsg` `joinbox` `leavechan` `leavemsg` `leavebox` `controlchan` `defrole` `shield` `disable`|
+|Moderation|`clean` `slowmode` `voicekick` `voicemute` `voiceunmute` `kick` `ban` `softban` `unban` `purge` `resetchan`|
 |Utility|`ping` `uptime` `server` `member` `avatar` `textchan` `controlgate` `banlist` `modolist` `adminlist`|
 |Memes|`issou`|
+
+## **Create an administrator role named 'bot' assigned to Proxy**
+
+Set this role in the uppermost position or you can also set Proxy's role directly in the uppermost position as well:
+
+![bot_role_img](https://raw.githubusercontent.com/Unknown-Ph4ntom/Proxy/master/attachments/bot_role.png)
 
 ## **How to activate the shield**
 
@@ -22,45 +28,17 @@ The bot will kick accounts that have been created less than [any value you want 
 
 Example:
 
-`!shield 0` *disables the shield.*
+`!shield 0` _disables the shield._
 
-`!shield 3` *kicks an account created less than 3 days.*
+`!shield 3` _kicks an account created less than 3 days._
 
-## **Top things to do:**
+## **How to set the control channel**
 
-### **1. Create an administrator role named 'bot' assigned to Proxy**
+[Here](https://github.com/Ph4ntom01/Proxy/wiki/Control-Channel) is the tutorial.
 
-Set this role in the uppermost position:
+## **Help**
 
-![bot_role_img](https://raw.githubusercontent.com/Unknown-Ph4ntom/Proxy/master/attachments/bot_role.png)
-
-You can also set Proxy's role directly in the uppermost position as well.
-
-### **2. Set a default role**
-
-`!defrole @aRole`
-
-*This role will be automatically assigned to members who join your server.*
-
-### **3. Set a welcoming and leaving notification channel**
-
-`!joinchan #aTextChannel` `!leavechan #aTextChannel`
-
-*These channels will be used to send welcoming and leaving messages.*
-
-### **4. Set a message**
-
-`!joinmsg yourMessage` `!leavemsg yourMessage`
-
-*Add [member] if you want the bot to mention the member.*
-
-### **5. Activate boxes**
-
-`!joinbox on` `!leavebox on`
-
-## **How to disable a functionnality**
-
-Use the command `!disable` and you will get started.
+If you have any issues, check the [wiki](https://github.com/Ph4ntom01/Proxy/wiki) or [join](https://discord.gg/3XkknNE) my server.
 
 ## **Hosting**
 
