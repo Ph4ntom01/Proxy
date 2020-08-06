@@ -114,17 +114,18 @@ public class GuildDAO extends Dao<GuildPojo> {
 
     @Override
     public boolean update(GuildPojo guild) {
-        String query = "UPDATE `guilds` SET `guild_name` = ?, `channel_join` = ?, `channel_leave` = ?, `default_role` = ?, `prefix` = ?, `shield` = ? WHERE `guild_id` = ?;";
+        String query = "UPDATE `guilds` SET `guild_name` = ?, `channel_join` = ?, `channel_leave` = ?, `channel_control` = ?,`default_role` = ?, `prefix` = ?, `shield` = ? WHERE `guild_id` = ?;";
         try (Connection conn = this.dataSource.getConnection();) {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
                 pst.setString(1, guild.getName());
                 pst.setString(2, guild.getChannelJoin());
                 pst.setString(3, guild.getChannelLeave());
-                pst.setString(4, guild.getDefaultRole());
-                pst.setString(5, guild.getPrefix());
-                pst.setInt(6, guild.getShield());
-                pst.setString(7, guild.getId());
+                pst.setString(4, guild.getChannelControl());
+                pst.setString(5, guild.getDefaultRole());
+                pst.setString(6, guild.getPrefix());
+                pst.setInt(7, guild.getShield());
+                pst.setString(8, guild.getId());
                 pst.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
@@ -142,7 +143,7 @@ public class GuildDAO extends Dao<GuildPojo> {
     @Override
     public GuildPojo find(String guildId) {
         GuildPojo guild = null;
-        String query = "SELECT `guild_id`, `guild_name`, `channel_join`, `channel_leave`, `default_role`, `prefix`, `shield` FROM `guilds` WHERE `guild_id` = ?;";
+        String query = "SELECT `guild_id`, `guild_name`, `channel_join`, `channel_leave`, `channel_control`, `default_role`, `prefix`, `shield` FROM `guilds` WHERE `guild_id` = ?;";
         try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setString(1, guildId);
             try (ResultSet rs = pst.executeQuery();) {
@@ -152,6 +153,7 @@ public class GuildDAO extends Dao<GuildPojo> {
                 guild.setName(rs.getString("guild_name"));
                 guild.setChannelJoin(rs.getString("channel_join"));
                 guild.setChannelLeave(rs.getString("channel_leave"));
+                guild.setChannelControl(rs.getString("channel_control"));
                 guild.setDefaultRole(rs.getString("default_role"));
                 guild.setPrefix(rs.getString("prefix"));
                 guild.setShield(rs.getInt("shield"));
@@ -163,7 +165,7 @@ public class GuildDAO extends Dao<GuildPojo> {
 
     public Set<GuildPojo> findGuilds() {
         Set<GuildPojo> guilds = null;
-        String query = "SELECT `guild_id`, `guild_name`, `channel_join`, `channel_leave`, `default_role`, `prefix`, `shield` FROM `guilds`;";
+        String query = "SELECT `guild_id`, `guild_name`, `channel_join`, `channel_leave`, `channel_control`, `default_role`, `prefix`, `shield` FROM `guilds`;";
         try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             try (ResultSet rs = pst.executeQuery();) {
                 guilds = new HashSet<>();
@@ -173,6 +175,7 @@ public class GuildDAO extends Dao<GuildPojo> {
                     guild.setName(rs.getString("guild_name"));
                     guild.setChannelJoin(rs.getString("channel_join"));
                     guild.setChannelLeave(rs.getString("channel_leave"));
+                    guild.setChannelControl(rs.getString("channel_control"));
                     guild.setDefaultRole(rs.getString("default_role"));
                     guild.setPrefix(rs.getString("prefix"));
                     guild.setShield(rs.getInt("shield"));
