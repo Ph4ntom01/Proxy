@@ -37,7 +37,7 @@ public class UserListener {
 
     public void route() {
 
-        String[] args = ProxyUtils.getArgs(event);
+        String[] args = ProxyUtils.getArgs(event.getMessage());
 
         if (command == Command.INFO) {
 
@@ -52,11 +52,11 @@ public class UserListener {
             Uptime uptimeCmd = new Uptime(event, guild);
             uptimeCmd.execute();
 
-        } else if (command == Command.GUILD_INFO) {
+        } else if (command == Command.GUILDINFO) {
             GuildInfo guildInfoCmd = new GuildInfo(event, guild);
             guildInfoCmd.execute();
 
-        } else if (command == Command.MEMBER_INFO) {
+        } else if (command == Command.MEMBERINFO) {
 
             if (args.length == 2) {
                 MemberInfo memberInfoCmd = new MemberInfo(event, guild);
@@ -76,7 +76,7 @@ public class UserListener {
                 avatarCmd.help(false);
             }
 
-        } else if (command == Command.TEXTCHAN_INFO) {
+        } else if (command == Command.TEXTCHANINFO) {
 
             if (args.length == 2) {
                 TextChanInfo textChanCmd = new TextChanInfo(event, guild);
@@ -86,7 +86,7 @@ public class UserListener {
                 textChanCmd.help(false);
             }
 
-        } else if (command == Command.CONTROL_GATE) {
+        } else if (command == Command.CONTROLGATE) {
 
             ControlGate controlGateCmd = new ControlGate(event, guild);
             controlGateCmd.execute();
