@@ -1,7 +1,6 @@
 package listeners.member;
 
 import java.time.LocalDate;
-import java.util.concurrent.TimeUnit;
 
 import configuration.cache.Blacklist;
 import configuration.constants.Permissions;
@@ -11,8 +10,12 @@ import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import factory.DaoFactory;
 import factory.PojoFactory;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -22,13 +25,13 @@ import proxy.ProxyUtils;
 
 public class MemberJoin extends ListenerAdapter {
 
-    private GuildPojo guild;
+    private GuildPojo guildPojo;
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId()) && !event.getUser().isBot()) {
-            guild = ProxyUtils.getGuildFromCache(event.getGuild());
-            LocalDate shield = LocalDate.now().minusDays(guild.getShield());
+            guildPojo = ProxyUtils.getGuildFromCache(event.getGuild());
+            LocalDate shield = LocalDate.now().minusDays(guildPojo.getShield());
             LocalDate userTimeCreated = event.getUser().getTimeCreated().toLocalDate();
 
             if (userTimeCreated.isAfter(shield)) {
@@ -39,8 +42,35 @@ public class MemberJoin extends ListenerAdapter {
                 }
             } else {
                 addMemberDatas(event);
-                addDefRole(event);
                 sendWelcomeMessage(event);
+                if (guildPojo.getChannelControl() == null) {
+                    addDefRole(event.getGuild(), event.getUser());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+        if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId())) {
+            guildPojo = ProxyUtils.getGuildFromCache(event.getGuild());
+            if (event.getChannel().getId().equals(guildPojo.getChannelControl()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+                addDefRole(event.getGuild(), event.getUser());
+            }
+        }
+    }
+
+    @Override
+    public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+        if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId())) {
+            guildPojo = ProxyUtils.getGuildFromCache(event.getGuild());
+            if (event.getChannel().getId().equals(guildPojo.getChannelControl()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+                try {
+                    Role defaultRole = event.getGuild().getRoleById(guildPojo.getDefaultRole());
+                    event.getGuild().removeRoleFromMember(event.getUserId(), defaultRole).queue();
+                } catch (HierarchyException e) {
+                } catch (ErrorResponseException e) {
+                }
             }
         }
     }
@@ -55,44 +85,35 @@ public class MemberJoin extends ListenerAdapter {
         memberDao.create(member);
     }
 
-    private void addDefRole(GuildMemberJoinEvent event) {
-        if (guild.getDefaultRole() != null && !guild.getDefaultRole().isEmpty()) {
-
-            for (int i = 0; i < event.getGuild().getRoles().size(); i++) {
-
-                if (event.getGuild().getRoles().get(i).getId().equals(guild.getDefaultRole())) {
-                    try {
-                        Role defaultRole = event.getGuild().getRoleById(guild.getDefaultRole());
-                        event.getGuild().addRoleToMember(event.getMember(), defaultRole).queue();
-                    } catch (HierarchyException e) {
-                    } catch (ErrorResponseException e) {
-                    }
-                }
+    private void addDefRole(Guild guildJda, User userJda) {
+        if (guildPojo.getDefaultRole() != null && !guildPojo.getDefaultRole().isEmpty()) {
+            try {
+                Role defaultRole = guildJda.getRoleById(guildPojo.getDefaultRole());
+                guildJda.addRoleToMember(userJda.getId(), defaultRole).queue();
+            } catch (HierarchyException e) {
+            } catch (ErrorResponseException e) {
             }
         }
     }
 
     private void sendWelcomeMessage(GuildMemberJoinEvent event) {
-        if (guild.getChannelJoin() != null) {
+        if (guildPojo.getChannelJoin() != null) {
             Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+            ChannelJoinPojo channelJoin = channelJoinDao.find(guildPojo.getChannelJoin());
             try {
                 if (channelJoin.getMessage() != null && !channelJoin.getEmbed()) {
-                    event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
+                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
 
                 } else if (channelJoin.getMessage() != null && channelJoin.getEmbed()) {
-                    event.getGuild().retrieveMemberById(event.getMember().getId()).queueAfter(1, TimeUnit.SECONDS, member -> {
-                        ProxyEmbed embed = new ProxyEmbed();
-                        embed.memberJoin(member);
-                        event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(embed.getEmbed().build())
-                                .append(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
-                    });
+                    ProxyEmbed embed = new ProxyEmbed();
+                    embed.controlGateEvent(event.getUser());
+                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(embed.getEmbed().build())
+                            .append(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
+
                 } else if (channelJoin.getMessage() == null && channelJoin.getEmbed()) {
-                    event.getGuild().retrieveMemberById(event.getMember().getId()).queueAfter(1, TimeUnit.SECONDS, member -> {
-                        ProxyEmbed embed = new ProxyEmbed();
-                        embed.memberJoin(member);
-                        event.getGuild().getTextChannelById(guild.getChannelJoin()).sendMessage(embed.getEmbed().build()).queue();
-                    });
+                    ProxyEmbed embed = new ProxyEmbed();
+                    embed.controlGateEvent(event.getUser());
+                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(embed.getEmbed().build()).queue();
                 }
             } catch (InsufficientPermissionException e) {
             }
