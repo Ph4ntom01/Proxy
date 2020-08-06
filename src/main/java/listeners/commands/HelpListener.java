@@ -2,6 +2,7 @@ package listeners.commands;
 
 import java.awt.Color;
 
+import commands.administrator.ControlChannel;
 import commands.administrator.DefaultRole;
 import commands.administrator.Disable;
 import commands.administrator.JoinChannel;
@@ -16,13 +17,11 @@ import commands.administrator.Shield;
 import commands.moderator.Bans;
 import commands.moderator.Clean;
 import commands.moderator.Kick;
-import commands.moderator.Lock;
 import commands.moderator.Purge;
 import commands.moderator.ResetChan;
 import commands.moderator.Slowmode;
 import commands.moderator.Softban;
 import commands.moderator.Unban;
-import commands.moderator.Unlock;
 import commands.moderator.VoiceKick;
 import commands.moderator.VoiceMute;
 import commands.moderator.VoiceUnmute;
@@ -57,14 +56,14 @@ public class HelpListener {
 
     public void route() {
 
-        String[] args = ProxyUtils.getArgs(event);
+        String[] args = ProxyUtils.getArgs(event.getMessage());
 
         if (args.length == 1) {
             ProxyEmbed embed = new ProxyEmbed();
             embed.helpList();
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            Command command = Commands.getInstance().get(ProxyUtils.getArgs(event)[1]);
+            Command command = Commands.getInstance().get(args[1]);
 
             if (args[1].equalsIgnoreCase(Category.ADMINISTRATION.getName())) {
                 ProxyEmbed embed = new ProxyEmbed();
@@ -74,7 +73,7 @@ public class HelpListener {
                         + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.SHIELD.getName() + "`",
                         Color.GREEN);
                 // @formatter:on
-                ProxyUtils.sendEmbed(event, embed);
+                ProxyUtils.sendEmbed(event.getChannel(), embed);
             }
 
             else if (args[1].equalsIgnoreCase(Category.MODERATION.getName())) {
@@ -82,10 +81,10 @@ public class HelpListener {
                 // @formatter:off
                 embed.help("__" + Command.HELP.getName() + " " + Category.MODERATION.getName() + "__",
                         ProxyUtils.getCommands(Category.MODERATION)
-                        + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.LOCK.getName() + "`",
+                        + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.PURGE.getName() + "`",
                         Color.GREEN);
                 // @formatter:on
-                ProxyUtils.sendEmbed(event, embed);
+                ProxyUtils.sendEmbed(event.getChannel(), embed);
             }
 
             else if (args[1].equalsIgnoreCase(Category.UTILITY.getName())) {
@@ -93,10 +92,10 @@ public class HelpListener {
                 // @formatter:off
                 embed.help("__" + Command.HELP.getName() + " " + Category.UTILITY.getName() + "__",
                         ProxyUtils.getCommands(Category.UTILITY)
-                        + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.GUILD_INFO.getName() + "`",
+                        + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.GUILDINFO.getName() + "`",
                         Color.GREEN);
                 // @formatter:on
-                ProxyUtils.sendEmbed(event, embed);
+                ProxyUtils.sendEmbed(event.getChannel(), embed);
             }
 
             else if (args[1].equalsIgnoreCase(Category.MEME.getName())) {
@@ -106,7 +105,7 @@ public class HelpListener {
                         ProxyUtils.getCommands(Category.MEME)
                         + "\n\nExample: `" + guild.getPrefix() + Command.HELP.getName() + " " + Command.ISSOU.getName() + "`", Color.GREEN);
                 // @formatter:on
-                ProxyUtils.sendEmbed(event, embed);
+                ProxyUtils.sendEmbed(event.getChannel(), embed);
             }
 
             else if (command == Command.PREFIX) {
@@ -159,6 +158,11 @@ public class HelpListener {
                 leaveEmbedCmd.help(true);
             }
 
+            else if (command == Command.CONTROLCHAN) {
+                ControlChannel controlChanCmd = new ControlChannel(event, guild);
+                controlChanCmd.help(true);
+            }
+
             else if (command == Command.DEFROLE) {
                 DefaultRole defRoleCmd = new DefaultRole(event, guild);
                 defRoleCmd.help(true);
@@ -182,16 +186,6 @@ public class HelpListener {
             else if (command == Command.SLOWMODE) {
                 Slowmode slowmodeCmd = new Slowmode(event, guild);
                 slowmodeCmd.help(true);
-            }
-
-            else if (command == Command.LOCK) {
-                Lock lockCmd = new Lock(event, guild);
-                lockCmd.help(true);
-            }
-
-            else if (command == Command.UNLOCK) {
-                Unlock unlockCmd = new Unlock(event, guild);
-                unlockCmd.help(true);
             }
 
             else if (command == Command.VOICEKICK) {
@@ -249,12 +243,12 @@ public class HelpListener {
                 uptimeCmd.help(true);
             }
 
-            else if (command == Command.GUILD_INFO) {
+            else if (command == Command.GUILDINFO) {
                 GuildInfo guildInfoCmd = new GuildInfo(event, guild);
                 guildInfoCmd.help(true);
             }
 
-            else if (command == Command.MEMBER_INFO) {
+            else if (command == Command.MEMBERINFO) {
                 MemberInfo memberInfoCmd = new MemberInfo(event, guild);
                 memberInfoCmd.help(true);
             }
@@ -264,12 +258,12 @@ public class HelpListener {
                 avatarCmd.help(true);
             }
 
-            else if (command == Command.TEXTCHAN_INFO) {
+            else if (command == Command.TEXTCHANINFO) {
                 TextChanInfo textChanInfoCmd = new TextChanInfo(event, guild);
                 textChanInfoCmd.help(true);
             }
 
-            else if (command == Command.CONTROL_GATE) {
+            else if (command == Command.CONTROLGATE) {
                 ControlGate controlGateCmd = new ControlGate(event, guild);
                 controlGateCmd.help(true);
             }

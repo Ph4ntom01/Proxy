@@ -1,5 +1,6 @@
 package listeners.commands;
 
+import commands.administrator.ControlChannel;
 import commands.administrator.DefaultRole;
 import commands.administrator.Disable;
 import commands.administrator.JoinChannel;
@@ -36,7 +37,7 @@ public class AdministratorListener {
 
     public void route() {
 
-        String[] args = ProxyUtils.getArgs(event);
+        String[] args = ProxyUtils.getArgs(event.getMessage());
 
         if (command == Command.PREFIX) {
 
@@ -116,6 +117,16 @@ public class AdministratorListener {
             } else {
                 LeaveEmbed leaveEmbebCmd = new LeaveEmbed(event, guild);
                 leaveEmbebCmd.help(false);
+            }
+
+        } else if (command == Command.CONTROLCHAN) {
+
+            if (args.length == 2) {
+                ControlChannel controlChanCmd = new ControlChannel(event, guild);
+                controlChanCmd.execute();
+            } else {
+                ControlChannel controlChanCmd = new ControlChannel(event, guild);
+                controlChanCmd.help(false);
             }
 
         } else if (command == Command.DEFROLE) {
