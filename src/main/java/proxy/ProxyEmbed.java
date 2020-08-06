@@ -102,9 +102,8 @@ public class ProxyEmbed {
         embed.setThumbnail(gld.getIconUrl());
         embed.setAuthor(gld.getName(), null, gld.getIconUrl());
         embed.addField("Server Creation",
-                StringUtils.capitalize(gld.getTimeCreated().getDayOfWeek().toString().toLowerCase()) + " "
-                        + gld.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH)) + " at "
-                        + gld.getTimeCreated().format(DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH)),
+                StringUtils.capitalize(gld.getTimeCreated().getDayOfWeek().toString().toLowerCase()) + " " + gld.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH))
+                        + " at " + gld.getTimeCreated().format(DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH)),
                 false);
         embed.addField("Guild Owner", owner.getAsMention(), true);
         embed.addField("Owner ID", "`" + owner.getId() + "`", true);
@@ -170,8 +169,8 @@ public class ProxyEmbed {
         }
 
         if (gld.getAfkChannel() != null) {
-            embed.addField("AFK Channel", "```ini\n[Name]:      " + gld.getAfkChannel().getName() + "\n[ID]:        " + gld.getAfkChannel().getId() + "\n[Timeout]:   "
-                    + gld.getAfkTimeout().getSeconds() + "s```", false);
+            embed.addField("AFK Channel",
+                    "```ini\n[Name]:      " + gld.getAfkChannel().getName() + "\n[ID]:        " + gld.getAfkChannel().getId() + "\n[Timeout]:   " + gld.getAfkTimeout().getSeconds() + "s```", false);
         }
 
         if (guild.getDefaultRole() == null) {
@@ -314,39 +313,19 @@ public class ProxyEmbed {
         // @formatter:on
     }
 
-    public void avatar(Member member) {
-        String avatarUrl = member.getUser().getEffectiveAvatarUrl();
+    public void avatar(User user) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
-        embed.setTitle("*" + member.getEffectiveName() + "'s* avatar");
-        embed.setImage(avatarUrl + "?size=512");
+        embed.setImage(user.getEffectiveAvatarUrl() + "?size=512");
     }
 
-    public void memberJoin(Member member) {
+    public void controlGateEvent(User user) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
-        embed.setThumbnail(member.getUser().getEffectiveAvatarUrl());
-        embed.addField("Name", member.getUser().getName(), false);
-        embed.addField("Server Join", member.getTimeJoined().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
-        embed.addField("Discord Join", member.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
-
-        if (!member.getRoles().isEmpty()) {
-            embed.addField("Role", ProxyUtils.getMemberRoles(member), false);
-        }
-
-        embed.setFooter(StringUtils.capitalize(DateTimeFormatter.ofPattern("EEE, dd/MM/yyyy", Locale.ENGLISH).format(LocalDateTime.now())) + " at "
-                + DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH).format(LocalDateTime.now()));
-    }
-
-    public void memberLeave(User user) {
-        embed = new EmbedBuilder();
-        embed.setColor(Color.GREEN);
-        embed.setThumbnail(user.getEffectiveAvatarUrl());
-        embed.addField("Name", user.getName(), false);
+        embed.addField("Tag", user.getAsTag(), false);
         embed.addField("Discord Join", user.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
-
-        embed.setFooter(StringUtils.capitalize(DateTimeFormatter.ofPattern("EEE, dd/MM/yyyy", Locale.ENGLISH).format(LocalDateTime.now())) + " at "
-                + DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH).format(LocalDateTime.now()));
+        embed.addField("ID", user.getId(), true);
+        embed.setImage(user.getEffectiveAvatarUrl() + "?size=256");
     }
 
     public void channelInfo(TextChannel textChannel) {
@@ -359,8 +338,8 @@ public class ProxyEmbed {
 
         for (PermissionOverride role : textChannel.getRolePermissionOverrides()) {
 
-            if (role.getRole().isPublicRole() && (role.getManager().getInheritedPermissions().contains(Permission.MESSAGE_WRITE)
-                    || role.getManager().getAllowedPermissions().contains(Permission.MESSAGE_WRITE))) {
+            if (role.getRole().isPublicRole()
+                    && (role.getManager().getInheritedPermissions().contains(Permission.MESSAGE_WRITE) || role.getManager().getAllowedPermissions().contains(Permission.MESSAGE_WRITE))) {
                 embed.addField("Lock", "Inactive", true);
             }
 
@@ -436,18 +415,20 @@ public class ProxyEmbed {
         // @formatter:off
         embed.addField("",
                 "`" + Command.JOINCHAN.getName() + "` " + "`" + Command.JOINMESSAGE.getName() + "` " + "`" + Command.JOINEMBED.getName() + "` " + "`" + Command.LEAVECHAN.getName()
-                + "` " + "`" + Command.LEAVEMESSAGE.getName() + "` " + "`" + Command.LEAVEEMBED.getName() + "` " + "`" + Command.DEFROLE.getName() + "` " + "`"
+                + "` " + "`" + Command.LEAVEMESSAGE.getName() + "` " + "`" + Command.LEAVEEMBED.getName() + "` " + "`" + Command.CONTROLCHAN.getName() + "` " + "`" + Command.DEFROLE.getName() + "` " + "`"
                 + Command.SHIELD.getName() + "`",
                 false);
         // @formatter:on
         embed.addField("", "Example: `" + prefix + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`", false);
     }
 
-    public void controlGate(Guild gld, ChannelJoinPojo channelJoin, ChannelLeavePojo channelLeave) {
+    public void controlGate(Guild gld, GuildPojo guild, ChannelJoinPojo channelJoin, ChannelLeavePojo channelLeave) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
+        embed.setTitle(":shield: Controlgate");
         embed.setThumbnail("https://media1.tenor.com/images/f02a54eef52d2867abd892ca0841a439/tenor.gif?itemid=9580001");
-        embed.addField(":airplane_arriving: __**Arrivals**__", "_Notification when a member joins the server._", false);
+
+        embed.addField("", ":airplane_arriving: __**Arrivals**__\n_Notification when a member joins the server._", false);
 
         if (channelJoin.getChannelId() != null) {
             embed.addField(":pushpin: Channel", gld.getTextChannelById(channelJoin.getChannelId()).getAsMention(), true);
@@ -466,7 +447,8 @@ public class ProxyEmbed {
         else {
             embed.addField(":page_with_curl: Message", "```\nNo message set.```", false);
         }
-        embed.addField(":airplane_departure: __**Departures**__", "_Notification when a member leaves the server._", false);
+
+        embed.addField("", ":airplane_departure: __**Departures**__\n_Notification when a member leaves the server._", false);
 
         if (channelLeave.getChannelId() != null) {
             embed.addField(":pushpin: Channel", gld.getTextChannelById(channelLeave.getChannelId()).getAsMention(), true);
@@ -484,6 +466,14 @@ public class ProxyEmbed {
 
         else {
             embed.addField(":page_with_curl: Message", "```\n" + "No message set." + "```", false);
+        }
+
+        if (guild.getChannelControl() != null) {
+            embed.addField("", ":white_check_mark: __**Control Channel**__: " + gld.getTextChannelById(guild.getChannelControl()).getAsMention(), false);
+        }
+
+        else {
+            embed.addField("", ":white_check_mark: __**Control Channel**__: Disabled", false);
         }
     }
 
