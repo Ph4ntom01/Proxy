@@ -26,14 +26,14 @@ public class Avatar extends UserListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event)[1]), false).queue(member -> {
+            event.getJDA().retrieveUserById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])).queue(user -> {
                 ProxyEmbed embed = new ProxyEmbed();
-                embed.avatar(member);
-                ProxyUtils.sendEmbed(event, embed);
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
+                embed.avatar(user);
+                ProxyUtils.sendEmbed(event.getChannel(), embed);
+            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
@@ -48,9 +48,9 @@ public class Avatar extends UserListener implements CommandManager {
                     + "*You can also mention a member by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the member's avatar. **Example:** `" + guild.getPrefix() + Command.AVATAR.getName() + " @aMember`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the member's avatar. **Example:** `" + guild.getPrefix() + Command.AVATAR.getName() + " @aMember`.");
         }
     }
 
