@@ -19,34 +19,35 @@ import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import factory.DaoFactory;
 import factory.PojoFactory;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.MentionType;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ProxyUtils {
 
     private ProxyUtils() {
     }
 
-    public static String[] getArgs(GuildMessageReceivedEvent event) {
-        return event.getMessage().getContentRaw().split("\\s+");
+    public static String[] getArgs(Message message) {
+        return message.getContentRaw().split("\\s+");
     }
 
-    public static void sendMessage(GuildMessageReceivedEvent event, String message) {
-        event.getChannel().sendTyping().queue();
-        event.getChannel().sendMessage(message).queueAfter(300, TimeUnit.MILLISECONDS);
+    public static void sendMessage(TextChannel channel, String message) {
+        channel.sendTyping().queue();
+        channel.sendMessage(message).queueAfter(300, TimeUnit.MILLISECONDS);
     }
 
-    public static void sendEmbed(GuildMessageReceivedEvent event, ProxyEmbed embed) {
-        event.getChannel().sendTyping().queue();
-        event.getChannel().sendMessage(embed.getEmbed().build()).queueAfter(300, TimeUnit.MILLISECONDS);
+    public static void sendEmbed(TextChannel channel, ProxyEmbed embed) {
+        channel.sendTyping().queue();
+        channel.sendMessage(embed.getEmbed().build()).queueAfter(300, TimeUnit.MILLISECONDS);
     }
 
     public static String getMemberMessageEvent(String message, User user) {
-        return message.replace("[member]", user.getAsTag());
+        return message.replace("[member]", user.getName());
     }
 
     public static String getMentionnedEntity(MentionType mention, Message message, String id) {
@@ -98,7 +99,6 @@ public class ProxyUtils {
 
     public static String getCommands(Category category) {
         List<Command> commands = Commands.getInstance().values().stream().filter(command -> command.getCategory() == category).sorted().collect(Collectors.toList());
-
         StringBuilder commandsList = new StringBuilder();
         for (Command command : commands) {
             commandsList.append("`" + command.getName() + "` ");
@@ -158,11 +158,11 @@ public class ProxyUtils {
         return member;
     }
 
-    public static void selfbotEmbed(GuildMessageReceivedEvent event, GuildPojo guild) {
-        event.getJDA().retrieveUserById(ID.CREATOR.getId()).queue(creator -> {
+    public static void selfbotEmbed(JDA jda, Guild guildJda, GuildPojo guildPojo, TextChannel channel) {
+        jda.retrieveUserById(ID.CREATOR.getId()).queue(creator -> {
             ProxyEmbed embed = new ProxyEmbed();
-            embed.selfbotInfo(guild, event.getGuild().getSelfMember(), creator);
-            ProxyUtils.sendEmbed(event, embed);
+            embed.selfbotInfo(guildPojo, guildJda.getSelfMember(), creator);
+            sendEmbed(channel, embed);
         });
     }
 

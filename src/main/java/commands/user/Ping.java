@@ -26,7 +26,7 @@ public class Ping extends UserListener implements CommandManager {
         event.getJDA().getRestPing().queue(ping -> {
             ProxyEmbed embed = new ProxyEmbed();
             embed.ping(ping);
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         });
     }
 
@@ -40,10 +40,10 @@ public class Ping extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.PING.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Display the time in milliseconds that discord took to respond to a request. "
                     + "**Example:** `" + guild.getPrefix() + Command.PING.getName() + "`.");
             // @formatter:on

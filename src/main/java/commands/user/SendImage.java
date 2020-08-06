@@ -75,9 +75,9 @@ public class SendImage extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.ISSOU.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Generate a random issou image. **Example:** `" + guild.getPrefix() + Command.ISSOU.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Generate a random issou image. **Example:** `" + guild.getPrefix() + Command.ISSOU.getName() + "`.");
         }
     }
 

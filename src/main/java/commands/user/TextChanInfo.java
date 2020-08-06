@@ -26,10 +26,10 @@ public class TextChanInfo extends UserListener implements CommandManager {
     public void execute() {
         try {
             ProxyEmbed embed = new ProxyEmbed();
-            embed.channelInfo(event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), ProxyUtils.getArgs(event)[1])));
-            ProxyUtils.sendEmbed(event, embed);
+            embed.channelInfo(event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])));
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
@@ -38,14 +38,14 @@ public class TextChanInfo extends UserListener implements CommandManager {
         if (embedState) {
             ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.TEXTCHAN_INFO.getName(),
+            embed.help(Command.TEXTCHANINFO.getName(),
                     "Display the text channel information.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.TEXTCHAN_INFO.getName() + " #aTextChannel`",
+                    + "Example: `" + guild.getPrefix() + Command.TEXTCHANINFO.getName() + " #aTextChannel`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the text channel information. **Example:** `" + guild.getPrefix() + Command.TEXTCHAN_INFO.getName() + " #aTextChannel`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the text channel information. **Example:** `" + guild.getPrefix() + Command.TEXTCHANINFO.getName() + " #aTextChannel`.");
         }
     }
 

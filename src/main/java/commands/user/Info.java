@@ -22,7 +22,7 @@ public class Info extends UserListener implements CommandManager {
     public void execute() {
         ProxyEmbed embed = new ProxyEmbed();
         embed.info(guild.getPrefix());
-        ProxyUtils.sendEmbed(event, embed);
+        ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 
     @Override

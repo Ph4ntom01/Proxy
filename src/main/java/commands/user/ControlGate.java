@@ -32,8 +32,8 @@ public class ControlGate extends UserListener implements CommandManager {
         Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
         ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
         ProxyEmbed embed = new ProxyEmbed();
-        embed.controlGate(event.getGuild(), channelJoin, channelLeave);
-        ProxyUtils.sendEmbed(event, embed);
+        embed.controlGate(event.getGuild(), guild, channelJoin, channelLeave);
+        ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class ControlGate extends UserListener implements CommandManager {
         if (embedState) {
             ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.CONTROL_GATE.getName(),
+            embed.help(Command.CONTROLGATE.getName(),
                     "Display the welcoming and leaving channel information.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.CONTROL_GATE.getName() + "`.",
+                    + "Example: `" + guild.getPrefix() + Command.CONTROLGATE.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the welcoming and leaving channel information. **Example:** `" + guild.getPrefix() + Command.CONTROL_GATE.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the welcoming and leaving channel information. **Example:** `" + guild.getPrefix() + Command.CONTROLGATE.getName() + "`.");
         }
     }
 

@@ -28,27 +28,27 @@ public class VoiceMute extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event)[1]), false).queue(member -> {
+            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
                 try {
                     if (!member.getVoiceState().isGuildMuted()) {
                         event.getGuild().mute(member, true).queue();
-                        ProxyUtils.sendMessage(event, "**" + member.getUser().getAsTag() + "** is successfully voice muted !");
+                        ProxyUtils.sendMessage(event.getChannel(), "**" + member.getUser().getAsTag() + "** is successfully voice muted !");
                     } else {
-                        ProxyUtils.sendMessage(event, "**" + member.getUser().getAsTag() + "** has already been voice muted !");
+                        ProxyUtils.sendMessage(event.getChannel(), "**" + member.getUser().getAsTag() + "** has already been voice muted !");
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
 
                 } catch (IllegalStateException e) {
-                    ProxyUtils.sendMessage(event, "You cannot mute a member who isn't in a voice channel.");
+                    ProxyUtils.sendMessage(event.getChannel(), "You cannot mute a member who isn't in a voice channel.");
 
                 } catch (InsufficientPermissionException e) {
-                    ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.VOICE_MUTE_OTHERS.getName() + "**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.VOICE_MUTE_OTHERS.getName() + "**.");
                 }
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
+            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
@@ -63,10 +63,10 @@ public class VoiceMute extends ModeratorListener implements CommandManager {
                     + "*You can also mention a member by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Mute a specified member from the voice channel he is in. "
                     + "**Example:** `" + guild.getPrefix() + Command.VOICEMUTE.getName() + " @aMember`.");
             // @formatter:on

@@ -26,29 +26,29 @@ public class Slowmode extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            int slowmode = Integer.parseInt(ProxyUtils.getArgs(event)[1]);
+            int slowmode = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
             if (slowmode == 0) {
                 if (event.getChannel().getSlowmode() == 0) {
-                    ProxyUtils.sendMessage(event, "Slowmode has already been **disabled** !");
+                    ProxyUtils.sendMessage(event.getChannel(), "Slowmode has already been **disabled** !");
                 } else {
                     event.getChannel().getManager().setSlowmode(slowmode).queue();
-                    ProxyUtils.sendMessage(event, "Slowmode is now **disabled** !");
+                    ProxyUtils.sendMessage(event.getChannel(), "Slowmode is now **disabled** !");
                 }
             } else if (slowmode == event.getChannel().getSlowmode()) {
-                ProxyUtils.sendMessage(event, "This amount has already been defined.");
+                ProxyUtils.sendMessage(event.getChannel(), "This amount has already been defined.");
 
             } else if (slowmode > 0 && slowmode <= 30) {
                 event.getChannel().getManager().setSlowmode(slowmode).queue();
-                ProxyUtils.sendMessage(event, "Slowmode is now **enabled** !" + " (" + slowmode + "s).");
+                ProxyUtils.sendMessage(event.getChannel(), "Slowmode is now **enabled** !" + " (" + slowmode + "s).");
             } else {
-                ProxyUtils.sendMessage(event, "Please enter a number between **0** and **30**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**.");
             }
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + " **or** " + Permission.MANAGE_CHANNEL.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + " **or** " + Permission.MANAGE_CHANNEL.getName() + "**.");
 
         } catch (IllegalStateException e) {
         } catch (NumberFormatException e) {
-            ProxyUtils.sendMessage(event, "Please enter a number between **0** and **30**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**.");
         }
     }
 
@@ -62,9 +62,9 @@ public class Slowmode extends ModeratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.SLOWMODE.getName() + " 5`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Change the slowmode amount on the current channel. **Example:** `" + guild.getPrefix() + Command.SLOWMODE.getName() + " 5`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Change the slowmode amount on the current channel. **Example:** `" + guild.getPrefix() + Command.SLOWMODE.getName() + " 5`.");
         }
     }
 

@@ -36,7 +36,7 @@ public class Adminlist extends UserListener implements CommandManager {
         List<MemberPojo> adminlist = members.stream().filter(member -> member.getPermLevel() == Permissions.ADMINISTRATOR.getLevel()).collect(Collectors.toList());
         ProxyEmbed embed = new ProxyEmbed();
         embed.adminList(adminlist);
-        ProxyUtils.sendEmbed(event, embed);
+        ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 
     @Override
@@ -49,9 +49,9 @@ public class Adminlist extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.ADMINLIST.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the bot administrators. **Example:** `" + guild.getPrefix() + Command.ADMINLIST.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the bot administrators. **Example:** `" + guild.getPrefix() + Command.ADMINLIST.getName() + "`.");
         }
     }
 

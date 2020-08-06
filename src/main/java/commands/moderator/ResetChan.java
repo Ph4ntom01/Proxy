@@ -31,7 +31,7 @@ public class ResetChan extends ModeratorListener implements CommandManager {
             event.getChannel().delete().queue();
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.MANAGE_CHANNEL.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MANAGE_CHANNEL.getName() + "**.");
 
         } catch (ErrorResponseException e) {
         }
@@ -47,9 +47,9 @@ public class ResetChan extends ModeratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.RESETCHAN.getName() + "`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Create a copy and delete the current text channel. **Example:** `" + guild.getPrefix() + Command.RESETCHAN.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Create a copy and delete the current text channel. **Example:** `" + guild.getPrefix() + Command.RESETCHAN.getName() + "`.");
         }
     }
 

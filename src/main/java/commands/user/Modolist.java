@@ -36,7 +36,7 @@ public class Modolist extends UserListener implements CommandManager {
         List<MemberPojo> modolist = members.stream().filter(member -> member.getPermLevel() == Permissions.MODERATOR.getLevel()).collect(Collectors.toList());
         if (modolist.isEmpty()) {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "No " + Permissions.MODERATOR.getName().toLowerCase() + ". "
                     + "To define a " + Permissions.MODERATOR.getName().toLowerCase()
                     + ", the guild owner has to use the command `" + guild.getPrefix() + Command.SETMODO.getName() + " @aMember`.");
@@ -44,7 +44,7 @@ public class Modolist extends UserListener implements CommandManager {
         } else {
             ProxyEmbed embed = new ProxyEmbed();
             embed.modoList(modolist);
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         }
     }
 
@@ -58,9 +58,9 @@ public class Modolist extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.MODOLIST.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the bot moderators. **Example:** `" + guild.getPrefix() + Command.MODOLIST.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the bot moderators. **Example:** `" + guild.getPrefix() + Command.MODOLIST.getName() + "`.");
         }
     }
 

@@ -39,30 +39,29 @@ public class SetPermission extends AdministratorListener implements CommandManag
     public void execute() {
         if (event.getAuthor().getId().equals(event.getGuild().getOwnerId())) {
             try {
-                event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event)[1]), false)
-                        .queue(mentionnedMember -> {
+                event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(mentionnedMember -> {
 
-                            if (mentionnedMember.getUser().isBot()) {
-                                ProxyUtils.sendMessage(event, "Impossible to set a permission for a bot.");
-                            } else {
-                                String userTag = mentionnedMember.getUser().getAsTag();
-                                MemberPojo member = ProxyUtils.getMemberFromCache(mentionnedMember);
+                    if (mentionnedMember.getUser().isBot()) {
+                        ProxyUtils.sendMessage(event.getChannel(), "Impossible to set a permission for a bot.");
+                    } else {
+                        String userTag = mentionnedMember.getUser().getAsTag();
+                        MemberPojo member = ProxyUtils.getMemberFromCache(mentionnedMember);
 
-                                if (permission.getLevel() == member.getPermLevel()) {
-                                    ProxyUtils.sendMessage(event, "**" + userTag + "** already has this permission.");
-                                } else {
-                                    member.setPermLevel(permission.getLevel());
-                                    Dao<MemberPojo> memberDao = DaoFactory.getMemberDAO();
-                                    memberDao.update(member);
-                                    ProxyUtils.sendMessage(event, "**" + userTag + "**" + " is now " + "**" + permission.getName().toLowerCase() + "**" + ".");
-                                }
-                            }
-                        }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
+                        if (permission.getLevel() == member.getPermLevel()) {
+                            ProxyUtils.sendMessage(event.getChannel(), "**" + userTag + "** already has this permission.");
+                        } else {
+                            member.setPermLevel(permission.getLevel());
+                            Dao<MemberPojo> memberDao = DaoFactory.getMemberDAO();
+                            memberDao.update(member);
+                            ProxyUtils.sendMessage(event.getChannel(), "**" + userTag + "**" + " is now " + "**" + permission.getName().toLowerCase() + "**" + ".");
+                        }
+                    }
+                }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
             } catch (IllegalArgumentException | NullPointerException e) {
-                ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+                ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "Only the guild owner has the ability to set a permission.");
+            ProxyUtils.sendMessage(event.getChannel(), "Only the guild owner has the ability to set a permission.");
         }
     }
 
@@ -80,11 +79,11 @@ public class SetPermission extends AdministratorListener implements CommandManag
                     + "*You can also mention a member by his ID*.\n"
                     + "**This command can only be used by the server owner**.",
                     Color.ORANGE);
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
             // @formatter:on
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event, "Set a permission for a mentionned member. "
+            ProxyUtils.sendMessage(event.getChannel(), "Set a permission for a mentionned member. "
                     + "**Example:** `" + guild.getPrefix() + Command.SETADMIN.getName() + " @aMember`.\n"
                     + "**This command can only be used by the server owner**.");
             // @formatter:on

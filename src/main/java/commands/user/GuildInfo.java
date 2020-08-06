@@ -28,7 +28,7 @@ public class GuildInfo extends UserListener implements CommandManager {
         gld.retrieveOwner().queue(owner -> {
             ProxyEmbed embed = new ProxyEmbed();
             embed.serverInfo(gld, guild, owner);
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         });
     }
 
@@ -37,14 +37,14 @@ public class GuildInfo extends UserListener implements CommandManager {
         if (embedState) {
             ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.GUILD_INFO.getName(),
+            embed.help(Command.GUILDINFO.getName(),
                     "Display the server information.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.GUILD_INFO.getName() + "`.",
+                    + "Example: `" + guild.getPrefix() + Command.GUILDINFO.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the server information. **Example:** `" + guild.getPrefix() + Command.GUILD_INFO.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the server information. **Example:** `" + guild.getPrefix() + Command.GUILDINFO.getName() + "`.");
         }
     }
 

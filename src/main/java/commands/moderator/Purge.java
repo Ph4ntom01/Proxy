@@ -28,34 +28,34 @@ public class Purge extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            int days = Integer.parseInt(ProxyUtils.getArgs(event)[1]);
+            int days = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
             if (days > 0 && days <= 30) {
-                event.getGuild().prune(days).queue(members -> ProxyUtils.sendMessage(event, "**Kicked members**: " + members + "."));
+                event.getGuild().prune(days).queue(members -> ProxyUtils.sendMessage(event.getChannel(), "**Kicked members**: " + members + "."));
             } else {
-                ProxyUtils.sendMessage(event, "Please enter a number between **1** and **30**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **1** and **30**.");
             }
         } catch (IllegalArgumentException e) {
-            ProxyUtils.sendMessage(event, "Please enter a number between **1** and **30**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **1** and **30**.");
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
         }
     }
 
     public void purgeByRole() {
         try {
-            Role role = event.getGuild().getRoleById(ProxyUtils.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event)[1]));
-            int days = Integer.parseInt(ProxyUtils.getArgs(event)[2]);
+            Role role = event.getGuild().getRoleById(ProxyUtils.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]));
+            int days = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[2]);
             if (days > 0 && days <= 30) {
-                event.getGuild().prune(days, role).queue(members -> ProxyUtils.sendMessage(event, "**" + role.getName() + "**: " + members + "."));
+                event.getGuild().prune(days, role).queue(members -> ProxyUtils.sendMessage(event.getChannel(), "**" + role.getName() + "**: " + members + "."));
             } else {
-                ProxyUtils.sendMessage(event, "The maximum number to purge is **30**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **1** and **30**.");
             }
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
@@ -73,10 +73,10 @@ public class Purge extends ModeratorListener implements CommandManager {
                     + "*You can also mention a role by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Kick all the members who were offline for at least the number of days you set. "
                     + "**Example:** `" + guild.getPrefix() + Command.PURGE.getName() + " 5` or `" + guild.getPrefix() + Command.PURGE.getName() + " 5 @aRole`.");
             // @formatter:on

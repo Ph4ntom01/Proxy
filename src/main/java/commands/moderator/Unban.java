@@ -32,27 +32,27 @@ public class Unban extends ModeratorListener implements CommandManager {
         try {
             event.getGuild().retrieveBanList().queue(banlist -> unban(banlist));
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
         }
     }
 
     private void unban(List<Ban> banlist) {
         try {
             if (banlist.isEmpty()) {
-                ProxyUtils.sendMessage(event, "No banned member.");
+                ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
             } else {
                 banlist.stream().findAny().ifPresent(mbr -> {
-                    event.getGuild().retrieveBanById(ProxyUtils.getArgs(event)[1]).queue(bannedMember -> {
+                    event.getGuild().retrieveBanById(ProxyUtils.getArgs(event.getMessage())[1]).queue(bannedMember -> {
 
                         if (mbr.getUser().getId().equals(bannedMember.getUser().getId())) {
                             event.getGuild().unban(mbr.getUser().getId()).queue();
-                            ProxyUtils.sendMessage(event, "**" + bannedMember.getUser().getName() + "** is successfully unbanned !");
+                            ProxyUtils.sendMessage(event.getChannel(), "**" + bannedMember.getUser().getName() + "** is successfully unbanned !");
                         }
-                    }, ContextException.here(e -> ProxyUtils.sendMessage(event, "Invalid ID.")));
+                    }, ContextException.here(e -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID.")));
                 });
             }
         } catch (IllegalArgumentException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID.");
         } catch (ErrorResponseException e) {
         }
     }
@@ -67,10 +67,10 @@ public class Unban extends ModeratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.UNBAN.getName() + " 500688503617749023`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Unban any person who has previously been banned from this server, require an ID. "
                     + "**Example:** `" + guild.getPrefix() + Command.UNBAN.getName() + " 500688503617749023`.");
             // @formatter:on

@@ -30,14 +30,14 @@ public class JoinChannel extends AdministratorListener implements CommandManager
 
     @Override
     public void execute() {
-        String textChannelID = ProxyUtils.getArgs(event)[1];
+        String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
         try {
             Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
             ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
             TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
             if (textChannel.getId().equals(guild.getChannelJoin()) && textChannel.getId().equals(channelJoin.getChannelId())) {
-                ProxyUtils.sendMessage(event, "The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
 
             } else if (guild.getChannelJoin() == null && channelJoin.getChannelId() == null) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
@@ -46,17 +46,17 @@ public class JoinChannel extends AdministratorListener implements CommandManager
                 guild.setChannelJoin(textChannel.getId());
                 channelJoinDao.create(channelJoin);
                 guildDao.update(guild);
-                ProxyUtils.sendMessage(event, "The default channel for new members is now " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");
 
             } else {
                 guild.setChannelJoin(textChannel.getId());
                 ((ChannelJoinDAO) channelJoinDao).update(channelJoin, textChannel.getId());
                 // No need to update the guild table with "guildDao.update" because ON UPDATE
                 // CASCADE is defined to the foreign key.
-                ProxyUtils.sendMessage(event, "The default channel for new members is now " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");
             }
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "**" + textChannelID + "** is not a text channel.");
+            ProxyUtils.sendMessage(event.getChannel(), "**" + textChannelID + "** is not a text channel.");
         }
     }
 
@@ -66,13 +66,14 @@ public class JoinChannel extends AdministratorListener implements CommandManager
             ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
             embed.help(Command.JOINCHAN.getName(),
-                    "Set the welcoming channel.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`",
+                    "Send notification when a member joins the server.\n\n"
+                    + "Example: `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`\n\n"
+                    + "*You can also mention a channel by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the welcoming channel. **Example:** `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Send notification when a member joins the server. **Example:** `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`.");
         }
     }
 

@@ -26,26 +26,26 @@ public class Shield extends AdministratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            int days = Integer.parseInt(ProxyUtils.getArgs(event)[1]);
+            int days = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
             if (days >= 0 && days <= 30) {
                 if (guild.getShield() == days) {
                     String message = (days == 0) ? ("Shield has already been **disabled**.") : ("Shield has already been set to **" + days + "** " + ProxyUtils.day(days) + ".");
-                    ProxyUtils.sendMessage(event, message);
+                    ProxyUtils.sendMessage(event.getChannel(), message);
                 } else {
                     String message = (days == 0)
-                            ? "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + guild.getShield() + "** "
-                                    + ProxyUtils.day(guild.getShield()) + " ago."
+                            ? "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + guild.getShield() + "** " + ProxyUtils.day(guild.getShield())
+                                    + " ago."
                             : "Shield is now set to **" + days + "** " + ProxyUtils.day(days) + ".";
                     Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
                     guild.setShield(days);
                     guildDao.update(guild);
-                    ProxyUtils.sendMessage(event, message);
+                    ProxyUtils.sendMessage(event.getChannel(), message);
                 }
             } else {
-                ProxyUtils.sendMessage(event, "Please enter a number between **0** and **30**. You can provide protection of **30** days maximum.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**. You can provide protection of **30** days maximum.");
             }
         } catch (NumberFormatException e) {
-            ProxyUtils.sendMessage(event, "Please enter a number between **0** and **30**. You can provide protection of **30** days maximum.");
+            ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**. You can provide protection of **30** days maximum.");
         }
     }
 
@@ -60,10 +60,10 @@ public class Shield extends AdministratorListener implements CommandManager {
                   + " 0` *disables the shield.*\n`" + guild.getPrefix() + Command.SHIELD.getName() + " 3` *kicks an account created less than 3 days*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Provide protection against fake accounts who join your server. "
                     + "**Example:** `" + guild.getPrefix() + Command.SHIELD.getName() + " 0` *disables the shield*.");
             // @formatter:on

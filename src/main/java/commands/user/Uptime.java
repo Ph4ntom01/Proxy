@@ -25,7 +25,7 @@ public class Uptime extends UserListener implements CommandManager {
     public void execute() {
         ProxyEmbed embed = new ProxyEmbed();
         embed.uptime();
-        ProxyUtils.sendEmbed(event, embed);
+        ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 
     @Override
@@ -38,9 +38,9 @@ public class Uptime extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.UPTIME.getName() + "`.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the percentage of time the bot has been available. **Example:** `" + guild.getPrefix() + Command.UPTIME.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the percentage of time the bot has been available. **Example:** `" + guild.getPrefix() + Command.UPTIME.getName() + "`.");
         }
     }
 

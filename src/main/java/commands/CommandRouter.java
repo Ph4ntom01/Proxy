@@ -19,10 +19,9 @@ public class CommandRouter extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-        if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId()) && !(boolean) Blacklist.getInstance().getUnchecked(event.getAuthor().getId())
-                && !event.getAuthor().isBot()) {
+        if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId()) && !(boolean) Blacklist.getInstance().getUnchecked(event.getAuthor().getId()) && !event.getAuthor().isBot()) {
 
-            String[] args = ProxyUtils.getArgs(event);
+            String[] args = ProxyUtils.getArgs(event.getMessage());
             GuildPojo guild = ProxyUtils.getGuildFromCache(event.getGuild());
             StringBuilder firstArg = new StringBuilder(args[0]);
 
@@ -54,7 +53,7 @@ public class CommandRouter extends ListenerAdapter {
                         }
                     } else {
                         // @formatter:off
-                        ProxyUtils.sendMessage(event,
+                        ProxyUtils.sendMessage(event.getChannel(),
                                 "You need to be **" + permission.getName().toLowerCase() + "**. "
                                 + "Only the guild owner has the ability to set a permission.");
                         // @formatter:on
@@ -62,7 +61,7 @@ public class CommandRouter extends ListenerAdapter {
                 }
             }
             if (event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && args.length == 1) {
-                ProxyUtils.selfbotEmbed(event, guild);
+                ProxyUtils.selfbotEmbed(event.getJDA(), event.getGuild(), guild, event.getChannel());
             }
         }
     }

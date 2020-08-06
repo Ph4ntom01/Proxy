@@ -28,15 +28,15 @@ public class Banlist extends UserListener implements CommandManager {
         try {
             event.getGuild().retrieveBanList().queue(banlist -> {
                 if (banlist.isEmpty()) {
-                    ProxyUtils.sendMessage(event, "No banned member.");
+                    ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
                 } else {
                     ProxyEmbed embed = new ProxyEmbed();
                     embed.banList(banlist, guild.getPrefix());
-                    ProxyUtils.sendEmbed(event, embed);
+                    ProxyUtils.sendEmbed(event.getChannel(), embed);
                 }
             });
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
         }
     }
 
@@ -44,21 +44,21 @@ public class Banlist extends UserListener implements CommandManager {
         try {
             event.getGuild().retrieveBanList().queue(banlist -> {
                 try {
-                    int value = Integer.parseInt(ProxyUtils.getArgs(event)[1]);
+                    int value = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
                     if (value > 0 && value <= banlist.size()) {
                         if (banlist.isEmpty()) {
-                            ProxyUtils.sendMessage(event, "No banned member.");
+                            ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
                         } else {
                             ProxyEmbed embed = new ProxyEmbed();
                             embed.bannedMemberInfo(banlist, value - 1);
-                            ProxyUtils.sendEmbed(event, embed);
+                            ProxyUtils.sendEmbed(event.getChannel(), embed);
                         }
                     } else {
-                        ProxyUtils.sendMessage(event, "Please enter a number from the banlist.");
+                        ProxyUtils.sendMessage(event.getChannel(), "Please enter a number from the banlist.");
                     }
                 } catch (NumberFormatException e) {
                     // @formatter:off
-                    ProxyUtils.sendMessage(event,
+                    ProxyUtils.sendMessage(event.getChannel(),
                             "To consult the banlist, use the command: `" + guild.getPrefix() + Command.BANLIST.getName()
                             + "`, you can also consult the banned member information by using the command "
                             + "**" + guild.getPrefix() + Command.BANLIST.getName() + " [a number from the banlist]**.");
@@ -66,7 +66,7 @@ public class Banlist extends UserListener implements CommandManager {
                 }
             });
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
         }
     }
 
@@ -80,9 +80,9 @@ public class Banlist extends UserListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.BANLIST.getName() + "`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Display the banned members. **Example:** `" + guild.getPrefix() + Command.BANLIST.getName() + "`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Display the banned members. **Example:** `" + guild.getPrefix() + Command.BANLIST.getName() + "`.");
         }
     }
 

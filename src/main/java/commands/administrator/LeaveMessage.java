@@ -29,12 +29,12 @@ public class LeaveMessage extends AdministratorListener implements CommandManage
         if (guild.getChannelLeave() != null) {
             Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
             ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
-            channelLeave.setMessage(getLeaveMessage(ProxyUtils.getArgs(event)));
+            channelLeave.setMessage(getLeaveMessage(ProxyUtils.getArgs(event.getMessage())));
             channelLeaveDao.update(channelLeave);
-            ProxyUtils.sendMessage(event, "Leaving message has been successfully defined.");
+            ProxyUtils.sendMessage(event.getChannel(), "Leaving message has been successfully defined.");
         } else {
-            ProxyUtils.sendMessage(event, "In order to create a leaving message, please select your leaving channel first using **" + guild.getPrefix()
-                    + Command.LEAVECHAN.getName() + " #aTextChannel**.");
+            ProxyUtils.sendMessage(event.getChannel(),
+                    "In order to create a leaving message, please select your leaving channel first using `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -53,9 +53,9 @@ public class LeaveMessage extends AdministratorListener implements CommandManage
             ProxyEmbed embed = new ProxyEmbed();
             embed.help(Command.LEAVEMESSAGE.getName(), "Set the leaving message.\n\nExample: `" + guild.getPrefix() + Command.LEAVEMESSAGE.getName()
                     + " Bye bye [member] !`\n\n*Add `[member]` if you want the bot to mention the leaving member*.", Color.ORANGE);
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the leaving message. **Example:** `" + guild.getPrefix() + Command.LEAVEMESSAGE.getName()
+            ProxyUtils.sendMessage(event.getChannel(), "Set the leaving message. **Example:** `" + guild.getPrefix() + Command.LEAVEMESSAGE.getName()
                     + " Bye bye [member] !`\n*Add `[member]` if you want the bot to mention the leaving member*.");
         }
     }

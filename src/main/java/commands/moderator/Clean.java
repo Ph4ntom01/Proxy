@@ -26,7 +26,7 @@ public class Clean extends ModeratorListener implements CommandManager {
 
     @Override
     public void execute() {
-        int messages = Integer.parseInt(ProxyUtils.getArgs(event)[1]);
+        int messages = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
         if (messages >= 2 && messages <= 100) {
             deleteMessages(messages);
         } else {
@@ -45,7 +45,7 @@ public class Clean extends ModeratorListener implements CommandManager {
                 event.getMessage().delete().queue();
 
             } catch (InsufficientPermissionException e) {
-                ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + "**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + "**.");
             }
         });
     }
@@ -60,10 +60,10 @@ public class Clean extends ModeratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.CLEAN.getName() + " 20`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Quickly cleans the last 10 messages, or however many you specify. "
                     + "**Example:** `" + guild.getPrefix() + Command.CLEAN.getName() + " 20`.");
             // @formatter:on

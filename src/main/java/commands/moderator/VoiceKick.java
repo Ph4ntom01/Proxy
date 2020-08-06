@@ -28,24 +28,24 @@ public class VoiceKick extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event)[1]), false).queue(member -> {
+            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
                 try {
                     event.getGuild().kickVoiceMember(member).queue();
-                    ProxyUtils.sendMessage(event, "**" + member.getUser().getAsTag() + "** is successfully voice kicked !");
+                    ProxyUtils.sendMessage(event.getChannel(), "**" + member.getUser().getAsTag() + "** is successfully voice kicked !");
 
                 } catch (IndexOutOfBoundsException e) {
-                    ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
 
                 } catch (IllegalStateException e) {
-                    ProxyUtils.sendMessage(event, "You cannot kick a member who isn't in a voice channel.");
+                    ProxyUtils.sendMessage(event.getChannel(), "You cannot kick a member who isn't in a voice channel.");
 
                 } catch (InsufficientPermissionException e) {
-                    ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.VOICE_MOVE_OTHERS.getName() + "**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.VOICE_MOVE_OTHERS.getName() + "**.");
                 }
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
+            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
@@ -60,10 +60,10 @@ public class VoiceKick extends ModeratorListener implements CommandManager {
                     + "*You can also mention a member by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Kick a specified member from the voice channel he is in. "
                     + "**Example:** `" + guild.getPrefix() + Command.VOICEKICK.getName() + " @aMember`.");
             // @formatter:on

@@ -25,18 +25,18 @@ public class SetPrefix extends AdministratorListener implements CommandManager {
 
     @Override
     public void execute() {
-        String prefix = ProxyUtils.getArgs(event)[1];
+        String prefix = ProxyUtils.getArgs(event.getMessage())[1];
         if (prefix.length() <= 2) {
             if (guild.getPrefix().equalsIgnoreCase(prefix)) {
-                ProxyUtils.sendMessage(event, "Prefix " + "**" + guild.getPrefix() + "**" + " has already been defined.");
+                ProxyUtils.sendMessage(event.getChannel(), "Prefix " + "**" + guild.getPrefix() + "**" + " has already been defined.");
             } else {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
                 guild.setPrefix(prefix);
                 guildDao.update(guild);
-                ProxyUtils.sendMessage(event, "Prefix is now: " + "**" + guild.getPrefix() + "**");
+                ProxyUtils.sendMessage(event.getChannel(), "Prefix is now: " + "**" + guild.getPrefix() + "**");
             }
         } else {
-            ProxyUtils.sendMessage(event, "Two characters maximum are allowed.");
+            ProxyUtils.sendMessage(event.getChannel(), "Two characters maximum are allowed.");
         }
     }
 
@@ -50,9 +50,9 @@ public class SetPrefix extends AdministratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.PREFIX.getName() + " $`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Change the prefix of the server. **Example:** `" + guild.getPrefix() + Command.PREFIX.getName() + " $`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Change the prefix of the server. **Example:** `" + guild.getPrefix() + Command.PREFIX.getName() + " $`.");
         }
     }
 

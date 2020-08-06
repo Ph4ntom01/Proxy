@@ -31,32 +31,32 @@ public class LeaveEmbed extends AdministratorListener implements CommandManager 
             Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
             ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
 
-            if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("on")) {
+            if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
 
                 if (channelLeave.getEmbed()) {
-                    ProxyUtils.sendMessage(event, "Leaving box has already been **enabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **enabled**.");
 
                 } else if (!channelLeave.getEmbed()) {
                     channelLeave.setEmbed(true);
                     channelLeaveDao.update(channelLeave);
-                    ProxyUtils.sendMessage(event, "Leaving box is now **enabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **enabled**.");
                 }
-            } else if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("off")) {
+            } else if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("off")) {
 
                 if (!channelLeave.getEmbed()) {
-                    ProxyUtils.sendMessage(event, "Leaving box has already been **disabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **disabled**.");
 
                 } else if (channelLeave.getEmbed()) {
                     channelLeave.setEmbed(false);
                     channelLeaveDao.update(channelLeave);
-                    ProxyUtils.sendMessage(event, "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
                 }
             } else {
-                ProxyUtils.sendMessage(event, "Please specify **on** or **off**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please specify **on** or **off**.");
             }
         } else {
-            ProxyUtils.sendMessage(event,
-                    "In order to create a leaving box, please select your leaving channel first using **" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel**.");
+            ProxyUtils.sendMessage(event.getChannel(),
+                    "In order to create a leaving box, please select your leaving channel first using `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -71,9 +71,9 @@ public class LeaveEmbed extends AdministratorListener implements CommandManager 
                     + "`" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " off` *disables the leaving box*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the leaving box. **Example:** `" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on` *enables the leaving box*.");
+            ProxyUtils.sendMessage(event.getChannel(), "Set the leaving box. **Example:** `" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on` *enables the leaving box*.");
         }
     }
 

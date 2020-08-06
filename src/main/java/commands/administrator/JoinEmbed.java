@@ -31,32 +31,32 @@ public class JoinEmbed extends AdministratorListener implements CommandManager {
             Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
             ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
 
-            if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("on")) {
+            if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
 
                 if (channelJoin.getEmbed()) {
-                    ProxyUtils.sendMessage(event, "Welcoming box has already been **enabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **enabled**.");
 
                 } else if (!channelJoin.getEmbed()) {
                     channelJoin.setEmbed(true);
                     channelJoinDao.update(channelJoin);
-                    ProxyUtils.sendMessage(event, "Welcoming box is now **enabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **enabled**.");
                 }
-            } else if (ProxyUtils.getArgs(event)[1].equalsIgnoreCase("off")) {
+            } else if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("off")) {
 
                 if (!channelJoin.getEmbed()) {
-                    ProxyUtils.sendMessage(event, "Welcoming box has already been **disabled**.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **disabled**.");
 
                 } else if (channelJoin.getEmbed()) {
                     channelJoin.setEmbed(false);
                     channelJoinDao.update(channelJoin);
-                    ProxyUtils.sendMessage(event, "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
                 }
             } else {
-                ProxyUtils.sendMessage(event, "Please specify **on** or **off**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Please specify **on** or **off**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to create a welcoming box, please select your welcoming channel first using **" + guild.getPrefix() + Command.JOINCHAN.getName()
-                    + " #aTextChannel**.");
+            ProxyUtils.sendMessage(event.getChannel(),
+                    "In order to create a welcoming box, please select your welcoming channel first using `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -72,9 +72,9 @@ public class JoinEmbed extends AdministratorListener implements CommandManager {
                     + guild.getPrefix() + Command.JOINEMBED.getName() + " off` *disables the welcoming box*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the welcoming box. **Example:** `" + guild.getPrefix() + Command.JOINEMBED.getName() + " on` *enables the welcoming box*.");
+            ProxyUtils.sendMessage(event.getChannel(), "Set the welcoming box. **Example:** `" + guild.getPrefix() + Command.JOINEMBED.getName() + " on` *enables the welcoming box*.");
         }
     }
 

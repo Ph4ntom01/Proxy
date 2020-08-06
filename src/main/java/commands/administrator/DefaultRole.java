@@ -28,17 +28,17 @@ public class DefaultRole extends AdministratorListener implements CommandManager
     @Override
     public void execute() {
         try {
-            Role role = event.getGuild().getRoleById(ProxyUtils.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event)[1]));
+            Role role = event.getGuild().getRoleById(ProxyUtils.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]));
             if (role.getId().equals(guild.getDefaultRole())) {
-                ProxyUtils.sendMessage(event, "Default role **" + role.getName() + "** has already been defined.");
+                ProxyUtils.sendMessage(event.getChannel(), "Default role **" + role.getName() + "** has already been defined.");
             } else {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
                 guild.setDefaultRole(role.getId());
                 guildDao.update(guild);
-                ProxyUtils.sendMessage(event, "Default role is now **" + role.getName() + "**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Default role is now **" + role.getName() + "**.");
             }
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "**" + ProxyUtils.getArgs(event)[1] + "** is not a role.");
+            ProxyUtils.sendMessage(event.getChannel(), "**" + ProxyUtils.getArgs(event.getMessage())[1] + "** is not a role.");
         }
     }
 
@@ -48,13 +48,14 @@ public class DefaultRole extends AdministratorListener implements CommandManager
             ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
             embed.help(Command.DEFROLE.getName(), 
-                    "Set the default role when a member join the server.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`",
+                    "Automatically assign a role when a member joins the server.\n\n"
+                    + "Example: `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`\n\n"
+                    + "*You can also mention a role by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the default role when a member join the server. **Example:** `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Automatically assign a role when a member joins the server. **Example:** `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`.");
         }
     }
 

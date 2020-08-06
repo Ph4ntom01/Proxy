@@ -30,14 +30,14 @@ public class LeaveChannel extends AdministratorListener implements CommandManage
 
     @Override
     public void execute() {
-        String textChannelID = ProxyUtils.getArgs(event)[1];
+        String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
         try {
             Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
             ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
             TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
             if (textChannel.getId().equals(guild.getChannelLeave()) && textChannel.getId().equals(channelLeave.getChannelId())) {
-                ProxyUtils.sendMessage(event, "The default channel for leaving members has already been set to " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members has already been set to " + textChannel.getAsMention() + ".");
 
             } else if (guild.getChannelLeave() == null && channelLeave.getChannelId() == null) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
@@ -46,17 +46,17 @@ public class LeaveChannel extends AdministratorListener implements CommandManage
                 guild.setChannelLeave(textChannel.getId());
                 channelLeaveDao.create(channelLeave);
                 guildDao.update(guild);
-                ProxyUtils.sendMessage(event, "The default channel for leaving members is now " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members is now " + textChannel.getAsMention() + ".");
 
             } else {
                 guild.setChannelLeave(textChannel.getId());
                 ((ChannelLeaveDAO) channelLeaveDao).update(channelLeave, textChannel.getId());
                 // No need to update the guild table with "guildDao.update" because ON UPDATE
                 // CASCADE is defined to the foreign key.
-                ProxyUtils.sendMessage(event, "The default channel for leaving members is now " + textChannel.getAsMention() + ".");
+                ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members is now " + textChannel.getAsMention() + ".");
             }
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "**" + textChannelID + "** is not a text channel.");
+            ProxyUtils.sendMessage(event.getChannel(), "**" + textChannelID + "** is not a text channel.");
         }
     }
 
@@ -64,10 +64,16 @@ public class LeaveChannel extends AdministratorListener implements CommandManage
     public void help(boolean embedState) {
         if (embedState) {
             ProxyEmbed embed = new ProxyEmbed();
-            embed.help(Command.LEAVECHAN.getName(), "Set the leaving channel.\n\nExample: `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`", Color.ORANGE);
-            ProxyUtils.sendEmbed(event, embed);
+            // @formatter:off
+            embed.help(Command.LEAVECHAN.getName(),
+                    "Send notification when a member leaves the server.\n\n"
+                    + "Example: `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`\n\n"
+                    + "*You can also mention a channel by his ID*.",
+                    Color.ORANGE);
+            // @formatter:on
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the leaving channel. **Example:** `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Send notification when a member leaves the server. **Example:** `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 

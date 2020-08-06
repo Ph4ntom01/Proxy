@@ -43,7 +43,7 @@ public class Kick extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event)[1]), false).queue(member -> {
+            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
                 try {
                     if (member.getUser().isBot()) {
                         kick(member);
@@ -52,38 +52,38 @@ public class Kick extends ModeratorListener implements CommandManager {
                         MemberPojo memberPojo = memberDao.find(event.getGuild().getId() + "#" + member.getId());
 
                         if (memberPojo.getId().equals(event.getAuthor().getId())) {
-                            ProxyUtils.sendMessage(event, "Impossible to kick yourself.");
+                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick yourself.");
 
                         } else if (((author.getPermLevel() == Permissions.MODERATOR.getLevel()) && (memberPojo.getPermLevel() == Permissions.MODERATOR.getLevel()))
                                 || ((author.getPermLevel() == Permissions.ADMINISTRATOR.getLevel()) && memberPojo.getPermLevel() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event, "Impossible to kick a member with the same or a higher permission than yours.");
+                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick a member with the same or a higher permission than yours.");
 
                         } else if (author.getPermLevel() == Permissions.MODERATOR.getLevel() && (memberPojo.getPermLevel() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event, "Impossible to kick an administrator.");
+                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick an administrator.");
                         } else {
                             kick(member);
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+                    ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
                 }
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event, "Invalid ID or mention.")));
+            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event, "Invalid ID or mention.");
+            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
         }
     }
 
     private void kick(Member mentionnedMember) {
         try {
             event.getGuild().kick(mentionnedMember).queue();
-            ProxyUtils.sendMessage(event, "**" + mentionnedMember.getUser().getAsTag() + "** is successfully kicked !");
+            ProxyUtils.sendMessage(event.getChannel(), "**" + mentionnedMember.getUser().getAsTag() + "** is successfully kicked !");
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event, "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
 
         } catch (HierarchyException e) {
-            ProxyUtils.sendMessage(event, "Impossible to kick a member with the same or a higher permission than yours.");
+            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick a member with the same or a higher permission than yours.");
 
         } catch (IllegalArgumentException e) {
         } catch (ErrorResponseException e) {
@@ -101,9 +101,9 @@ public class Kick extends ModeratorListener implements CommandManager {
                     + "*You can also mention a member by his ID*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Kick a specified member from your server. **Example:** `" + guild.getPrefix() + Command.KICK.getName() + " @aMember`.");
+            ProxyUtils.sendMessage(event.getChannel(), "Kick a specified member from your server. **Example:** `" + guild.getPrefix() + Command.KICK.getName() + " @aMember`.");
         }
     }
 

@@ -29,12 +29,12 @@ public class JoinMessage extends AdministratorListener implements CommandManager
         if (guild.getChannelJoin() != null) {
             Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
             ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-            channelJoin.setMessage(getJoinMessage(ProxyUtils.getArgs(event)));
+            channelJoin.setMessage(getJoinMessage(ProxyUtils.getArgs(event.getMessage())));
             channelJoinDao.update(channelJoin);
-            ProxyUtils.sendMessage(event, "Welcoming message has been successfully defined.");
+            ProxyUtils.sendMessage(event.getChannel(), "Welcoming message has been successfully defined.");
         } else {
-            ProxyUtils.sendMessage(event, "In order to create a welcoming message, please select your welcoming channel first using **" + guild.getPrefix()
-                    + Command.JOINCHAN.getName() + " #aTextChannel**.");
+            ProxyUtils.sendMessage(event.getChannel(),
+                    "In order to create a welcoming message, please select your welcoming channel first using `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -58,9 +58,9 @@ public class JoinMessage extends AdministratorListener implements CommandManager
                     + "*Add `[member]` if you want the bot to mention the joining member*.",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event, "Set the welcoming message. **Example:** `" + guild.getPrefix() + Command.JOINMESSAGE.getName()
+            ProxyUtils.sendMessage(event.getChannel(), "Set the welcoming message. **Example:** `" + guild.getPrefix() + Command.JOINMESSAGE.getName()
                     + " Welcome [member] !`\n*Add `[member]` if you want the bot to mention the joining member*.");
         }
     }
