@@ -59,6 +59,10 @@ public class Disable extends AdministratorListener implements CommandManager {
             disableLeaveEmbed();
         }
 
+        else if (command == Command.CONTROLCHAN) {
+            disableControlChan();
+        }
+
         else if (command == Command.DEFROLE) {
             disableDefaultRole();
         }
@@ -70,7 +74,7 @@ public class Disable extends AdministratorListener implements CommandManager {
         else {
             ProxyEmbed embed = new ProxyEmbed();
             embed.disable(guild.getPrefix());
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         }
     }
 
@@ -84,10 +88,10 @@ public class Disable extends AdministratorListener implements CommandManager {
                     + "Example: `" + guild.getPrefix() + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`",
                     Color.ORANGE);
             // @formatter:on
-            ProxyUtils.sendEmbed(event, embed);
+            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event,
+            ProxyUtils.sendMessage(event.getChannel(),
                     "Disable the welcoming channel-message-embed, leaving channel-message-embed, the default role or the shield. "
                     + "**Example:** `" + guild.getPrefix() + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`.");
             // @formatter:on
@@ -102,9 +106,9 @@ public class Disable extends AdministratorListener implements CommandManager {
             guild.setChannelJoin(null);
             guildDao.update(guild);
             channelJoinDao.delete(channelJoin);
-            ProxyUtils.sendMessage(event, "Welcoming channel is now **disabled**, you will no longer receive notifications when a member joins the server.");
+            ProxyUtils.sendMessage(event.getChannel(), "Welcoming channel is now **disabled**, you will no longer receive notifications when a member joins the server.");
         } else {
-            ProxyUtils.sendMessage(event, "Welcoming channel has already been **disabled**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Welcoming channel has already been **disabled**.");
         }
     }
 
@@ -117,13 +121,13 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelJoin.getMessage() != null && !channelJoin.getMessage().isEmpty()) {
                 channelJoin.setMessage(null);
                 channelJoinDao.update(channelJoin);
-                ProxyUtils.sendMessage(event, "Welcoming message is now **disabled**, you will no longer receive a message when a member joins the server.");
+                ProxyUtils.sendMessage(event.getChannel(), "Welcoming message is now **disabled**, you will no longer receive a message when a member joins the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Welcoming message has already been **disabled**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Welcoming message has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the welcoming message, please select your welcoming channel first using **" + guild.getPrefix()
-                    + Command.JOINCHAN.getName() + " #aTextChannel** and set your message by using **" + guild.getPrefix() + Command.JOINMESSAGE.getName() + " your message**.");
+            ProxyUtils.sendMessage(event.getChannel(), "In order to disable the welcoming message, please select your welcoming channel first using **" + guild.getPrefix() + Command.JOINCHAN.getName()
+                    + " #aTextChannel** and set your message by using **" + guild.getPrefix() + Command.JOINMESSAGE.getName() + " your message**.");
         }
     }
 
@@ -136,13 +140,13 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelJoin.getEmbed()) {
                 channelJoin.setEmbed(false);
                 channelJoinDao.update(channelJoin);
-                ProxyUtils.sendMessage(event, "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
+                ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Welcoming box has already been **disabled**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the welcoming box, please select your welcoming channel first using **" + guild.getPrefix()
-                    + Command.JOINCHAN.getName() + " #aTextChannel** and enable the box by using **" + guild.getPrefix() + Command.JOINEMBED.getName() + " on**.");
+            ProxyUtils.sendMessage(event.getChannel(), "In order to disable the welcoming box, please select your welcoming channel first using **" + guild.getPrefix() + Command.JOINCHAN.getName()
+                    + " #aTextChannel** and enable the box by using **" + guild.getPrefix() + Command.JOINEMBED.getName() + " on**.");
         }
     }
 
@@ -154,9 +158,9 @@ public class Disable extends AdministratorListener implements CommandManager {
             guild.setChannelLeave(null);
             guildDao.update(guild);
             channelLeaveDao.delete(channelLeave);
-            ProxyUtils.sendMessage(event, "Leaving channel is now **disabled**, you will no longer receive notifications when a member leaves the server.");
+            ProxyUtils.sendMessage(event.getChannel(), "Leaving channel is now **disabled**, you will no longer receive notifications when a member leaves the server.");
         } else {
-            ProxyUtils.sendMessage(event, "Leaving channel has already been **disabled**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Leaving channel has already been **disabled**.");
         }
     }
 
@@ -169,13 +173,13 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelLeave.getMessage() != null && !channelLeave.getMessage().isEmpty()) {
                 channelLeave.setMessage(null);
                 channelLeaveDao.update(channelLeave);
-                ProxyUtils.sendMessage(event, "Leaving message is now **disabled**, you will no longer receive a message when a member leaves the server.");
+                ProxyUtils.sendMessage(event.getChannel(), "Leaving message is now **disabled**, you will no longer receive a message when a member leaves the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Leaving message has already been **disabled**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Leaving message has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the leaving message, please select your leaving channel first using **" + guild.getPrefix()
-                    + Command.LEAVECHAN.getName() + " #aTextChannel** and set your message by using **" + guild.getPrefix() + Command.LEAVEMESSAGE.getName() + " your message**.");
+            ProxyUtils.sendMessage(event.getChannel(), "In order to disable the leaving message, please select your leaving channel first using **" + guild.getPrefix() + Command.LEAVECHAN.getName()
+                    + " #aTextChannel** and set your message by using **" + guild.getPrefix() + Command.LEAVEMESSAGE.getName() + " your message**.");
         }
     }
 
@@ -188,13 +192,24 @@ public class Disable extends AdministratorListener implements CommandManager {
             if (channelLeave.getEmbed()) {
                 channelLeave.setEmbed(false);
                 channelLeaveDao.update(channelLeave);
-                ProxyUtils.sendMessage(event, "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
+                ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
             } else {
-                ProxyUtils.sendMessage(event, "Leaving box has already been **disabled**.");
+                ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **disabled**.");
             }
         } else {
-            ProxyUtils.sendMessage(event, "In order to disable the leaving box, please select your leaving channel first using **" + guild.getPrefix() + Command.LEAVECHAN.getName()
+            ProxyUtils.sendMessage(event.getChannel(), "In order to disable the leaving box, please select your leaving channel first using **" + guild.getPrefix() + Command.LEAVECHAN.getName()
                     + " #aTextChannel** and enable the box by using **" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on**.");
+        }
+    }
+
+    private void disableControlChan() {
+        if (guild.getChannelControl() != null) {
+            Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
+            guild.setChannelControl(null);
+            guildDao.update(guild);
+            ProxyUtils.sendMessage(event.getChannel(), "Control channel is now **disabled**.");
+        } else {
+            ProxyUtils.sendMessage(event.getChannel(), "Control channel has already been **disabled**.");
         }
     }
 
@@ -203,9 +218,9 @@ public class Disable extends AdministratorListener implements CommandManager {
             Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
             guild.setDefaultRole(null);
             guildDao.update(guild);
-            ProxyUtils.sendMessage(event, "Default role is now **disabled**, the bot will no longer add a role when a member joins the server.");
+            ProxyUtils.sendMessage(event.getChannel(), "Default role is now **disabled**, the bot will no longer add a role when a member joins the server.");
         } else {
-            ProxyUtils.sendMessage(event, "Default role has already been **disabled**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Default role has already been **disabled**.");
         }
     }
 
@@ -215,10 +230,10 @@ public class Disable extends AdministratorListener implements CommandManager {
             int oldShield = guild.getShield();
             guild.setShield(0);
             guildDao.update(guild);
-            ProxyUtils.sendMessage(event, "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + oldShield + "** "
-                    + ProxyUtils.day(oldShield) + " ago.");
+            ProxyUtils.sendMessage(event.getChannel(),
+                    "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + oldShield + "** " + ProxyUtils.day(oldShield) + " ago.");
         } else {
-            ProxyUtils.sendMessage(event, "Shield has already been **disabled**.");
+            ProxyUtils.sendMessage(event.getChannel(), "Shield has already been **disabled**.");
         }
     }
 
