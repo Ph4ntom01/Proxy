@@ -8,6 +8,7 @@ public class GuildPojo {
     private String name;
     private String channelJoin;
     private String channelLeave;
+    private String channelControl;
     private String defaultRole;
     private String prefix;
     private int shield;
@@ -27,6 +28,10 @@ public class GuildPojo {
 
     public String getChannelLeave() {
         return channelLeave;
+    }
+
+    public String getChannelControl() {
+        return channelControl;
     }
 
     public String getDefaultRole() {
@@ -61,6 +66,10 @@ public class GuildPojo {
         this.channelLeave = channelLeave;
     }
 
+    public void setChannelControl(String channelControl) {
+        this.channelControl = channelControl;
+    }
+
     public void setDefaultRole(String defaultRole) {
         this.defaultRole = defaultRole;
     }
@@ -78,8 +87,7 @@ public class GuildPojo {
     }
 
     public boolean isEmpty() {
-        return (getId() == null && getName() == null && getChannelJoin() == null && getChannelLeave() == null && getDefaultRole() == null && getPrefix() == null
-                && getShield() == 0);
+        return (getId() == null && getName() == null && getChannelJoin() == null && getChannelLeave() == null && getDefaultRole() == null && getPrefix() == null && getShield() == 0);
     }
 
     @Override
