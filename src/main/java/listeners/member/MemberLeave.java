@@ -48,13 +48,13 @@ public class MemberLeave extends ListenerAdapter {
 
                 } else if (channelLeave.getMessage() != null && channelLeave.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
-                    embed.memberLeave(event.getUser());
+                    embed.controlGateEvent(event.getUser());
                     event.getGuild().getTextChannelById(guild.getChannelLeave()).sendMessage(embed.getEmbed().build())
                             .append(ProxyUtils.getMemberMessageEvent(channelLeave.getMessage(), event.getUser())).queue();
 
                 } else if (channelLeave.getMessage() == null && channelLeave.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
-                    embed.memberLeave(event.getUser());
+                    embed.controlGateEvent(event.getUser());
                     event.getGuild().getTextChannelById(guild.getChannelLeave()).sendMessage(embed.getEmbed().build()).queue();
                 }
             } catch (InsufficientPermissionException e) {
