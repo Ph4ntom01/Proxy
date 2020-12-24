@@ -31,7 +31,7 @@ public class ControlChannel extends AdministratorListener implements CommandMana
         try {
             TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
-            if (textChannel.getId().equals(guild.getChannelControl())) {
+            if (textChannel.getId().equals(guild.getControlChannel())) {
                 ProxyUtils.sendMessage(event.getChannel(), "The control channel for new members has already been set to " + textChannel.getAsMention() + ".");
 
             } else {
@@ -41,7 +41,7 @@ public class ControlChannel extends AdministratorListener implements CommandMana
                             "In order to create your control channel, please select your default role first by using `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`.");
                 } else {
                     Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                    guild.setChannelControl(textChannel.getId());
+                    guild.setControlChannel(textChannel.getId());
                     guildDao.update(guild);
                     ProxyUtils.sendMessage(event.getChannel(), "The control channel for new members is now " + textChannel.getAsMention() + ".");
                 }
