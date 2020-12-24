@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import configuration.cache.Blacklist;
 import configuration.constants.Permissions;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
+import dao.pojo.JoinChannelPojo;
 import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import factory.DaoFactory;
@@ -43,7 +43,7 @@ public class MemberJoin extends ListenerAdapter {
             } else {
                 addMemberDatas(event);
                 sendWelcomeMessage(event);
-                if (guildPojo.getChannelControl() == null) {
+                if (guildPojo.getControlChannel() == null) {
                     addDefRole(event.getGuild(), event.getUser());
                 }
             }
@@ -54,7 +54,7 @@ public class MemberJoin extends ListenerAdapter {
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId())) {
             guildPojo = ProxyUtils.getGuildFromCache(event.getGuild());
-            if (event.getChannel().getId().equals(guildPojo.getChannelControl()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+            if (event.getChannel().getId().equals(guildPojo.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
                 addDefRole(event.getGuild(), event.getUser());
             }
         }
@@ -64,7 +64,7 @@ public class MemberJoin extends ListenerAdapter {
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
         if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId())) {
             guildPojo = ProxyUtils.getGuildFromCache(event.getGuild());
-            if (event.getChannel().getId().equals(guildPojo.getChannelControl()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+            if (event.getChannel().getId().equals(guildPojo.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
                 try {
                     Role defaultRole = event.getGuild().getRoleById(guildPojo.getDefaultRole());
                     event.getGuild().removeRoleFromMember(event.getUserId(), defaultRole).queue();
@@ -97,23 +97,23 @@ public class MemberJoin extends ListenerAdapter {
     }
 
     private void sendWelcomeMessage(GuildMemberJoinEvent event) {
-        if (guildPojo.getChannelJoin() != null) {
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guildPojo.getChannelJoin());
+        if (guildPojo.getJoinChannel() != null) {
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guildPojo.getJoinChannel());
             try {
-                if (channelJoin.getMessage() != null && !channelJoin.getEmbed()) {
-                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
+                if (joinChannel.getMessage() != null && !joinChannel.getEmbed()) {
+                    event.getGuild().getTextChannelById(guildPojo.getJoinChannel()).sendMessage(ProxyUtils.getMemberMessageEvent(joinChannel.getMessage(), event.getUser())).queue();
 
-                } else if (channelJoin.getMessage() != null && channelJoin.getEmbed()) {
+                } else if (joinChannel.getMessage() != null && joinChannel.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
                     embed.controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(embed.getEmbed().build())
-                            .append(ProxyUtils.getMemberMessageEvent(channelJoin.getMessage(), event.getUser())).queue();
+                    event.getGuild().getTextChannelById(guildPojo.getJoinChannel()).sendMessage(embed.getEmbed().build())
+                            .append(ProxyUtils.getMemberMessageEvent(joinChannel.getMessage(), event.getUser())).queue();
 
-                } else if (channelJoin.getMessage() == null && channelJoin.getEmbed()) {
+                } else if (joinChannel.getMessage() == null && joinChannel.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
                     embed.controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guildPojo.getChannelJoin()).sendMessage(embed.getEmbed().build()).queue();
+                    event.getGuild().getTextChannelById(guildPojo.getJoinChannel()).sendMessage(embed.getEmbed().build()).queue();
                 }
             } catch (InsufficientPermissionException e) {
             }

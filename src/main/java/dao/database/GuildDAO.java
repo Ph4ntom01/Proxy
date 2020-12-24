@@ -119,9 +119,9 @@ public class GuildDAO extends Dao<GuildPojo> {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
                 pst.setString(1, guild.getName());
-                pst.setString(2, guild.getChannelJoin());
-                pst.setString(3, guild.getChannelLeave());
-                pst.setString(4, guild.getChannelControl());
+                pst.setString(2, guild.getJoinChannel());
+                pst.setString(3, guild.getLeaveChannel());
+                pst.setString(4, guild.getControlChannel());
                 pst.setString(5, guild.getDefaultRole());
                 pst.setString(6, guild.getPrefix());
                 pst.setInt(7, guild.getShield());
@@ -151,9 +151,9 @@ public class GuildDAO extends Dao<GuildPojo> {
                 guild = PojoFactory.getGuild();
                 guild.setId(rs.getString("guild_id"));
                 guild.setName(rs.getString("guild_name"));
-                guild.setChannelJoin(rs.getString("channel_join"));
-                guild.setChannelLeave(rs.getString("channel_leave"));
-                guild.setChannelControl(rs.getString("channel_control"));
+                guild.setJoinChannel(rs.getString("channel_join"));
+                guild.setLeaveChannel(rs.getString("channel_leave"));
+                guild.setControlChannel(rs.getString("channel_control"));
                 guild.setDefaultRole(rs.getString("default_role"));
                 guild.setPrefix(rs.getString("prefix"));
                 guild.setShield(rs.getInt("shield"));
@@ -173,9 +173,9 @@ public class GuildDAO extends Dao<GuildPojo> {
                     GuildPojo guild = PojoFactory.getGuild();
                     guild.setId(rs.getString("guild_id"));
                     guild.setName(rs.getString("guild_name"));
-                    guild.setChannelJoin(rs.getString("channel_join"));
-                    guild.setChannelLeave(rs.getString("channel_leave"));
-                    guild.setChannelControl(rs.getString("channel_control"));
+                    guild.setJoinChannel(rs.getString("channel_join"));
+                    guild.setLeaveChannel(rs.getString("channel_leave"));
+                    guild.setControlChannel(rs.getString("channel_control"));
                     guild.setDefaultRole(rs.getString("default_role"));
                     guild.setPrefix(rs.getString("prefix"));
                     guild.setShield(rs.getInt("shield"));

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import configuration.cache.Blacklist;
 import dao.database.Dao;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import factory.DaoFactory;
@@ -39,23 +39,23 @@ public class MemberLeave extends ListenerAdapter {
     }
 
     private void sendLeaveMessage(GuildMemberRemoveEvent event) {
-        if (guild.getChannelLeave() != null) {
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+        if (guild.getLeaveChannel() != null) {
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
             try {
-                if (channelLeave.getMessage() != null && !channelLeave.getEmbed()) {
-                    event.getGuild().getTextChannelById(guild.getChannelLeave()).sendMessage(ProxyUtils.getMemberMessageEvent(channelLeave.getMessage(), event.getUser())).queue();
+                if (leaveChannel.getMessage() != null && !leaveChannel.getEmbed()) {
+                    event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(ProxyUtils.getMemberMessageEvent(leaveChannel.getMessage(), event.getUser())).queue();
 
-                } else if (channelLeave.getMessage() != null && channelLeave.getEmbed()) {
+                } else if (leaveChannel.getMessage() != null && leaveChannel.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
                     embed.controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guild.getChannelLeave()).sendMessage(embed.getEmbed().build())
-                            .append(ProxyUtils.getMemberMessageEvent(channelLeave.getMessage(), event.getUser())).queue();
+                    event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(embed.getEmbed().build())
+                            .append(ProxyUtils.getMemberMessageEvent(leaveChannel.getMessage(), event.getUser())).queue();
 
-                } else if (channelLeave.getMessage() == null && channelLeave.getEmbed()) {
+                } else if (leaveChannel.getMessage() == null && leaveChannel.getEmbed()) {
                     ProxyEmbed embed = new ProxyEmbed();
                     embed.controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guild.getChannelLeave()).sendMessage(embed.getEmbed().build()).queue();
+                    event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(embed.getEmbed().build()).queue();
                 }
             } catch (InsufficientPermissionException e) {
             }

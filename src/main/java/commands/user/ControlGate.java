@@ -5,8 +5,8 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import listeners.commands.UserListener;
@@ -27,12 +27,12 @@ public class ControlGate extends UserListener implements CommandManager {
 
     @Override
     public void execute() {
-        Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-        ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-        Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-        ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+        Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+        JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+        Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+        LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
         ProxyEmbed embed = new ProxyEmbed();
-        embed.controlGate(event.getGuild(), guild, channelJoin, channelLeave);
+        embed.controlGate(event.getGuild(), guild, joinChannel, leaveChannel);
         ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 

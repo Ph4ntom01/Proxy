@@ -5,7 +5,7 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import listeners.commands.AdministratorListener;
@@ -26,29 +26,29 @@ public class LeaveEmbed extends AdministratorListener implements CommandManager 
 
     @Override
     public void execute() {
-        if (guild.getChannelLeave() != null) {
+        if (guild.getLeaveChannel() != null) {
 
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
 
             if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
 
-                if (channelLeave.getEmbed()) {
+                if (leaveChannel.getEmbed()) {
                     ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **enabled**.");
 
-                } else if (!channelLeave.getEmbed()) {
-                    channelLeave.setEmbed(true);
-                    channelLeaveDao.update(channelLeave);
+                } else if (!leaveChannel.getEmbed()) {
+                    leaveChannel.setEmbed(true);
+                    leaveChannelDao.update(leaveChannel);
                     ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **enabled**.");
                 }
             } else if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("off")) {
 
-                if (!channelLeave.getEmbed()) {
+                if (!leaveChannel.getEmbed()) {
                     ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **disabled**.");
 
-                } else if (channelLeave.getEmbed()) {
-                    channelLeave.setEmbed(false);
-                    channelLeaveDao.update(channelLeave);
+                } else if (leaveChannel.getEmbed()) {
+                    leaveChannel.setEmbed(false);
+                    leaveChannelDao.update(leaveChannel);
                     ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
                 }
             } else {

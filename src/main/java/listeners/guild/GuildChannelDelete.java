@@ -2,8 +2,8 @@ package listeners.guild;
 
 import configuration.cache.Blacklist;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
@@ -18,25 +18,25 @@ public class GuildChannelDelete extends ListenerAdapter {
 
             GuildPojo guild = ProxyUtils.getGuildFromCache(event.getGuild());
 
-            if (event.getChannel().getId().equals(guild.getChannelJoin())) {
+            if (event.getChannel().getId().equals(guild.getJoinChannel())) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-                ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-                guild.setChannelJoin(null);
+                Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+                JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+                guild.setJoinChannel(null);
                 guildDao.update(guild);
-                channelJoinDao.delete(channelJoin);
+                joinChannelDao.delete(joinChannel);
             }
-            if (event.getChannel().getId().equals(guild.getChannelLeave())) {
+            if (event.getChannel().getId().equals(guild.getLeaveChannel())) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-                ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
-                guild.setChannelLeave(null);
+                Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+                LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+                guild.setLeaveChannel(null);
                 guildDao.update(guild);
-                channelLeaveDao.delete(channelLeave);
+                leaveChannelDao.delete(leaveChannel);
             }
-            if (event.getChannel().getId().equals(guild.getChannelControl())) {
+            if (event.getChannel().getId().equals(guild.getControlChannel())) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                guild.setChannelControl(null);
+                guild.setControlChannel(null);
                 guildDao.update(guild);
             }
         }

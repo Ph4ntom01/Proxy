@@ -4,9 +4,9 @@ import java.awt.Color;
 
 import commands.CommandManager;
 import configuration.constants.Command;
-import dao.database.ChannelJoinDAO;
+import dao.database.JoinChannelDAO;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
+import dao.pojo.JoinChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import factory.PojoFactory;
@@ -32,25 +32,25 @@ public class JoinChannel extends AdministratorListener implements CommandManager
     public void execute() {
         String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
         try {
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
             TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
-            if (textChannel.getId().equals(guild.getChannelJoin()) && textChannel.getId().equals(channelJoin.getChannelId())) {
+            if (textChannel.getId().equals(guild.getJoinChannel()) && textChannel.getId().equals(joinChannel.getChannelId())) {
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
 
-            } else if (guild.getChannelJoin() == null && channelJoin.getChannelId() == null) {
+            } else if (guild.getJoinChannel() == null && joinChannel.getChannelId() == null) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                channelJoin = PojoFactory.getChannelJoin();
-                channelJoin.setChannelId(textChannel.getId());
-                guild.setChannelJoin(textChannel.getId());
-                channelJoinDao.create(channelJoin);
+                joinChannel = PojoFactory.getJoinChannel();
+                joinChannel.setChannelId(textChannel.getId());
+                guild.setJoinChannel(textChannel.getId());
+                joinChannelDao.create(joinChannel);
                 guildDao.update(guild);
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");
 
             } else {
-                guild.setChannelJoin(textChannel.getId());
-                ((ChannelJoinDAO) channelJoinDao).update(channelJoin, textChannel.getId());
+                guild.setJoinChannel(textChannel.getId());
+                ((JoinChannelDAO) joinChannelDao).update(joinChannel, textChannel.getId());
                 // No need to update the guild table with "guildDao.update" because ON UPDATE
                 // CASCADE is defined to the foreign key.
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");

@@ -1,7 +1,7 @@
 package factory;
 
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import dao.pojo.PermissionPojo;
@@ -15,12 +15,12 @@ public class PojoFactory {
         return new GuildPojo();
     }
 
-    public static ChannelJoinPojo getChannelJoin() {
-        return new ChannelJoinPojo();
+    public static JoinChannelPojo getJoinChannel() {
+        return new JoinChannelPojo();
     }
 
-    public static ChannelLeavePojo getChannelLeave() {
-        return new ChannelLeavePojo();
+    public static LeaveChannelPojo getLeaveChannel() {
+        return new LeaveChannelPojo();
     }
 
     public static MemberPojo getMember() {

@@ -5,7 +5,7 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import listeners.commands.AdministratorListener;
@@ -26,11 +26,11 @@ public class LeaveMessage extends AdministratorListener implements CommandManage
 
     @Override
     public void execute() {
-        if (guild.getChannelLeave() != null) {
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
-            channelLeave.setMessage(getLeaveMessage(ProxyUtils.getArgs(event.getMessage())));
-            channelLeaveDao.update(channelLeave);
+        if (guild.getLeaveChannel() != null) {
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+            leaveChannel.setMessage(getLeaveMessage(ProxyUtils.getArgs(event.getMessage())));
+            leaveChannelDao.update(leaveChannel);
             ProxyUtils.sendMessage(event.getChannel(), "Leaving message has been successfully defined.");
         } else {
             ProxyUtils.sendMessage(event.getChannel(),

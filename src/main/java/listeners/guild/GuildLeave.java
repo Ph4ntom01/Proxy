@@ -6,9 +6,9 @@ import configuration.files.Config;
 import configuration.files.Log;
 import dao.database.Dao;
 import dao.database.GuildDAO;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
 import dao.pojo.GuildPojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import factory.ConfigFactory;
 import factory.DaoFactory;
 import factory.StatsFactory;
@@ -22,19 +22,19 @@ public class GuildLeave extends ListenerAdapter {
         Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
         GuildPojo guild = guildDao.find(event.getGuild().getId());
 
-        if (guild.getChannelJoin() != null) {
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-            guild.setChannelJoin(null);
+        if (guild.getJoinChannel() != null) {
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+            guild.setJoinChannel(null);
             guildDao.update(guild);
-            channelJoinDao.delete(channelJoin);
+            joinChannelDao.delete(joinChannel);
         }
-        if (guild.getChannelLeave() != null) {
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
-            guild.setChannelLeave(null);
+        if (guild.getLeaveChannel() != null) {
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+            guild.setLeaveChannel(null);
             guildDao.update(guild);
-            channelLeaveDao.delete(channelLeave);
+            leaveChannelDao.delete(leaveChannel);
         }
         guild.setMembers(((GuildDAO) guildDao).findMembers(event.getGuild().getId()));
         ((GuildDAO) guildDao).delete(guild.getMembers());

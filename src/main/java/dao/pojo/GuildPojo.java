@@ -6,9 +6,9 @@ public class GuildPojo {
 
     private String id;
     private String name;
-    private String channelJoin;
-    private String channelLeave;
-    private String channelControl;
+    private String joinChannel;
+    private String leaveChannel;
+    private String controlChannel;
     private String defaultRole;
     private String prefix;
     private int shield;
@@ -22,16 +22,16 @@ public class GuildPojo {
         return name;
     }
 
-    public String getChannelJoin() {
-        return channelJoin;
+    public String getJoinChannel() {
+        return joinChannel;
     }
 
-    public String getChannelLeave() {
-        return channelLeave;
+    public String getLeaveChannel() {
+        return leaveChannel;
     }
 
-    public String getChannelControl() {
-        return channelControl;
+    public String getControlChannel() {
+        return controlChannel;
     }
 
     public String getDefaultRole() {
@@ -58,16 +58,16 @@ public class GuildPojo {
         this.name = name;
     }
 
-    public void setChannelJoin(String channelJoin) {
-        this.channelJoin = channelJoin;
+    public void setJoinChannel(String joinChannel) {
+        this.joinChannel = joinChannel;
     }
 
-    public void setChannelLeave(String channelLeave) {
-        this.channelLeave = channelLeave;
+    public void setLeaveChannel(String leaveChannel) {
+        this.leaveChannel = leaveChannel;
     }
 
-    public void setChannelControl(String channelControl) {
-        this.channelControl = channelControl;
+    public void setControlChannel(String controlChannel) {
+        this.controlChannel = controlChannel;
     }
 
     public void setDefaultRole(String defaultRole) {
@@ -87,7 +87,7 @@ public class GuildPojo {
     }
 
     public boolean isEmpty() {
-        return (getId() == null && getName() == null && getChannelJoin() == null && getChannelLeave() == null && getDefaultRole() == null && getPrefix() == null && getShield() == 0);
+        return (getId() == null && getName() == null && getJoinChannel() == null && getLeaveChannel() == null && getDefaultRole() == null && getPrefix() == null && getShield() == 0);
     }
 
     @Override

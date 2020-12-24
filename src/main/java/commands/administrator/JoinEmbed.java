@@ -5,7 +5,7 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
+import dao.pojo.JoinChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import listeners.commands.AdministratorListener;
@@ -26,29 +26,29 @@ public class JoinEmbed extends AdministratorListener implements CommandManager {
 
     @Override
     public void execute() {
-        if (guild.getChannelJoin() != null) {
+        if (guild.getJoinChannel() != null) {
 
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
 
             if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
 
-                if (channelJoin.getEmbed()) {
+                if (joinChannel.getEmbed()) {
                     ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **enabled**.");
 
-                } else if (!channelJoin.getEmbed()) {
-                    channelJoin.setEmbed(true);
-                    channelJoinDao.update(channelJoin);
+                } else if (!joinChannel.getEmbed()) {
+                    joinChannel.setEmbed(true);
+                    joinChannelDao.update(joinChannel);
                     ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **enabled**.");
                 }
             } else if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("off")) {
 
-                if (!channelJoin.getEmbed()) {
+                if (!joinChannel.getEmbed()) {
                     ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **disabled**.");
 
-                } else if (channelJoin.getEmbed()) {
-                    channelJoin.setEmbed(false);
-                    channelJoinDao.update(channelJoin);
+                } else if (joinChannel.getEmbed()) {
+                    joinChannel.setEmbed(false);
+                    joinChannelDao.update(joinChannel);
                     ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
                 }
             } else {

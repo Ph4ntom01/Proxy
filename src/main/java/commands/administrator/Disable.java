@@ -5,9 +5,9 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
 import dao.pojo.GuildPojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import factory.DaoFactory;
 import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -36,7 +36,7 @@ public class Disable extends AdministratorListener implements CommandManager {
     @Override
     public void execute() {
         if (command == Command.JOINCHAN) {
-            disableChannelJoin();
+            disableJoinChannel();
         }
 
         else if (command == Command.JOINMESSAGE) {
@@ -48,7 +48,7 @@ public class Disable extends AdministratorListener implements CommandManager {
         }
 
         else if (command == Command.LEAVECHAN) {
-            disableChannelLeave();
+            disableLeaveChannel();
         }
 
         else if (command == Command.LEAVEMESSAGE) {
@@ -98,14 +98,14 @@ public class Disable extends AdministratorListener implements CommandManager {
         }
     }
 
-    private void disableChannelJoin() {
-        if (guild.getChannelJoin() != null && !guild.getChannelJoin().isEmpty()) {
+    private void disableJoinChannel() {
+        if (guild.getJoinChannel() != null && !guild.getJoinChannel().isEmpty()) {
             Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-            guild.setChannelJoin(null);
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+            guild.setJoinChannel(null);
             guildDao.update(guild);
-            channelJoinDao.delete(channelJoin);
+            joinChannelDao.delete(joinChannel);
             ProxyUtils.sendMessage(event.getChannel(), "Welcoming channel is now **disabled**, you will no longer receive notifications when a member joins the server.");
         } else {
             ProxyUtils.sendMessage(event.getChannel(), "Welcoming channel has already been **disabled**.");
@@ -113,14 +113,14 @@ public class Disable extends AdministratorListener implements CommandManager {
     }
 
     private void disableJoinMessage() {
-        if (guild.getChannelJoin() != null && !guild.getChannelJoin().isEmpty()) {
+        if (guild.getJoinChannel() != null && !guild.getJoinChannel().isEmpty()) {
 
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
 
-            if (channelJoin.getMessage() != null && !channelJoin.getMessage().isEmpty()) {
-                channelJoin.setMessage(null);
-                channelJoinDao.update(channelJoin);
+            if (joinChannel.getMessage() != null && !joinChannel.getMessage().isEmpty()) {
+                joinChannel.setMessage(null);
+                joinChannelDao.update(joinChannel);
                 ProxyUtils.sendMessage(event.getChannel(), "Welcoming message is now **disabled**, you will no longer receive a message when a member joins the server.");
             } else {
                 ProxyUtils.sendMessage(event.getChannel(), "Welcoming message has already been **disabled**.");
@@ -132,14 +132,14 @@ public class Disable extends AdministratorListener implements CommandManager {
     }
 
     private void disableJoinEmbed() {
-        if (guild.getChannelJoin() != null && !guild.getChannelJoin().isEmpty()) {
+        if (guild.getJoinChannel() != null && !guild.getJoinChannel().isEmpty()) {
 
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
 
-            if (channelJoin.getEmbed()) {
-                channelJoin.setEmbed(false);
-                channelJoinDao.update(channelJoin);
+            if (joinChannel.getEmbed()) {
+                joinChannel.setEmbed(false);
+                joinChannelDao.update(joinChannel);
                 ProxyUtils.sendMessage(event.getChannel(), "Welcoming box is now **disabled**, you will no longer receive a box when a member joins the server.");
             } else {
                 ProxyUtils.sendMessage(event.getChannel(), "Welcoming box has already been **disabled**.");
@@ -150,14 +150,14 @@ public class Disable extends AdministratorListener implements CommandManager {
         }
     }
 
-    private void disableChannelLeave() {
-        if (guild.getChannelLeave() != null && !guild.getChannelLeave().isEmpty()) {
+    private void disableLeaveChannel() {
+        if (guild.getLeaveChannel() != null && !guild.getLeaveChannel().isEmpty()) {
             Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
-            guild.setChannelLeave(null);
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+            guild.setLeaveChannel(null);
             guildDao.update(guild);
-            channelLeaveDao.delete(channelLeave);
+            leaveChannelDao.delete(leaveChannel);
             ProxyUtils.sendMessage(event.getChannel(), "Leaving channel is now **disabled**, you will no longer receive notifications when a member leaves the server.");
         } else {
             ProxyUtils.sendMessage(event.getChannel(), "Leaving channel has already been **disabled**.");
@@ -165,14 +165,14 @@ public class Disable extends AdministratorListener implements CommandManager {
     }
 
     private void disableLeaveMessage() {
-        if (guild.getChannelLeave() != null && !guild.getChannelLeave().isEmpty()) {
+        if (guild.getLeaveChannel() != null && !guild.getLeaveChannel().isEmpty()) {
 
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
 
-            if (channelLeave.getMessage() != null && !channelLeave.getMessage().isEmpty()) {
-                channelLeave.setMessage(null);
-                channelLeaveDao.update(channelLeave);
+            if (leaveChannel.getMessage() != null && !leaveChannel.getMessage().isEmpty()) {
+                leaveChannel.setMessage(null);
+                leaveChannelDao.update(leaveChannel);
                 ProxyUtils.sendMessage(event.getChannel(), "Leaving message is now **disabled**, you will no longer receive a message when a member leaves the server.");
             } else {
                 ProxyUtils.sendMessage(event.getChannel(), "Leaving message has already been **disabled**.");
@@ -184,14 +184,14 @@ public class Disable extends AdministratorListener implements CommandManager {
     }
 
     private void disableLeaveEmbed() {
-        if (guild.getChannelLeave() != null && !guild.getChannelLeave().isEmpty()) {
+        if (guild.getLeaveChannel() != null && !guild.getLeaveChannel().isEmpty()) {
 
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
 
-            if (channelLeave.getEmbed()) {
-                channelLeave.setEmbed(false);
-                channelLeaveDao.update(channelLeave);
+            if (leaveChannel.getEmbed()) {
+                leaveChannel.setEmbed(false);
+                leaveChannelDao.update(leaveChannel);
                 ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
             } else {
                 ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **disabled**.");
@@ -203,9 +203,9 @@ public class Disable extends AdministratorListener implements CommandManager {
     }
 
     private void disableControlChan() {
-        if (guild.getChannelControl() != null) {
+        if (guild.getControlChannel() != null) {
             Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-            guild.setChannelControl(null);
+            guild.setControlChannel(null);
             guildDao.update(guild);
             ProxyUtils.sendMessage(event.getChannel(), "Control channel is now **disabled**.");
         } else {

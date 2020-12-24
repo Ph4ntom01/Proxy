@@ -7,22 +7,22 @@ import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.LeaveChannelPojo;
 import factory.PojoFactory;
 
-public class ChannelLeaveDAO extends Dao<ChannelLeavePojo> {
+public class LeaveChannelDAO extends Dao<LeaveChannelPojo> {
 
-    public ChannelLeaveDAO(HikariDataSource dataSource) {
+    public LeaveChannelDAO(HikariDataSource dataSource) {
         super(dataSource);
     }
 
     @Override
-    public boolean create(ChannelLeavePojo channelLeave) {
+    public boolean create(LeaveChannelPojo leaveChannel) {
         String query = "INSERT INTO `channels_leave`(`channel_id`) VALUES(?);";
         try (Connection conn = this.dataSource.getConnection();) {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
-                pst.setString(1, channelLeave.getChannelId());
+                pst.setString(1, leaveChannel.getChannelId());
                 pst.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
@@ -38,12 +38,12 @@ public class ChannelLeaveDAO extends Dao<ChannelLeavePojo> {
     }
 
     @Override
-    public boolean delete(ChannelLeavePojo channelLeave) {
+    public boolean delete(LeaveChannelPojo leaveChannel) {
         String query = "DELETE FROM `channels_leave` WHERE `channel_id` = ?;";
         try (Connection conn = this.dataSource.getConnection();) {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
-                pst.setString(1, channelLeave.getChannelId());
+                pst.setString(1, leaveChannel.getChannelId());
                 pst.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
@@ -59,14 +59,14 @@ public class ChannelLeaveDAO extends Dao<ChannelLeavePojo> {
     }
 
     @Override
-    public boolean update(ChannelLeavePojo channelLeave) {
+    public boolean update(LeaveChannelPojo leaveChannel) {
         String query = "UPDATE `channels_leave` SET `message` = ?, `embed` = ? WHERE `channel_id` = ?;";
         try (Connection conn = this.dataSource.getConnection();) {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
-                pst.setString(1, channelLeave.getMessage());
-                pst.setBoolean(2, channelLeave.getEmbed());
-                pst.setString(3, channelLeave.getChannelId());
+                pst.setString(1, leaveChannel.getMessage());
+                pst.setBoolean(2, leaveChannel.getEmbed());
+                pst.setString(3, leaveChannel.getChannelId());
                 pst.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
@@ -81,15 +81,15 @@ public class ChannelLeaveDAO extends Dao<ChannelLeavePojo> {
         return true;
     }
 
-    public boolean update(ChannelLeavePojo channelLeave, String channelId) {
+    public boolean update(LeaveChannelPojo leaveChannel, String channelId) {
         String query = "UPDATE `channels_leave` SET `channel_id` = ?, `message` = ?, `embed` = ? WHERE `channel_id` = ?;";
         try (Connection conn = this.dataSource.getConnection();) {
             conn.setAutoCommit(false);
             try (PreparedStatement pst = conn.prepareStatement(query);) {
                 pst.setString(1, channelId);
-                pst.setString(2, channelLeave.getMessage());
-                pst.setBoolean(3, channelLeave.getEmbed());
-                pst.setString(4, channelLeave.getChannelId());
+                pst.setString(2, leaveChannel.getMessage());
+                pst.setBoolean(3, leaveChannel.getEmbed());
+                pst.setString(4, leaveChannel.getChannelId());
                 pst.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
@@ -105,21 +105,21 @@ public class ChannelLeaveDAO extends Dao<ChannelLeavePojo> {
     }
 
     @Override
-    public ChannelLeavePojo find(String channelId) {
-        ChannelLeavePojo channelLeave = null;
+    public LeaveChannelPojo find(String channelId) {
+        LeaveChannelPojo leaveChannel = null;
         String query = "SELECT `channel_id`, `message`, `embed` FROM `channels_leave` WHERE `channel_id` = ?;";
         try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setString(1, channelId);
             try (ResultSet rs = pst.executeQuery();) {
                 rs.next();
-                channelLeave = PojoFactory.getChannelLeave();
-                channelLeave.setChannelId(rs.getString("channel_id"));
-                channelLeave.setMessage(rs.getString("message"));
-                channelLeave.setEmbed(rs.getBoolean("embed"));
+                leaveChannel = PojoFactory.getLeaveChannel();
+                leaveChannel.setChannelId(rs.getString("channel_id"));
+                leaveChannel.setMessage(rs.getString("message"));
+                leaveChannel.setEmbed(rs.getBoolean("embed"));
             }
         } catch (SQLException e) {
         }
-        return channelLeave;
+        return leaveChannel;
     }
 
 }

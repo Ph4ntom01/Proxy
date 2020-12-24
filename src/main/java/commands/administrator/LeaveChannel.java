@@ -4,9 +4,9 @@ import java.awt.Color;
 
 import commands.CommandManager;
 import configuration.constants.Command;
-import dao.database.ChannelLeaveDAO;
+import dao.database.LeaveChannelDAO;
 import dao.database.Dao;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import factory.PojoFactory;
@@ -32,25 +32,25 @@ public class LeaveChannel extends AdministratorListener implements CommandManage
     public void execute() {
         String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
         try {
-            Dao<ChannelLeavePojo> channelLeaveDao = DaoFactory.getChannelLeaveDAO();
-            ChannelLeavePojo channelLeave = channelLeaveDao.find(guild.getChannelLeave());
+            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
             TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
-            if (textChannel.getId().equals(guild.getChannelLeave()) && textChannel.getId().equals(channelLeave.getChannelId())) {
+            if (textChannel.getId().equals(guild.getLeaveChannel()) && textChannel.getId().equals(leaveChannel.getChannelId())) {
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members has already been set to " + textChannel.getAsMention() + ".");
 
-            } else if (guild.getChannelLeave() == null && channelLeave.getChannelId() == null) {
+            } else if (guild.getLeaveChannel() == null && leaveChannel.getChannelId() == null) {
                 Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-                channelLeave = PojoFactory.getChannelLeave();
-                channelLeave.setChannelId(textChannel.getId());
-                guild.setChannelLeave(textChannel.getId());
-                channelLeaveDao.create(channelLeave);
+                leaveChannel = PojoFactory.getLeaveChannel();
+                leaveChannel.setChannelId(textChannel.getId());
+                guild.setLeaveChannel(textChannel.getId());
+                leaveChannelDao.create(leaveChannel);
                 guildDao.update(guild);
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members is now " + textChannel.getAsMention() + ".");
 
             } else {
-                guild.setChannelLeave(textChannel.getId());
-                ((ChannelLeaveDAO) channelLeaveDao).update(channelLeave, textChannel.getId());
+                guild.setLeaveChannel(textChannel.getId());
+                ((LeaveChannelDAO) leaveChannelDao).update(leaveChannel, textChannel.getId());
                 // No need to update the guild table with "guildDao.update" because ON UPDATE
                 // CASCADE is defined to the foreign key.
                 ProxyUtils.sendMessage(event.getChannel(), "The default channel for leaving members is now " + textChannel.getAsMention() + ".");

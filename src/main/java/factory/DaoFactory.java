@@ -2,16 +2,16 @@ package factory;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import dao.database.ChannelJoinDAO;
-import dao.database.ChannelLeaveDAO;
 import dao.database.DBService;
 import dao.database.Dao;
 import dao.database.GuildDAO;
+import dao.database.JoinChannelDAO;
+import dao.database.LeaveChannelDAO;
 import dao.database.MemberDAO;
 import dao.database.PermissionDAO;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
 import dao.pojo.GuildPojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.MemberPojo;
 import dao.pojo.PermissionPojo;
 
@@ -26,12 +26,12 @@ public class DaoFactory {
         return new GuildDAO(dataSource);
     }
 
-    public static Dao<ChannelJoinPojo> getChannelJoinDAO() {
-        return new ChannelJoinDAO(dataSource);
+    public static Dao<JoinChannelPojo> getJoinChannelDAO() {
+        return new JoinChannelDAO(dataSource);
     }
 
-    public static Dao<ChannelLeavePojo> getChannelLeaveDAO() {
-        return new ChannelLeaveDAO(dataSource);
+    public static Dao<LeaveChannelPojo> getLeaveChannelDAO() {
+        return new LeaveChannelDAO(dataSource);
     }
 
     public static Dao<MemberPojo> getMemberDAO() {

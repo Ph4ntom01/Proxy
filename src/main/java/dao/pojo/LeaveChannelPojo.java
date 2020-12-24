@@ -1,6 +1,6 @@
 package dao.pojo;
 
-public class ChannelLeavePojo {
+public class LeaveChannelPojo {
 
     private String channelId;
     private String message;

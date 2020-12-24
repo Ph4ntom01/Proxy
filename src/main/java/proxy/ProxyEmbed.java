@@ -15,8 +15,8 @@ import configuration.constants.Command;
 import configuration.constants.ID;
 import configuration.constants.Permissions;
 import configuration.files.Config;
-import dao.pojo.ChannelJoinPojo;
-import dao.pojo.ChannelLeavePojo;
+import dao.pojo.JoinChannelPojo;
+import dao.pojo.LeaveChannelPojo;
 import dao.pojo.GuildPojo;
 import dao.pojo.MemberPojo;
 import factory.ConfigFactory;
@@ -422,7 +422,7 @@ public class ProxyEmbed {
         embed.addField("", "Example: `" + prefix + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`", false);
     }
 
-    public void controlGate(Guild gld, GuildPojo guild, ChannelJoinPojo channelJoin, ChannelLeavePojo channelLeave) {
+    public void controlGate(Guild gld, GuildPojo guild, JoinChannelPojo joinChannel, LeaveChannelPojo leaveChannel) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
         embed.setTitle(":shield: Controlgate");
@@ -430,18 +430,18 @@ public class ProxyEmbed {
 
         embed.addField("", ":airplane_arriving: __**Arrivals**__\n_Notification when a member joins the server._", false);
 
-        if (channelJoin.getChannelId() != null) {
-            embed.addField(":pushpin: Channel", gld.getTextChannelById(channelJoin.getChannelId()).getAsMention(), true);
+        if (joinChannel.getChannelId() != null) {
+            embed.addField(":pushpin: Channel", gld.getTextChannelById(joinChannel.getChannelId()).getAsMention(), true);
         }
 
         else {
             embed.addField(":pushpin: Channel", "No welcoming channel.", true);
         }
 
-        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(channelJoin.getEmbed()), true);
+        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(joinChannel.getEmbed()), true);
 
-        if (channelJoin.getMessage() != null) {
-            embed.addField(":page_with_curl: Message", "```\n" + channelJoin.getMessage() + "```", false);
+        if (joinChannel.getMessage() != null) {
+            embed.addField(":page_with_curl: Message", "```\n" + joinChannel.getMessage() + "```", false);
         }
 
         else {
@@ -450,26 +450,26 @@ public class ProxyEmbed {
 
         embed.addField("", ":airplane_departure: __**Departures**__\n_Notification when a member leaves the server._", false);
 
-        if (channelLeave.getChannelId() != null) {
-            embed.addField(":pushpin: Channel", gld.getTextChannelById(channelLeave.getChannelId()).getAsMention(), true);
+        if (leaveChannel.getChannelId() != null) {
+            embed.addField(":pushpin: Channel", gld.getTextChannelById(leaveChannel.getChannelId()).getAsMention(), true);
         }
 
         else {
             embed.addField(":pushpin: Channel", "No leaving channel.", true);
         }
 
-        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(channelLeave.getEmbed()), true);
+        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(leaveChannel.getEmbed()), true);
 
-        if (channelLeave.getMessage() != null) {
-            embed.addField(":page_with_curl: Message", "```\n" + channelLeave.getMessage() + "```", false);
+        if (leaveChannel.getMessage() != null) {
+            embed.addField(":page_with_curl: Message", "```\n" + leaveChannel.getMessage() + "```", false);
         }
 
         else {
             embed.addField(":page_with_curl: Message", "```\n" + "No message set." + "```", false);
         }
 
-        if (guild.getChannelControl() != null) {
-            embed.addField("", ":white_check_mark: __**Control Channel**__: " + gld.getTextChannelById(guild.getChannelControl()).getAsMention(), false);
+        if (guild.getControlChannel() != null) {
+            embed.addField("", ":white_check_mark: __**Control Channel**__: " + gld.getTextChannelById(guild.getControlChannel()).getAsMention(), false);
         }
 
         else {

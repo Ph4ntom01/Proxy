@@ -5,7 +5,7 @@ import java.awt.Color;
 import commands.CommandManager;
 import configuration.constants.Command;
 import dao.database.Dao;
-import dao.pojo.ChannelJoinPojo;
+import dao.pojo.JoinChannelPojo;
 import dao.pojo.GuildPojo;
 import factory.DaoFactory;
 import listeners.commands.AdministratorListener;
@@ -26,11 +26,11 @@ public class JoinMessage extends AdministratorListener implements CommandManager
 
     @Override
     public void execute() {
-        if (guild.getChannelJoin() != null) {
-            Dao<ChannelJoinPojo> channelJoinDao = DaoFactory.getChannelJoinDAO();
-            ChannelJoinPojo channelJoin = channelJoinDao.find(guild.getChannelJoin());
-            channelJoin.setMessage(getJoinMessage(ProxyUtils.getArgs(event.getMessage())));
-            channelJoinDao.update(channelJoin);
+        if (guild.getJoinChannel() != null) {
+            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+            joinChannel.setMessage(getJoinMessage(ProxyUtils.getArgs(event.getMessage())));
+            joinChannelDao.update(joinChannel);
             ProxyUtils.sendMessage(event.getChannel(), "Welcoming message has been successfully defined.");
         } else {
             ProxyUtils.sendMessage(event.getChannel(),
