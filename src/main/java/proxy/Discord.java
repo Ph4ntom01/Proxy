@@ -45,7 +45,7 @@ public class Discord {
     private void configureMemoryUsage(JDABuilder builder) {
         builder.enableCache(CacheFlag.VOICE_STATE);
         builder.setChunkingFilter(ChunkingFilter.NONE);
-        builder.setMemberCachePolicy(MemberCachePolicy.VOICE);
+        builder.setMemberCachePolicy(MemberCachePolicy.ALL);
     }
 
     private void addEventListeners(JDABuilder builder) {
