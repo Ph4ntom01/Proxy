@@ -1,6 +1,13 @@
 package dao.database;
 
+import java.sql.SQLException;
+
 import com.zaxxer.hikari.HikariDataSource;
+
+interface SQLCloseable extends AutoCloseable {
+    @Override
+    public void close() throws SQLException;
+}
 
 public abstract class Dao<T> {
 
