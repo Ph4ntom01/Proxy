@@ -1,27 +1,34 @@
 package factory;
 
-import configuration.constants.File;
-import configuration.files.Config;
+import configuration.constant.File;
+import configuration.constant.Folder;
+import configuration.file.Config;
 
 public class ConfigFactory {
+
+    private static final String PATH = Folder.RESOURCES.getName() + Folder.CONFIG.getName();
 
     private ConfigFactory() {
     }
 
-    public static Config blacklist() {
-        return new Config(File.BLACKLIST_FILE.getName());
+    public static Config getBlacklist() {
+        return new Config(PATH + File.BLACKLIST.getName());
     }
 
-    public static Config datasource() {
-        return new Config(File.DATASOURCE_FILE.getName());
+    public static Config getCache() {
+        return new Config(PATH + File.CACHE.getName());
     }
 
-    public static Config links() {
-        return new Config(File.LINKS_FILE.getName());
+    public static Config getDatasource() {
+        return new Config(PATH + File.DATASOURCE.getName());
     }
 
-    public static Config tokens() {
-        return new Config(File.TOKENS_FILE.getName());
+    public static Config getLink() {
+        return new Config(PATH + File.LINK.getName());
+    }
+
+    public static Config getToken() {
+        return new Config(PATH + File.TOKEN.getName());
     }
 
 }
