@@ -1,4 +1,4 @@
-package proxy;
+package proxy.utility;
 
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
@@ -6,19 +6,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
-import configuration.constants.Category;
-import configuration.constants.Command;
-import configuration.constants.ID;
-import configuration.constants.Permissions;
-import configuration.files.Config;
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.LeaveChannelPojo;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import configuration.constant.Category;
+import configuration.constant.Command;
+import configuration.constant.ID;
+import configuration.constant.Permissions;
+import configuration.file.Config;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
+import dao.pojo.PLeaveChannel;
 import factory.ConfigFactory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.Ban;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -92,7 +94,7 @@ public class ProxyEmbed {
         embed.addField("", uptime + ".", true);
     }
 
-    public void serverInfo(Guild gld, GuildPojo guild, Member owner) {
+    public void serverInfo(Guild gld, PGuild guild, Member owner) {
         long categories = gld.getCategories().size();
         long textChannels = gld.getTextChannels().size();
         long voiceChannels = gld.getVoiceChannels().size();
@@ -182,7 +184,7 @@ public class ProxyEmbed {
         }
 
         embed.addField("Prefix", guild.getPrefix(), true);
-        embed.addField("Shield", ProxyUtils.activeOrInactive(guild.getShield(), ProxyUtils.day(guild.getShield())), true);
+        embed.addField("Shield", ProxyString.activeOrInactive(guild.getShield(), ProxyString.day(guild.getShield())), true);
 
         // @formatter:off
         embed.setFooter(
@@ -197,18 +199,18 @@ public class ProxyEmbed {
         embed.setColor(Color.GREEN);
         embed.setThumbnail(mbr.getUser().getEffectiveAvatarUrl());
         embed.setAuthor(mbr.getUser().getName(), null, mbr.getUser().getAvatarUrl());
-        embed.addField("Nickname", ProxyUtils.getNickname(mbr), true);
+        embed.addField("Nickname", ProxyString.getNickname(mbr), true);
         embed.addField("Discriminator", mbr.getUser().getDiscriminator(), true);
         embed.addField("Mention", mbr.getAsMention(), true);
         embed.addField("Permission", permission.getName(), true);
-        embed.addField("Voice Channel", ProxyUtils.getVoiceChannel(mbr), true);
+        embed.addField("Voice Channel", ProxyString.getVoiceChannel(mbr), true);
         embed.addField("ID", mbr.getId(), true);
         embed.addField("Server Join", mbr.getTimeJoined().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
         embed.addField("Discord Join", mbr.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
-        embed.addField("Boosted Time", ProxyUtils.getTimeBoosted(mbr), true);
+        embed.addField("Boosted Time", ProxyString.getTimeBoosted(mbr), true);
 
         if (!mbr.getRoles().isEmpty()) {
-            embed.addField("Role(s)", ProxyUtils.getMemberRoles(mbr), false);
+            embed.addField("Role(s)", getMemberRoles(mbr), false);
         }
     }
 
@@ -217,7 +219,7 @@ public class ProxyEmbed {
         embed.setColor(Color.GREEN);
         embed.setThumbnail(bot.getUser().getEffectiveAvatarUrl());
         embed.setAuthor(bot.getUser().getName(), null, bot.getUser().getAvatarUrl());
-        embed.addField("Nickname", ProxyUtils.getNickname(bot), true);
+        embed.addField("Nickname", ProxyString.getNickname(bot), true);
         embed.addField("Discriminator", bot.getUser().getDiscriminator(), true);
         embed.addField("Mention", bot.getAsMention(), true);
         embed.addField("Server Join", bot.getTimeJoined().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
@@ -229,7 +231,7 @@ public class ProxyEmbed {
             // @formatter:off
             embed.addField(
                     "Permissions",
-                    "```ini\n[Administrator]:       " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.ADMINISTRATOR))
+                    "```ini\n[Administrator]:       " + ProxyString.yesOrNo(bot.hasPermission(Permission.ADMINISTRATOR))
                     + "\n[Role Position]:        " + position + "```",
                     false);
             // @formatter:on
@@ -239,28 +241,28 @@ public class ProxyEmbed {
             // @formatter:off
             embed.addField(
                     "Permissions", "```ini\n"
-                    + "[Manage Server]:       " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_SERVER)) + "\n"
-                    + "[Manage Roles]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_ROLES)) + "\n"
-                    + "[Manage Channels]:     " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_CHANNEL)) + "\n"
-                    + "[Kick Members]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.KICK_MEMBERS)) + "\n"
-                    + "[Ban Members]:         " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.BAN_MEMBERS)) + "\n"
-                    + "[Mute Members]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.VOICE_MUTE_OTHERS)) + "\n"
-                    + "[Deafen Members]:      " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.VOICE_DEAF_OTHERS)) + "```",
+                    + "[Manage Server]:       " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_SERVER)) + "\n"
+                    + "[Manage Roles]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_ROLES)) + "\n"
+                    + "[Manage Channels]:     " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_CHANNEL)) + "\n"
+                    + "[Kick Members]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.KICK_MEMBERS)) + "\n"
+                    + "[Ban Members]:         " + ProxyString.yesOrNo(bot.hasPermission(Permission.BAN_MEMBERS)) + "\n"
+                    + "[Mute Members]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.VOICE_MUTE_OTHERS)) + "\n"
+                    + "[Deafen Members]:      " + ProxyString.yesOrNo(bot.hasPermission(Permission.VOICE_DEAF_OTHERS)) + "```",
                     false);
             // @formatter:on
         }
 
         if (!bot.getRoles().isEmpty()) {
-            embed.addField("Role(s)", ProxyUtils.getMemberRoles(bot), false);
+            embed.addField("Role(s)", getMemberRoles(bot), false);
         }
     }
 
-    public void selfbotInfo(GuildPojo guild, Member bot, User creator) {
+    public void selfbotInfo(PGuild guild, Member bot, User creator) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
         embed.setThumbnail(bot.getUser().getEffectiveAvatarUrl());
         embed.setAuthor(bot.getUser().getName(), null, bot.getUser().getAvatarUrl());
-        embed.addField("Nickname", ProxyUtils.getNickname(bot), true);
+        embed.addField("Nickname", ProxyString.getNickname(bot), true);
         embed.addField("Discriminator", bot.getUser().getDiscriminator(), true);
         embed.addField("Mention", bot.getAsMention(), true);
         embed.addField("Server Join", bot.getTimeJoined().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
@@ -272,7 +274,7 @@ public class ProxyEmbed {
             // @formatter:off
             embed.addField(
                     "Permissions", "```ini\n"
-                    + "[Administrator]:       " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.ADMINISTRATOR)) + "\n"
+                    + "[Administrator]:       " + ProxyString.yesOrNo(bot.hasPermission(Permission.ADMINISTRATOR)) + "\n"
                     + "[Role Position]:        " + position + "```",
                     false);
             // @formatter:on
@@ -282,13 +284,13 @@ public class ProxyEmbed {
             // @formatter:off
             embed.addField("Permissions",
                     "```ini\n"
-                    + "[Manage Server]:       " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_SERVER)) + "\n"
-                    + "[Manage Roles]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_ROLES)) + "\n"
-                    + "[Manage Channels]:     " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.MANAGE_CHANNEL)) + "\n"
-                    + "[Kick Members]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.KICK_MEMBERS)) + "\n"
-                    + "[Ban Members]:         " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.BAN_MEMBERS)) + "\n"
-                    + "[Mute Members]:        " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.VOICE_MUTE_OTHERS)) + "\n"
-                    + "[Deafen Members]:      " + ProxyUtils.yesOrNo(bot.hasPermission(Permission.VOICE_DEAF_OTHERS)) + "```",
+                    + "[Manage Server]:       " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_SERVER)) + "\n"
+                    + "[Manage Roles]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_ROLES)) + "\n"
+                    + "[Manage Channels]:     " + ProxyString.yesOrNo(bot.hasPermission(Permission.MANAGE_CHANNEL)) + "\n"
+                    + "[Kick Members]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.KICK_MEMBERS)) + "\n"
+                    + "[Ban Members]:         " + ProxyString.yesOrNo(bot.hasPermission(Permission.BAN_MEMBERS)) + "\n"
+                    + "[Mute Members]:        " + ProxyString.yesOrNo(bot.hasPermission(Permission.VOICE_MUTE_OTHERS)) + "\n"
+                    + "[Deafen Members]:      " + ProxyString.yesOrNo(bot.hasPermission(Permission.VOICE_DEAF_OTHERS)) + "```",
                     false);
             // @formatter:on
         }
@@ -299,16 +301,16 @@ public class ProxyEmbed {
         embed.setFooter("Creator: " + creator.getName() + "#" + creator.getDiscriminator(), creator.getEffectiveAvatarUrl());
 
         if (!bot.getRoles().isEmpty()) {
-            embed.addField("Role(s)", ProxyUtils.getMemberRoles(bot), false);
+            embed.addField("Role(s)", getMemberRoles(bot), false);
         }
 
-        Config conf = ConfigFactory.links();
+        Config conf = ConfigFactory.getLink();
         // @formatter:off
         embed.addField(
                 "Links", 
                 "[Invite](" + conf.getValue("Invite") + ") | "
                 + "[GitHub](" + conf.getValue("GitHub") + ") | "
-                + "[Support Server](" + conf.getValue("Support Server") + ")",
+                + "[Support Server](" + conf.getValue("Support") + ")",
                 false);
         // @formatter:on
     }
@@ -347,7 +349,7 @@ public class ProxyEmbed {
                 embed.addField("Lock", "Active", true);
             }
         }
-        embed.addField("Slowmode", ProxyUtils.activeOrInactive(textChannel.getSlowmode(), "s"), true);
+        embed.addField("Slowmode", ProxyString.activeOrInactive(textChannel.getSlowmode(), "s"), true);
         embed.addField("ID", textChannel.getId(), true);
         // @formatter:off
         embed.addField(
@@ -360,33 +362,33 @@ public class ProxyEmbed {
         // @formatter:on
     }
 
-    public void modoList(List<MemberPojo> modolist) {
+    public void modoList(Set<PGuildMember> moderators) {
         embed = new EmbedBuilder();
         embed.setColor(Color.RED);
         embed.setTitle(":dagger: __Moderator(s)__");
 
-        for (int i = 0; i < modolist.size(); i++) {
-            embed.addField("", "<@" + modolist.get(i).getId() + ">", false);
+        for (PGuildMember modo : moderators) {
+            embed.addField("", "<@" + modo.getId() + ">", false);
         }
     }
 
-    public void adminList(List<MemberPojo> adminList) {
+    public void adminList(Set<PGuildMember> administrators) {
         embed = new EmbedBuilder();
         embed.setColor(Color.RED);
         embed.setTitle(":closed_lock_with_key: __Administrator(s)__");
 
-        for (int i = 0; i < adminList.size(); i++) {
-            embed.addField("", "<@" + adminList.get(i).getId() + ">", false);
+        for (PGuildMember admin : administrators) {
+            embed.addField("", "<@" + admin.getId() + ">", false);
         }
     }
 
-    public void banList(List<Ban> memberList, String prefix) {
+    public void banList(List<Ban> bans, String prefix) {
         embed = new EmbedBuilder();
         embed.setColor(Color.RED);
         embed.setTitle(":skull_crossbones: __Ban List__");
 
-        for (int i = 0; i < memberList.size(); i++) {
-            embed.addField("", "**" + (i + 1) + ". " + memberList.get(i).getUser().getName() + "**", false);
+        for (int i = 0; i < bans.size(); i++) {
+            embed.addField("", "**" + (i + 1) + ". " + bans.get(i).getUser().getName() + "**", false);
         }
         embed.addField("", "**" + prefix + "banlist [a number]**", true);
     }
@@ -422,7 +424,7 @@ public class ProxyEmbed {
         embed.addField("", "Example: `" + prefix + Command.DISABLE.getName() + " " + Command.JOINCHAN.getName() + "`", false);
     }
 
-    public void controlGate(Guild gld, GuildPojo guild, JoinChannelPojo joinChannel, LeaveChannelPojo leaveChannel) {
+    public void controlGate(Guild gld, PGuild guild, PJoinChannel joinChannel, PLeaveChannel leaveChannel) {
         embed = new EmbedBuilder();
         embed.setColor(Color.GREEN);
         embed.setTitle(":shield: Controlgate");
@@ -438,7 +440,7 @@ public class ProxyEmbed {
             embed.addField(":pushpin: Channel", "No welcoming channel.", true);
         }
 
-        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(joinChannel.getEmbed()), true);
+        embed.addField(":mag_right: Box", ProxyString.activeOrInactive(joinChannel.getEmbed()), true);
 
         if (joinChannel.getMessage() != null) {
             embed.addField(":page_with_curl: Message", "```\n" + joinChannel.getMessage() + "```", false);
@@ -458,7 +460,7 @@ public class ProxyEmbed {
             embed.addField(":pushpin: Channel", "No leaving channel.", true);
         }
 
-        embed.addField(":mag_right: Box", ProxyUtils.activeOrInactive(leaveChannel.getEmbed()), true);
+        embed.addField(":mag_right: Box", ProxyString.activeOrInactive(leaveChannel.getEmbed()), true);
 
         if (leaveChannel.getMessage() != null) {
             embed.addField(":page_with_curl: Message", "```\n" + leaveChannel.getMessage() + "```", false);
@@ -499,6 +501,14 @@ public class ProxyEmbed {
                 "`" + Command.HELP.getName() + " " + Category.MEME.getName() + "`",
                 true);
         // @formatter:on
+    }
+
+    private String getMemberRoles(Member member) {
+        StringBuilder roles = new StringBuilder();
+        for (Role memberRoles : member.getRoles()) {
+            roles.append(memberRoles.getAsMention() + " ");
+        }
+        return roles.deleteCharAt(roles.length() - 1).toString();
     }
 
     public EmbedBuilder getEmbed() {

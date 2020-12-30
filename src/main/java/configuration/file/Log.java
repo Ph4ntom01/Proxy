@@ -1,4 +1,4 @@
-package configuration.files;
+package configuration.file;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import configuration.constants.Folder;
+import configuration.constant.Folder;
 
 public class Log {
 

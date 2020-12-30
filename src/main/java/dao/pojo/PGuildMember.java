@@ -1,11 +1,11 @@
 package dao.pojo;
 
-public class MemberPojo {
+public class PGuildMember {
 
     private String guildId;
     private String id;
     private String name;
-    private int permLevel;
+    private int permId;
 
     public String getGuildId() {
         return guildId;
@@ -19,8 +19,8 @@ public class MemberPojo {
         return name;
     }
 
-    public int getPermLevel() {
-        return permLevel;
+    public int getPermId() {
+        return permId;
     }
 
     public void setGuildId(String guildId) {
@@ -35,12 +35,12 @@ public class MemberPojo {
         this.name = name;
     }
 
-    public void setPermLevel(int permLevel) {
-        this.permLevel = permLevel;
+    public void setPermId(int permId) {
+        this.permId = permId;
     }
 
     public boolean isEmpty() {
-        return (getGuildId() == null && getId() == null && getName() == null && getPermLevel() == 0);
+        return (getGuildId() == null && getId() == null && getPermId() == 0);
     }
 
 }

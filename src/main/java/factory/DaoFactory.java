@@ -5,41 +5,41 @@ import com.zaxxer.hikari.HikariDataSource;
 import dao.database.DBService;
 import dao.database.Dao;
 import dao.database.GuildDAO;
+import dao.database.GuildMemberDAO;
 import dao.database.JoinChannelDAO;
 import dao.database.LeaveChannelDAO;
 import dao.database.MemberDAO;
-import dao.database.PermissionDAO;
-import dao.pojo.GuildPojo;
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.LeaveChannelPojo;
-import dao.pojo.MemberPojo;
-import dao.pojo.PermissionPojo;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
+import dao.pojo.PLeaveChannel;
+import dao.pojo.PMember;
 
 public class DaoFactory {
 
-    private static HikariDataSource dataSource = DBService.getInstance();
+    private static HikariDataSource dataSource = DBService.INSTANCE.getDatasource();
 
     private DaoFactory() {
     }
 
-    public static Dao<GuildPojo> getGuildDAO() {
+    public static Dao<PGuild> getGuildDAO() {
         return new GuildDAO(dataSource);
     }
 
-    public static Dao<JoinChannelPojo> getJoinChannelDAO() {
+    public static Dao<PJoinChannel> getJoinChannelDAO() {
         return new JoinChannelDAO(dataSource);
     }
 
-    public static Dao<LeaveChannelPojo> getLeaveChannelDAO() {
+    public static Dao<PLeaveChannel> getLeaveChannelDAO() {
         return new LeaveChannelDAO(dataSource);
     }
 
-    public static Dao<MemberPojo> getMemberDAO() {
-        return new MemberDAO(dataSource);
+    public static Dao<PGuildMember> getGuildMemberDAO() {
+        return new GuildMemberDAO(dataSource);
     }
 
-    public static Dao<PermissionPojo> getPermissionDAO() {
-        return new PermissionDAO(dataSource);
+    public static Dao<PMember> getMemberDAO() {
+        return new MemberDAO(dataSource);
     }
 
 }

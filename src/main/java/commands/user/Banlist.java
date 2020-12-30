@@ -3,22 +3,20 @@ package commands.user;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class Banlist extends UserListener implements CommandManager {
+public class Banlist implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Banlist(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Banlist(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }

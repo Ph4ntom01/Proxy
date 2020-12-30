@@ -3,34 +3,32 @@ package commands.user;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
+import configuration.constant.Command;
 import dao.database.Dao;
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.LeaveChannelPojo;
-import dao.pojo.GuildPojo;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
+import dao.pojo.PLeaveChannel;
 import factory.DaoFactory;
-import listeners.commands.UserListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class ControlGate extends UserListener implements CommandManager {
+public class ControlGate implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public ControlGate(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public ControlGate(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
     @Override
     public void execute() {
-        Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
-        JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
-        Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
-        LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+        Dao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
+        PJoinChannel joinChannel = joinChannelDao.find(guild.getJoinChannel());
+        Dao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+        PLeaveChannel leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
         ProxyEmbed embed = new ProxyEmbed();
         embed.controlGate(event.getGuild(), guild, joinChannel, leaveChannel);
         ProxyUtils.sendEmbed(event.getChannel(), embed);

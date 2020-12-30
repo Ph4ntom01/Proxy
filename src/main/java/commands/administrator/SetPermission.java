@@ -3,33 +3,32 @@ package commands.administrator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import configuration.constants.Permissions;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
 import dao.database.Dao;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyCache;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class SetPermission extends AdministratorListener implements CommandManager {
+public class SetPermission implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
     private Permissions permission;
 
-    public SetPermission(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public SetPermission(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public SetPermission(GuildMessageReceivedEvent event, GuildPojo guild, Permissions permission) {
-        super(event, guild);
+    public SetPermission(GuildMessageReceivedEvent event, PGuild guild, Permissions permission) {
         this.event = event;
         this.guild = guild;
         this.permission = permission;
@@ -39,20 +38,20 @@ public class SetPermission extends AdministratorListener implements CommandManag
     public void execute() {
         if (event.getAuthor().getId().equals(event.getGuild().getOwnerId())) {
             try {
-                event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(mentionnedMember -> {
+                event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(mentionnedMember -> {
 
                     if (mentionnedMember.getUser().isBot()) {
                         ProxyUtils.sendMessage(event.getChannel(), "Impossible to set a permission for a bot.");
                     } else {
                         String userTag = mentionnedMember.getUser().getAsTag();
-                        MemberPojo member = ProxyUtils.getMemberFromCache(mentionnedMember);
+                        PGuildMember gMember = ProxyCache.getGuildMember(mentionnedMember);
 
-                        if (permission.getLevel() == member.getPermLevel()) {
+                        if (permission.getLevel() == gMember.getPermId()) {
                             ProxyUtils.sendMessage(event.getChannel(), "**" + userTag + "** already has this permission.");
                         } else {
-                            member.setPermLevel(permission.getLevel());
-                            Dao<MemberPojo> memberDao = DaoFactory.getMemberDAO();
-                            memberDao.update(member);
+                            gMember.setPermId(permission.getLevel());
+                            Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+                            gMemberDao.update(gMember);
                             ProxyUtils.sendMessage(event.getChannel(), "**" + userTag + "**" + " is now " + "**" + permission.getName().toLowerCase() + "**" + ".");
                         }
                     }

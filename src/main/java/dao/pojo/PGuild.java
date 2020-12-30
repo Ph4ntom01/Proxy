@@ -1,8 +1,6 @@
 package dao.pojo;
 
-import java.util.Set;
-
-public class GuildPojo {
+public class PGuild {
 
     private String id;
     private String name;
@@ -12,7 +10,6 @@ public class GuildPojo {
     private String defaultRole;
     private String prefix;
     private int shield;
-    private Set<MemberPojo> members;
 
     public String getId() {
         return id;
@@ -44,10 +41,6 @@ public class GuildPojo {
 
     public int getShield() {
         return shield;
-    }
-
-    public Set<MemberPojo> getMembers() {
-        return members;
     }
 
     public void setId(String id) {
@@ -82,10 +75,6 @@ public class GuildPojo {
         this.shield = shield;
     }
 
-    public void setMembers(Set<MemberPojo> members) {
-        this.members = members;
-    }
-
     public boolean isEmpty() {
         return (getId() == null && getName() == null && getJoinChannel() == null && getLeaveChannel() == null && getDefaultRole() == null && getPrefix() == null && getShield() == 0);
     }
@@ -93,11 +82,11 @@ public class GuildPojo {
     @Override
     public boolean equals(Object object) {
 
-        if (!(object instanceof GuildPojo)) {
+        if (!(object instanceof PGuild)) {
             return false;
         }
 
-        GuildPojo guild = (GuildPojo) object;
+        PGuild guild = (PGuild) object;
         return guild.getId().equals(getId());
     }
 

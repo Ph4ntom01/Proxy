@@ -1,34 +1,34 @@
 package factory;
 
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.LeaveChannelPojo;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
-import dao.pojo.PermissionPojo;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
+import dao.pojo.PLeaveChannel;
+import dao.pojo.PMember;
 
 public class PojoFactory {
 
     private PojoFactory() {
     }
 
-    public static GuildPojo getGuild() {
-        return new GuildPojo();
+    public static PGuild getGuild() {
+        return new PGuild();
     }
 
-    public static JoinChannelPojo getJoinChannel() {
-        return new JoinChannelPojo();
+    public static PJoinChannel getJoinChannel() {
+        return new PJoinChannel();
     }
 
-    public static LeaveChannelPojo getLeaveChannel() {
-        return new LeaveChannelPojo();
+    public static PLeaveChannel getLeaveChannel() {
+        return new PLeaveChannel();
     }
 
-    public static MemberPojo getMember() {
-        return new MemberPojo();
+    public static PGuildMember getGuildMember() {
+        return new PGuildMember();
     }
 
-    public static PermissionPojo getPermission() {
-        return new PermissionPojo();
+    public static PMember getMember() {
+        return new PMember();
     }
 
 }

@@ -3,23 +3,21 @@ package commands.administrator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
+import configuration.constant.Command;
 import dao.database.Dao;
-import dao.pojo.LeaveChannelPojo;
-import dao.pojo.GuildPojo;
+import dao.pojo.PGuild;
+import dao.pojo.PLeaveChannel;
 import factory.DaoFactory;
-import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class LeaveEmbed extends AdministratorListener implements CommandManager {
+public class LeaveEmbed implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public LeaveEmbed(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public LeaveEmbed(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -28,8 +26,8 @@ public class LeaveEmbed extends AdministratorListener implements CommandManager 
     public void execute() {
         if (guild.getLeaveChannel() != null) {
 
-            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
-            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
+            Dao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            PLeaveChannel leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
 
             if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
 

@@ -3,24 +3,23 @@ package commands.moderator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.ModeratorListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class VoiceKick extends ModeratorListener implements CommandManager {
+public class VoiceKick implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public VoiceKick(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public VoiceKick(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -28,10 +27,10 @@ public class VoiceKick extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
+            event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(gMember -> {
                 try {
-                    event.getGuild().kickVoiceMember(member).queue();
-                    ProxyUtils.sendMessage(event.getChannel(), "**" + member.getUser().getAsTag() + "** is successfully voice kicked !");
+                    event.getGuild().kickVoiceMember(gMember).queue();
+                    ProxyUtils.sendMessage(event.getChannel(), "**" + gMember.getUser().getAsTag() + "** is successfully voice kicked !");
 
                 } catch (IndexOutOfBoundsException e) {
                     ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");

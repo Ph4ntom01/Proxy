@@ -1,4 +1,4 @@
-package listeners.commands;
+package listeners.command;
 
 import java.awt.Color;
 
@@ -36,20 +36,20 @@ import commands.user.Ping;
 import commands.user.SendImage;
 import commands.user.TextChanInfo;
 import commands.user.Uptime;
-import configuration.cache.Commands;
-import configuration.constants.Category;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
+import configuration.constant.Category;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyCache;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
 public class HelpListener {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public HelpListener(GuildMessageReceivedEvent event, GuildPojo guild) {
+    public HelpListener(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -63,7 +63,7 @@ public class HelpListener {
             embed.helpList();
             ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            Command command = Commands.getInstance().get(args[1]);
+            Command command = ProxyCache.getCommands().get(args[1]);
 
             if (args[1].equalsIgnoreCase(Category.ADMINISTRATION.getName())) {
                 ProxyEmbed embed = new ProxyEmbed();

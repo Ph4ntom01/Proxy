@@ -1,8 +1,8 @@
-package configuration.constants;
+package configuration.constant;
 
 public enum File {
 
-    BLACKLIST_FILE("blacklist.json"), DATASOURCE_FILE("datasource.json"), LINKS_FILE("links.json"), TOKENS_FILE("tokens.json");
+    BLACKLIST("blacklist.json"), CACHE("cache.json"), DATASOURCE("datasource.json"), LINK("link.json"), TOKEN("token.json");
 
     private final String name;
 

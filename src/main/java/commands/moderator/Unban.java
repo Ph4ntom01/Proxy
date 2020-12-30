@@ -4,25 +4,23 @@ import java.awt.Color;
 import java.util.List;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.ModeratorListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild.Ban;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class Unban extends ModeratorListener implements CommandManager {
+public class Unban implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Unban(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Unban(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }

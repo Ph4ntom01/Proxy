@@ -1,40 +1,39 @@
 package commands;
 
-import configuration.cache.Blacklist;
-import configuration.cache.Commands;
-import configuration.constants.Command;
-import configuration.constants.Permissions;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
-import listeners.commands.AdministratorListener;
-import listeners.commands.HelpListener;
-import listeners.commands.ModeratorListener;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
+import dao.pojo.PGuild;
+import dao.pojo.PGuildMember;
+import listeners.command.AdministratorListener;
+import listeners.command.HelpListener;
+import listeners.command.ModeratorListener;
+import listeners.command.UserListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyCache;
+import proxy.utility.ProxyUtils;
 
 public class CommandRouter extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-        if (!(boolean) Blacklist.getInstance().getUnchecked(event.getGuild().getId()) && !(boolean) Blacklist.getInstance().getUnchecked(event.getAuthor().getId()) && !event.getAuthor().isBot()) {
+        if (!ProxyCache.getGuildBlacklist(event.getGuild().getId()) && !ProxyCache.getMemberBlacklist(event.getAuthor().getId()) && !event.getAuthor().isBot()) {
 
             String[] args = ProxyUtils.getArgs(event.getMessage());
-            GuildPojo guild = ProxyUtils.getGuildFromCache(event.getGuild());
+            PGuild guild = ProxyCache.getGuild(event.getGuild());
             StringBuilder firstArg = new StringBuilder(args[0]);
 
             if (firstArg.toString().regionMatches(0, guild.getPrefix(), 0, guild.getPrefix().length())) {
                 firstArg.replace(0, guild.getPrefix().length(), "");
                 String userCommand = firstArg.toString();
 
-                if (Commands.getInstance().containsKey(userCommand)) {
-                    Command command = Commands.getInstance().get(userCommand);
+                if (ProxyCache.getCommands().containsKey(userCommand)) {
+                    Command command = ProxyCache.getCommands().get(userCommand);
                     Permissions permission = command.getPermission();
-                    MemberPojo author = ProxyUtils.getMemberFromCache(event.getMember());
+                    PGuildMember author = ProxyCache.getGuildMember(event.getMember());
 
-                    if (author.getPermLevel() >= permission.getLevel()) {
+                    if (author.getPermId() >= permission.getLevel()) {
 
                         if (permission == Permissions.ADMINISTRATOR) {
                             AdministratorListener adminCmd = new AdministratorListener(event, guild, command);
@@ -53,9 +52,9 @@ public class CommandRouter extends ListenerAdapter {
                         }
                     } else {
                         // @formatter:off
-                        ProxyUtils.sendMessage(event.getChannel(),
-                                "You need to be **" + permission.getName().toLowerCase() + "**. "
-                                + "Only the guild owner has the ability to set a permission.");
+                            ProxyUtils.sendMessage(event.getChannel(),
+                                    "You need to be **" + permission.getName().toLowerCase() + "**. "
+                                    + "Only the guild owner has the ability to set a permission.");
                         // @formatter:on
                     }
                 }

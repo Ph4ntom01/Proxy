@@ -1,19 +1,17 @@
 package commands.user;
 
 import commands.CommandManager;
-import dao.pojo.GuildPojo;
-import listeners.commands.UserListener;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class Info extends UserListener implements CommandManager {
+public class Info implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Info(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Info(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }

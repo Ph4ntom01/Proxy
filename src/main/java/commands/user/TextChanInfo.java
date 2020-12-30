@@ -3,21 +3,20 @@ package commands.user;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class TextChanInfo extends UserListener implements CommandManager {
+public class TextChanInfo implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public TextChanInfo(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public TextChanInfo(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -26,7 +25,7 @@ public class TextChanInfo extends UserListener implements CommandManager {
     public void execute() {
         try {
             ProxyEmbed embed = new ProxyEmbed();
-            embed.channelInfo(event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])));
+            embed.channelInfo(event.getGuild().getTextChannelById(ProxyString.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])));
             ProxyUtils.sendEmbed(event.getChannel(), embed);
         } catch (IllegalArgumentException | NullPointerException e) {
             ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");

@@ -3,22 +3,20 @@ package commands.administrator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
+import configuration.constant.Command;
 import dao.database.Dao;
-import dao.pojo.GuildPojo;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class SetPrefix extends AdministratorListener implements CommandManager {
+public class SetPrefix implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public SetPrefix(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public SetPrefix(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -30,7 +28,7 @@ public class SetPrefix extends AdministratorListener implements CommandManager {
             if (guild.getPrefix().equalsIgnoreCase(prefix)) {
                 ProxyUtils.sendMessage(event.getChannel(), "Prefix " + "**" + guild.getPrefix() + "**" + " has already been defined.");
             } else {
-                Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
+                Dao<PGuild> guildDao = DaoFactory.getGuildDAO();
                 guild.setPrefix(prefix);
                 guildDao.update(guild);
                 ProxyUtils.sendMessage(event.getChannel(), "Prefix is now: " + "**" + guild.getPrefix() + "**");

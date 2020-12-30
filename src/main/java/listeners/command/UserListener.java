@@ -1,4 +1,4 @@
-package listeners.commands;
+package listeners.command;
 
 import commands.user.Adminlist;
 import commands.user.Avatar;
@@ -12,24 +12,24 @@ import commands.user.Ping;
 import commands.user.SendImage;
 import commands.user.TextChanInfo;
 import commands.user.Uptime;
-import configuration.constants.Command;
-import configuration.constants.Folder;
-import dao.pojo.GuildPojo;
+import configuration.constant.Command;
+import configuration.constant.Folder;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyUtils;
 
 public class UserListener {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
     private Command command;
 
-    public UserListener(GuildMessageReceivedEvent event, GuildPojo guild) {
+    public UserListener(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public UserListener(GuildMessageReceivedEvent event, GuildPojo guild, Command command) {
+    public UserListener(GuildMessageReceivedEvent event, PGuild guild, Command command) {
         this.event = event;
         this.guild = guild;
         this.command = command;

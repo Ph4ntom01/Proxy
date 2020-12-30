@@ -3,24 +3,23 @@ package commands.moderator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.ModeratorListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class Purge extends ModeratorListener implements CommandManager {
+public class Purge implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Purge(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Purge(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -44,7 +43,7 @@ public class Purge extends ModeratorListener implements CommandManager {
 
     public void purgeByRole() {
         try {
-            Role role = event.getGuild().getRoleById(ProxyUtils.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]));
+            Role role = event.getGuild().getRoleById(ProxyString.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]));
             int days = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[2]);
             if (days > 0 && days <= 30) {
                 event.getGuild().prune(days, role).queue(members -> ProxyUtils.sendMessage(event.getChannel(), "**" + role.getName() + "**: " + members + "."));

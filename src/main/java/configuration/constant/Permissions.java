@@ -1,4 +1,4 @@
-package configuration.constants;
+package configuration.constant;
 
 public enum Permissions {
 

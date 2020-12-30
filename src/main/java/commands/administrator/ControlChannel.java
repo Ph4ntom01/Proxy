@@ -3,24 +3,23 @@ package commands.administrator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
+import configuration.constant.Command;
 import dao.database.Dao;
-import dao.pojo.GuildPojo;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class ControlChannel extends AdministratorListener implements CommandManager {
+public class ControlChannel implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public ControlChannel(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public ControlChannel(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -29,7 +28,7 @@ public class ControlChannel extends AdministratorListener implements CommandMana
     public void execute() {
         String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
         try {
-            TextChannel textChannel = event.getGuild().getTextChannelById(ProxyUtils.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
+            TextChannel textChannel = event.getGuild().getTextChannelById(ProxyString.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
 
             if (textChannel.getId().equals(guild.getControlChannel())) {
                 ProxyUtils.sendMessage(event.getChannel(), "The control channel for new members has already been set to " + textChannel.getAsMention() + ".");
@@ -40,7 +39,7 @@ public class ControlChannel extends AdministratorListener implements CommandMana
                     ProxyUtils.sendMessage(event.getChannel(),
                             "In order to create your control channel, please select your default role first by using `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`.");
                 } else {
-                    Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
+                    Dao<PGuild> guildDao = DaoFactory.getGuildDAO();
                     guild.setControlChannel(textChannel.getId());
                     guildDao.update(guild);
                     ProxyUtils.sendMessage(event.getChannel(), "The control channel for new members is now " + textChannel.getAsMention() + ".");

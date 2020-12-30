@@ -1,4 +1,4 @@
-package listeners.commands;
+package listeners.command;
 
 import commands.moderator.Bans;
 import commands.moderator.Clean;
@@ -11,31 +11,31 @@ import commands.moderator.Unban;
 import commands.moderator.VoiceKick;
 import commands.moderator.VoiceMute;
 import commands.moderator.VoiceUnmute;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
+import dao.pojo.PGuildMember;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyUtils;
 
 public class ModeratorListener {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
-    private MemberPojo author;
+    private PGuild guild;
+    private PGuildMember author;
     private Command command;
 
-    public ModeratorListener(GuildMessageReceivedEvent event, GuildPojo guild) {
+    public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public ModeratorListener(GuildMessageReceivedEvent event, GuildPojo guild, MemberPojo author) {
+    public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author) {
         this.event = event;
         this.guild = guild;
         this.author = author;
     }
 
-    public ModeratorListener(GuildMessageReceivedEvent event, GuildPojo guild, MemberPojo author, Command command) {
+    public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author, Command command) {
         this.event = event;
         this.guild = guild;
         this.author = author;

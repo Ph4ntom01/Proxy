@@ -3,23 +3,21 @@ package commands.administrator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
+import configuration.constant.Command;
 import dao.database.Dao;
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.GuildPojo;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
 import factory.DaoFactory;
-import listeners.commands.AdministratorListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class JoinMessage extends AdministratorListener implements CommandManager {
+public class JoinMessage implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public JoinMessage(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public JoinMessage(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -27,8 +25,8 @@ public class JoinMessage extends AdministratorListener implements CommandManager
     @Override
     public void execute() {
         if (guild.getJoinChannel() != null) {
-            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
-            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
+            Dao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            PJoinChannel joinChannel = joinChannelDao.find(guild.getJoinChannel());
             joinChannel.setMessage(getJoinMessage(ProxyUtils.getArgs(event.getMessage())));
             joinChannelDao.update(joinChannel);
             ProxyUtils.sendMessage(event.getChannel(), "Welcoming message has been successfully defined.");

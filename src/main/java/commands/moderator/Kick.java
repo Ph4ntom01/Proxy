@@ -3,13 +3,12 @@ package commands.moderator;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import configuration.constants.Permissions;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
 import dao.database.Dao;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.ModeratorListener;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message.MentionType;
@@ -18,23 +17,22 @@ import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class Kick extends ModeratorListener implements CommandManager {
+public class Kick implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
-    private MemberPojo author;
+    private PGuild guild;
+    private PGuildMember author;
 
-    public Kick(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Kick(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public Kick(GuildMessageReceivedEvent event, GuildPojo guild, MemberPojo author) {
-        super(event, guild);
+    public Kick(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author) {
         this.event = event;
         this.guild = guild;
         this.author = author;
@@ -43,25 +41,25 @@ public class Kick extends ModeratorListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
+            event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(gMember -> {
                 try {
-                    if (member.getUser().isBot()) {
-                        kick(member);
+                    if (gMember.getUser().isBot()) {
+                        kick(gMember);
                     } else {
-                        Dao<MemberPojo> memberDao = DaoFactory.getMemberDAO();
-                        MemberPojo memberPojo = memberDao.find(event.getGuild().getId() + "#" + member.getId());
+                        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+                        PGuildMember gMemberPojo = gMemberDao.find(event.getGuild().getId() + "#" + gMember.getId());
 
-                        if (memberPojo.getId().equals(event.getAuthor().getId())) {
+                        if (gMemberPojo.getId().equals(event.getAuthor().getId())) {
                             ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick yourself.");
 
-                        } else if (((author.getPermLevel() == Permissions.MODERATOR.getLevel()) && (memberPojo.getPermLevel() == Permissions.MODERATOR.getLevel()))
-                                || ((author.getPermLevel() == Permissions.ADMINISTRATOR.getLevel()) && memberPojo.getPermLevel() == Permissions.ADMINISTRATOR.getLevel())) {
+                        } else if (((author.getPermId() == Permissions.MODERATOR.getLevel()) && (gMemberPojo.getPermId() == Permissions.MODERATOR.getLevel()))
+                                || ((author.getPermId() == Permissions.ADMINISTRATOR.getLevel()) && gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
                             ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick a member with the same or a higher permission than yours.");
 
-                        } else if (author.getPermLevel() == Permissions.MODERATOR.getLevel() && (memberPojo.getPermLevel() == Permissions.ADMINISTRATOR.getLevel())) {
+                        } else if (author.getPermId() == Permissions.MODERATOR.getLevel() && (gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
                             ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick an administrator.");
                         } else {
-                            kick(member);
+                            kick(gMember);
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {

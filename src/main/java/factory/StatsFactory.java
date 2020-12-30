@@ -2,8 +2,8 @@ package factory;
 
 import org.discordbots.api.client.DiscordBotListAPI;
 
-import configuration.constants.ID;
-import configuration.files.Config;
+import configuration.constant.ID;
+import configuration.file.Config;
 
 public class StatsFactory {
 

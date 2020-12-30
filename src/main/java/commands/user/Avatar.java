@@ -3,22 +3,21 @@ package commands.user;
 import java.awt.Color;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class Avatar extends UserListener implements CommandManager {
+public class Avatar implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Avatar(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Avatar(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -26,7 +25,7 @@ public class Avatar extends UserListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getJDA().retrieveUserById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])).queue(user -> {
+            event.getJDA().retrieveUserById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])).queue(user -> {
                 ProxyEmbed embed = new ProxyEmbed();
                 embed.avatar(user);
                 ProxyUtils.sendEmbed(event.getChannel(), embed);

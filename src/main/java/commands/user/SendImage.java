@@ -5,28 +5,25 @@ import java.io.File;
 import java.util.Random;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class SendImage extends UserListener implements CommandManager {
+public class SendImage implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
     private String path;
 
-    public SendImage(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public SendImage(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public SendImage(GuildMessageReceivedEvent event, GuildPojo guild, String path) {
-        super(event, guild);
+    public SendImage(GuildMessageReceivedEvent event, PGuild guild, String path) {
         this.event = event;
         this.guild = guild;
         this.path = path;
@@ -36,7 +33,6 @@ public class SendImage extends UserListener implements CommandManager {
     public void execute() {
         File directory = new File(path);
         File[] files = directory.listFiles();
-        // image contain the relative file path.
         File image = files[new Random().nextInt((files.length))];
 
         EmbedBuilder embed = new EmbedBuilder();
