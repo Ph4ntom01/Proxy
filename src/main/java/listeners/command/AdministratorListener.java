@@ -1,4 +1,4 @@
-package listeners.commands;
+package listeners.command;
 
 import commands.administrator.ControlChannel;
 import commands.administrator.DefaultRole;
@@ -12,24 +12,25 @@ import commands.administrator.LeaveMessage;
 import commands.administrator.SetPermission;
 import commands.administrator.SetPrefix;
 import commands.administrator.Shield;
-import configuration.cache.Commands;
-import configuration.constants.Command;
-import dao.pojo.GuildPojo;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyCache;
+import proxy.utility.ProxyUtils;
 
 public class AdministratorListener {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
     private Command command;
 
-    public AdministratorListener(GuildMessageReceivedEvent event, GuildPojo guild) {
+    public AdministratorListener(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
-    public AdministratorListener(GuildMessageReceivedEvent event, GuildPojo guild, Command command) {
+    public AdministratorListener(GuildMessageReceivedEvent event, PGuild guild, Command command) {
         this.event = event;
         this.guild = guild;
         this.command = command;
@@ -52,7 +53,18 @@ public class AdministratorListener {
         } else if (command == Command.SETUSER || command == Command.SETMODO || command == Command.SETADMIN) {
 
             if (args.length == 2) {
-                SetPermission permCmd = new SetPermission(event, guild, ProxyUtils.getPermission(command.getName()));
+                Permissions permission = null;
+                switch (command) {
+                case SETADMIN:
+                    permission = Permissions.ADMINISTRATOR;
+                    break;
+                case SETMODO:
+                    permission = Permissions.MODERATOR;
+                    break;
+                default:
+                    permission = Permissions.USER;
+                }
+                SetPermission permCmd = new SetPermission(event, guild, permission);
                 permCmd.execute();
             } else {
                 SetPermission permCmd = new SetPermission(event, guild);
@@ -152,7 +164,7 @@ public class AdministratorListener {
         } else if (command == Command.DISABLE) {
 
             if (args.length == 2) {
-                Disable disableCmd = new Disable(event, guild, Commands.getInstance().get(args[1]));
+                Disable disableCmd = new Disable(event, guild, ProxyCache.getCommands().get(args[1]));
                 disableCmd.execute();
             } else {
                 Disable disableCmd = new Disable(event, guild);
