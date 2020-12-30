@@ -1,30 +1,27 @@
 package commands.user;
 
 import java.awt.Color;
-import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import configuration.constants.ID;
-import configuration.constants.Permissions;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
-import listeners.commands.UserListener;
+import configuration.constant.Command;
+import configuration.constant.ID;
+import configuration.constant.Permissions;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyCache;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyString;
+import proxy.utility.ProxyUtils;
 
-public class MemberInfo extends UserListener implements CommandManager {
+public class MemberInfo implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public MemberInfo(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public MemberInfo(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
@@ -32,20 +29,30 @@ public class MemberInfo extends UserListener implements CommandManager {
     @Override
     public void execute() {
         try {
-            event.getGuild().retrieveMemberById(ProxyUtils.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(member -> {
-                if (member.getUser().isBot()) {
-                    if (member.getId().equals(ID.PROXY.getId())) {
+            event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(gMember -> {
+                if (gMember.getUser().isBot()) {
+                    if (gMember.getId().equals(ID.PROXY.getId())) {
                         ProxyUtils.selfbotEmbed(event.getJDA(), event.getGuild(), guild, event.getChannel());
                     } else {
                         ProxyEmbed embed = new ProxyEmbed();
-                        embed.botInfo(member);
+                        embed.botInfo(gMember);
                         ProxyUtils.sendEmbed(event.getChannel(), embed);
                     }
                 } else {
-                    MemberPojo mentionnedMember = ProxyUtils.getMemberFromCache(member);
-                    List<Permissions> permissions = Lists.newArrayList(Permissions.values());
+                    PGuildMember mentionnedMember = ProxyCache.getGuildMember(gMember);
                     ProxyEmbed embed = new ProxyEmbed();
-                    embed.memberInfo(member, permissions.stream().filter(permission -> permission.getLevel() == mentionnedMember.getPermLevel()).findFirst().orElse(null));
+                    Permissions memberPermission = null;
+                    switch (mentionnedMember.getPermId()) {
+                    case 3:
+                        memberPermission = Permissions.ADMINISTRATOR;
+                        break;
+                    case 2:
+                        memberPermission = Permissions.MODERATOR;
+                        break;
+                    default:
+                        memberPermission = Permissions.USER;
+                    }
+                    embed.memberInfo(gMember, memberPermission);
                     ProxyUtils.sendEmbed(event.getChannel(), embed);
                 }
             }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
