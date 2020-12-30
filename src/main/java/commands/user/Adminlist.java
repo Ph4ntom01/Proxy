@@ -1,41 +1,36 @@
 package commands.user;
 
 import java.awt.Color;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import configuration.constants.Permissions;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
 import dao.database.Dao;
-import dao.database.GuildDAO;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import dao.database.GuildMemberDAO;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.UserListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class Adminlist extends UserListener implements CommandManager {
+public class Adminlist implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Adminlist(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Adminlist(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
     @Override
     public void execute() {
-        Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-        Set<MemberPojo> members = ((GuildDAO) guildDao).findMembers(event.getGuild().getId());
-        List<MemberPojo> adminlist = members.stream().filter(member -> member.getPermLevel() == Permissions.ADMINISTRATOR.getLevel()).collect(Collectors.toList());
+        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+        Set<PGuildMember> administrators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(event.getGuild().getId(), Permissions.ADMINISTRATOR);
         ProxyEmbed embed = new ProxyEmbed();
-        embed.adminList(adminlist);
+        embed.adminList(administrators);
         ProxyUtils.sendEmbed(event.getChannel(), embed);
     }
 

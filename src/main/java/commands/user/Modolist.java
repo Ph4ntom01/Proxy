@@ -1,40 +1,35 @@
 package commands.user;
 
 import java.awt.Color;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import commands.CommandManager;
-import configuration.constants.Command;
-import configuration.constants.Permissions;
+import configuration.constant.Command;
+import configuration.constant.Permissions;
 import dao.database.Dao;
-import dao.database.GuildDAO;
-import dao.pojo.GuildPojo;
-import dao.pojo.MemberPojo;
+import dao.database.GuildMemberDAO;
+import dao.pojo.PGuildMember;
+import dao.pojo.PGuild;
 import factory.DaoFactory;
-import listeners.commands.UserListener;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.ProxyEmbed;
-import proxy.ProxyUtils;
+import proxy.utility.ProxyEmbed;
+import proxy.utility.ProxyUtils;
 
-public class Modolist extends UserListener implements CommandManager {
+public class Modolist implements CommandManager {
 
     private GuildMessageReceivedEvent event;
-    private GuildPojo guild;
+    private PGuild guild;
 
-    public Modolist(GuildMessageReceivedEvent event, GuildPojo guild) {
-        super(event, guild);
+    public Modolist(GuildMessageReceivedEvent event, PGuild guild) {
         this.event = event;
         this.guild = guild;
     }
 
     @Override
     public void execute() {
-        Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-        Set<MemberPojo> members = ((GuildDAO) guildDao).findMembers(event.getGuild().getId());
-        List<MemberPojo> modolist = members.stream().filter(member -> member.getPermLevel() == Permissions.MODERATOR.getLevel()).collect(Collectors.toList());
-        if (modolist.isEmpty()) {
+        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+        Set<PGuildMember> moderators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(event.getGuild().getId(), Permissions.MODERATOR);
+        if (moderators.isEmpty()) {
             // @formatter:off
             ProxyUtils.sendMessage(event.getChannel(),
                     "No " + Permissions.MODERATOR.getName().toLowerCase() + ". "
@@ -43,7 +38,7 @@ public class Modolist extends UserListener implements CommandManager {
             // @formatter:on
         } else {
             ProxyEmbed embed = new ProxyEmbed();
-            embed.modoList(modolist);
+            embed.modoList(moderators);
             ProxyUtils.sendEmbed(event.getChannel(), embed);
         }
     }
