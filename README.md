@@ -42,4 +42,4 @@ If you have any issues, check the [wiki](https://github.com/Ph4ntom01/Proxy/wiki
 
 ## **Hosting**
 
-Proxy is currently hosted 24/7 on a VPS and uses MariaDB for its database.
+Proxy is currently hosted 24/7 on a VPS and uses PostgreSQL for its database.
