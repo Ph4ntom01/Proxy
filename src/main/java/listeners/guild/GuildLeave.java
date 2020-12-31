@@ -2,45 +2,38 @@ package listeners.guild;
 
 import java.util.logging.Level;
 
-import configuration.files.Config;
-import configuration.files.Log;
+import configuration.file.Config;
+import configuration.file.Log;
 import dao.database.Dao;
-import dao.database.GuildDAO;
-import dao.pojo.GuildPojo;
-import dao.pojo.JoinChannelPojo;
-import dao.pojo.LeaveChannelPojo;
+import dao.pojo.PGuild;
+import dao.pojo.PJoinChannel;
+import dao.pojo.PLeaveChannel;
 import factory.ConfigFactory;
 import factory.DaoFactory;
 import factory.StatsFactory;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import proxy.utility.ProxyCache;
 
 public class GuildLeave extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        Dao<GuildPojo> guildDao = DaoFactory.getGuildDAO();
-        GuildPojo guild = guildDao.find(event.getGuild().getId());
-
+        Dao<PGuild> guildDao = DaoFactory.getGuildDAO();
+        PGuild guild = ProxyCache.getGuild(event.getGuild());
+        guildDao.delete(guild);
         if (guild.getJoinChannel() != null) {
-            Dao<JoinChannelPojo> joinChannelDao = DaoFactory.getJoinChannelDAO();
-            JoinChannelPojo joinChannel = joinChannelDao.find(guild.getJoinChannel());
-            guild.setJoinChannel(null);
-            guildDao.update(guild);
+            Dao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
+            PJoinChannel joinChannel = joinChannelDao.find(guild.getJoinChannel());
             joinChannelDao.delete(joinChannel);
         }
         if (guild.getLeaveChannel() != null) {
-            Dao<LeaveChannelPojo> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
-            LeaveChannelPojo leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
-            guild.setLeaveChannel(null);
-            guildDao.update(guild);
+            Dao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            PLeaveChannel leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
             leaveChannelDao.delete(leaveChannel);
         }
-        guild.setMembers(((GuildDAO) guildDao).findMembers(event.getGuild().getId()));
-        ((GuildDAO) guildDao).delete(guild.getMembers());
-        guildDao.delete(guild);
 
-        Config conf = ConfigFactory.tokens();
+        Config conf = ConfigFactory.getToken();
         StatsFactory.getDBL(conf).setStats(event.getJDA().getGuilds().size());
         Log log = new Log(GuildLeave.class.getName(), "guilds.log");
         log.log(Level.INFO, event.getGuild().getName() + "(" + event.getGuild().getId() + ")" + " left");
