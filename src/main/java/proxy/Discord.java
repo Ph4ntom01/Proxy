@@ -3,7 +3,7 @@ package proxy;
 import javax.security.auth.login.LoginException;
 
 import commands.CommandRouter;
-import configuration.files.Config;
+import configuration.file.Config;
 import factory.ConfigFactory;
 import factory.StatsFactory;
 import listeners.guild.GuildChannelDelete;
@@ -22,28 +22,26 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Discord {
 
     private Config conf;
 
     protected Discord() {
-        conf = ConfigFactory.tokens();
+        conf = ConfigFactory.getToken();
     }
 
     protected void connect() {
         JDABuilder builder = JDABuilder.createDefault(conf.getValue("Discord"));
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.playing("@Proxy"));
-        builder.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES);
+        builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         configureMemoryUsage(builder);
         addEventListeners(builder);
         build(builder);
     }
 
     private void configureMemoryUsage(JDABuilder builder) {
-        builder.enableCache(CacheFlag.VOICE_STATE);
         builder.setChunkingFilter(ChunkingFilter.NONE);
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
     }
