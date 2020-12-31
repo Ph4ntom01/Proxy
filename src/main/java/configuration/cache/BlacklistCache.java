@@ -15,9 +15,9 @@ public enum BlacklistCache {
     private final List<String> members;
 
     private BlacklistCache() {
-        Config conf = ConfigFactory.getBlacklist();
-        guilds = UnmodifiableList.unmodifiableList(conf.getValues("Guilds[*].ID"));
-        members = UnmodifiableList.unmodifiableList(conf.getValues("Members[*].ID"));
+        Config conf = ConfigFactory.getConf();
+        guilds = UnmodifiableList.unmodifiableList(conf.getList("blacklist.guilds.id"));
+        members = UnmodifiableList.unmodifiableList(conf.getList("blacklist.members.id"));
     }
 
     public boolean getGuild(String guildId) {

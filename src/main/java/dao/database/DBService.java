@@ -13,17 +13,17 @@ public enum DBService {
     private final HikariDataSource dataSource;
 
     private DBService() {
-        Config conf = ConfigFactory.getDatasource();
+        Config conf = ConfigFactory.getConf();
         HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName(conf.getValue("className"));
-        config.setUsername(conf.getValue("username"));
-        config.setPassword(conf.getValue("password"));
-        config.addDataSourceProperty("databaseName", conf.getValue("database"));
-        config.addDataSourceProperty("portNumber", conf.getValue("port"));
-        config.addDataSourceProperty("serverName", conf.getValue("server"));
-        config.addDataSourceProperty("ssl", conf.getValue("ssl"));
-        config.addDataSourceProperty("sslmode", conf.getValue("sslmode"));
-        config.addDataSourceProperty("sslrootcert", conf.getValue("ca"));
+        config.setDataSourceClassName(conf.getString("database.className"));
+        config.setUsername(conf.getString("database.username"));
+        config.setPassword(conf.getString("database.password"));
+        config.addDataSourceProperty("databaseName", conf.getString("database.databaseName"));
+        config.addDataSourceProperty("portNumber", conf.getLong("database.port"));
+        config.addDataSourceProperty("serverName", conf.getString("database.server"));
+        config.addDataSourceProperty("ssl", conf.getBoolean("database.ssl"));
+        config.addDataSourceProperty("sslmode", conf.getString("database.sslMode"));
+        config.addDataSourceProperty("sslrootcert", conf.getString("database.ca"));
         dataSource = new HikariDataSource(config);
     }
 

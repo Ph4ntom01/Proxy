@@ -16,8 +16,8 @@ import configuration.constant.Command;
 import configuration.constant.ID;
 import configuration.constant.Permissions;
 import configuration.file.Config;
-import dao.pojo.PGuildMember;
 import dao.pojo.PGuild;
+import dao.pojo.PGuildMember;
 import dao.pojo.PJoinChannel;
 import dao.pojo.PLeaveChannel;
 import factory.ConfigFactory;
@@ -304,13 +304,13 @@ public class ProxyEmbed {
             embed.addField("Role(s)", getMemberRoles(bot), false);
         }
 
-        Config conf = ConfigFactory.getLink();
+        Config conf = ConfigFactory.getConf();
         // @formatter:off
         embed.addField(
                 "Links", 
-                "[Invite](" + conf.getValue("Invite") + ") | "
-                + "[GitHub](" + conf.getValue("GitHub") + ") | "
-                + "[Support Server](" + conf.getValue("Support") + ")",
+                "[Invite](" + conf.getString("invite") + ") | "
+                + "[GitHub](" + conf.getString("github") + ") | "
+                + "[Support Server](" + conf.getString("support") + ")",
                 false);
         // @formatter:on
     }

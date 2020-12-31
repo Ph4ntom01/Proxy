@@ -3,29 +3,38 @@ package configuration.file;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
+import com.moandjiezana.toml.Toml;
 
 public class Config {
 
-    private String filePath;
+    private final Toml toml;
 
     public Config(String filePath) {
-        this.filePath = filePath;
+        toml = new Toml();
+        toml.read(readFileAsString(filePath));
     }
 
-    public String getValue(String key) {
-        String json = readFileAsString(filePath);
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        return JsonPath.read(document, "$." + key);
+    public String getString(String key) {
+        return toml.getString(key);
     }
 
-    public List<String> getValues(String request) {
-        String json = readFileAsString(filePath);
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        return JsonPath.read(document, "$." + request);
+    public long getLong(String key) {
+        return toml.getLong(key);
+    }
+
+    public boolean getBoolean(String key) {
+        return toml.getBoolean(key);
+    }
+
+    public Date getDate(String key) {
+        return toml.getDate(key);
+    }
+
+    public List<String> getList(String key) {
+        return toml.getList(key);
     }
 
     private String readFileAsString(String filePath) {

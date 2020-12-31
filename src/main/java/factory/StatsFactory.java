@@ -11,7 +11,7 @@ public class StatsFactory {
     }
 
     public static DiscordBotListAPI getDBL(Config conf) {
-        return new DiscordBotListAPI.Builder().token(conf.getValue("DBL")).botId(ID.PROXY.getId()).build();
+        return new DiscordBotListAPI.Builder().token(conf.getString("token.dbl")).botId(ID.PROXY.getId()).build();
     }
 
 }

@@ -17,11 +17,11 @@ public enum GuildCache {
     private final AsyncLoadingCache<String, PGuild> cache;
 
     private GuildCache() {
-        Config conf = ConfigFactory.getCache();
+        Config conf = ConfigFactory.getConf();
         // @formatter:off
         cache = Caffeine.newBuilder()
-                .maximumSize(Long.parseLong(conf.getValue("Guild.maxSize")))
-                .expireAfterWrite(Long.parseLong(conf.getValue("Guild.expireAfter")), ProxyString.getTimeUnit(conf.getValue("Guild.timeUnit")))
+                .maximumSize(conf.getLong("cache.guild.maxSize"))
+                .expireAfterWrite(conf.getLong("cache.guild.expireAfter"), ProxyString.getTimeUnit(conf.getString("cache.guild.timeUnit")))
                 .buildAsync(guildId -> find(guildId));
         // @formatter:on
     }

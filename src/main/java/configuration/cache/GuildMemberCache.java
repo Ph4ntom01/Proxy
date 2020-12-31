@@ -19,11 +19,11 @@ public enum GuildMemberCache {
     private final AsyncLoadingCache<Member, PGuildMember> cache;
 
     private GuildMemberCache() {
-        Config conf = ConfigFactory.getCache();
+        Config conf = ConfigFactory.getConf();
         // @formatter:off
         cache = Caffeine.newBuilder()
-                .maximumSize(Long.parseLong(conf.getValue("GuildMember.maxSize")))
-                .expireAfterWrite(Long.parseLong(conf.getValue("GuildMember.expireAfter")), ProxyString.getTimeUnit(conf.getValue("GuildMember.timeUnit")))
+                .maximumSize(conf.getLong("cache.guildMember.maxSize"))
+                .expireAfterWrite(conf.getLong("cache.guildMember.expireAfter"), ProxyString.getTimeUnit(conf.getString("cache.guildMember.timeUnit")))
                 .buildAsync(member -> find(member));
         // @formatter:on
     }

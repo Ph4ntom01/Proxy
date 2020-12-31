@@ -28,11 +28,11 @@ public class Discord {
     private Config conf;
 
     protected Discord() {
-        conf = ConfigFactory.getToken();
+        conf = ConfigFactory.getConf();
     }
 
     protected void connect() {
-        JDABuilder builder = JDABuilder.createDefault(conf.getValue("Discord"));
+        JDABuilder builder = JDABuilder.createDefault(conf.getString("token.discord"));
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.playing("@Proxy"));
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
