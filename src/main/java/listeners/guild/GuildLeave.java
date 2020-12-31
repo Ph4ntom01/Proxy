@@ -33,7 +33,7 @@ public class GuildLeave extends ListenerAdapter {
             leaveChannelDao.delete(leaveChannel);
         }
 
-        Config conf = ConfigFactory.getToken();
+        Config conf = ConfigFactory.getConf();
         StatsFactory.getDBL(conf).setStats(event.getJDA().getGuilds().size());
         Log log = new Log(GuildLeave.class.getName(), "guilds.log");
         log.log(Level.INFO, event.getGuild().getName() + "(" + event.getGuild().getId() + ")" + " left");

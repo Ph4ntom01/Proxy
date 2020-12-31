@@ -23,7 +23,7 @@ public class GuildJoin extends ListenerAdapter {
         guild.setName(event.getGuild().getName());
         guildDao.create(guild);
 
-        Config conf = ConfigFactory.getToken();
+        Config conf = ConfigFactory.getConf();
         StatsFactory.getDBL(conf).setStats(event.getJDA().getGuilds().size());
         Log log = new Log(GuildJoin.class.getName(), "guilds.log");
         log.log(Level.INFO, event.getGuild().getName() + "(" + event.getGuild().getId() + ")" + " joined");
