@@ -2,6 +2,7 @@ package listeners.guild;
 
 import java.util.logging.Level;
 
+import configuration.cache.GuildCache;
 import configuration.file.Config;
 import configuration.file.Log;
 import dao.database.Dao;
@@ -32,6 +33,9 @@ public class GuildLeave extends ListenerAdapter {
             PLeaveChannel leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
             leaveChannelDao.delete(leaveChannel);
         }
+
+        // Remove the guild from the cache.
+        GuildCache.INSTANCE.getGuild().synchronous().invalidate(guild.getId());
 
         Config conf = ConfigFactory.getConf();
         StatsFactory.getDBL(conf).setStats(event.getJDA().getGuilds().size());
