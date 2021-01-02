@@ -308,9 +308,9 @@ public class ProxyEmbed {
         // @formatter:off
         embed.addField(
                 "Links", 
-                "[Invite](" + conf.getString("invite") + ") | "
-                + "[GitHub](" + conf.getString("github") + ") | "
-                + "[Support Server](" + conf.getString("support") + ")",
+                "[Invite](" + conf.getString("link.invite") + ") | "
+                + "[GitHub](" + conf.getString("link.github") + ") | "
+                + "[Support Server](" + conf.getString("link.support") + ")",
                 false);
         // @formatter:on
     }
