@@ -57,6 +57,7 @@ public class Discord {
             setStats(jda);
         } catch (LoginException e) {
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (NullPointerException e) {
         }
     }
