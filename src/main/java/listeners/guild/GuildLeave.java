@@ -34,7 +34,7 @@ public class GuildLeave extends ListenerAdapter {
             leaveChannelDao.delete(leaveChannel);
         }
 
-        // Remove the guild from the cache.
+        // Delete the guild from the cache.
         GuildCache.INSTANCE.getGuild().synchronous().invalidate(guild.getId());
 
         Config conf = ConfigFactory.getConf();

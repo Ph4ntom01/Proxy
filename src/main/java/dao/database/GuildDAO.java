@@ -47,7 +47,7 @@ public class GuildDAO extends Dao<PGuild> {
             conn.setAutoCommit(false);
             deleteMembers.setString(1, guild.getId());
             deleteMembers.executeUpdate();
-            // Delete members from the member table if their id are no more referenced into the GuildMember table.
+            // Delete members from the member table if their ids are no more referenced into the GuildMember table.
             deleteOrphans.executeUpdate();
             deleteGuild.setString(1, guild.getId());
             deleteGuild.executeUpdate();
