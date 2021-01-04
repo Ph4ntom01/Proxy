@@ -15,7 +15,7 @@ repositories {
 dependencies {
 
     // https://github.com/DV8FromTheWorld/JDA
-    compile 'net.dv8tion:JDA:4.2.0_224'
+    compile 'net.dv8tion:JDA:4.2.0_225'
 
     // https://jitpack.io/#DiscordBotList/DBL-Java-Library/2.0.1
     compile 'com.github.DiscordBotList:DBL-Java-Library:2.0.1'
