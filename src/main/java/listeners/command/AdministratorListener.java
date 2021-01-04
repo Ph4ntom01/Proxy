@@ -25,11 +25,6 @@ public class AdministratorListener {
     private PGuild guild;
     private Command command;
 
-    public AdministratorListener(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
-    }
-
     public AdministratorListener(GuildMessageReceivedEvent event, PGuild guild, Command command) {
         this.event = event;
         this.guild = guild;

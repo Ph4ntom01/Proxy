@@ -24,11 +24,6 @@ public class UserListener {
     private PGuild guild;
     private Command command;
 
-    public UserListener(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
-    }
-
     public UserListener(GuildMessageReceivedEvent event, PGuild guild, Command command) {
         this.event = event;
         this.guild = guild;

@@ -24,17 +24,6 @@ public class ModeratorListener {
     private PGuildMember author;
     private Command command;
 
-    public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
-    }
-
-    public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author) {
-        this.event = event;
-        this.guild = guild;
-        this.author = author;
-    }
-
     public ModeratorListener(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author, Command command) {
         this.event = event;
         this.guild = guild;
