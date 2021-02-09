@@ -1,44 +1,46 @@
 package commands.user;
 
 import java.awt.Color;
+import java.lang.management.ManagementFactory;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class Uptime implements CommandManager {
+public class Uptime extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
-
-    public Uptime(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Uptime(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        ProxyEmbed embed = new ProxyEmbed();
-        embed.uptime();
-        ProxyUtils.sendEmbed(event.getChannel(), embed);
+        final long duration = ManagementFactory.getRuntimeMXBean().getUptime();
+        final long years = duration / 31104000000L;
+        final long months = duration / 2592000000L % 12;
+        final long days = duration / 86400000L % 30;
+        final long hours = duration / 3600000L % 24;
+        final long minutes = duration / 60000L % 60;
+        final long seconds = duration / 1000L % 60;
+        String uptime = (years == 0 ? "" : "**" + years + "** Years, ") + (months == 0 ? "" : "**" + months + "** Months, ") + (days == 0 ? "" : "**" + days + "** Days, ")
+                + (hours == 0 ? "" : "**" + hours + "** Hours, ") + (minutes == 0 ? "" : "**" + minutes + "** Minutes, ") + (seconds == 0 ? "" : "**" + seconds + "** Seconds, ");
+        uptime = uptime.replaceFirst("(?s)(.*)" + ", ", "$1" + "");
+        uptime = uptime.replaceFirst("(?s)(.*)" + ",", "$1" + " and");
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle(":stopwatch: Uptime");
+        embed.setColor(Color.GREEN);
+        embed.addField("", uptime + ".", true);
+        sendEmbed(embed);
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.UPTIME.getName(),
-                    "Display the percentage of time the bot has been available.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.UPTIME.getName() + "`.",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Display the percentage of time the bot has been available.\n\n" + "Example: `" + getGuildPrefix() + getCommandName() + "`.");
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Display the percentage of time the bot has been available. **Example:** `" + guild.getPrefix() + Command.UPTIME.getName() + "`.");
+            sendMessage("Display the percentage of time the bot has been available. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
         }
     }
 

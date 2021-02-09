@@ -1,35 +1,31 @@
 package commands.moderator;
 
-import java.awt.Color;
-
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class ResetChan implements CommandManager {
+public class ResetChan extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public ResetChan(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public ResetChan(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public ResetChan(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
         try {
-            event.getChannel().createCopy().queue();
-            event.getChannel().delete().queue();
+            getChannel().createCopy().queue();
+            getChannel().delete().queue();
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MANAGE_CHANNEL.getName() + "**.");
+            sendMessage("Missing permission: **" + Permission.MANAGE_CHANNEL.getName() + "**.");
 
         } catch (ErrorResponseException e) {
         }
@@ -38,16 +34,9 @@ public class ResetChan implements CommandManager {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.RESETCHAN.getName(),
-                    "Create a copy and delete the current text channel.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.RESETCHAN.getName() + "`",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Create a copy and delete the current text channel.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`");
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Create a copy and delete the current text channel. **Example:** `" + guild.getPrefix() + Command.RESETCHAN.getName() + "`.");
+            sendMessage("Create a copy and delete the current text channel. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
         }
     }
 

@@ -1,87 +1,69 @@
 package commands.moderator;
 
-import java.awt.Color;
+import java.util.Objects;
 
-import commands.CommandManager;
-import configuration.constant.Command;
-import configuration.constant.Permissions;
-import dao.database.Dao;
-import dao.pojo.PGuildMember;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.pojo.PGuild;
-import factory.DaoFactory;
+import dao.pojo.PGuildMember;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyString;
-import proxy.utility.ProxyUtils;
+import net.dv8tion.jda.api.requests.RestAction;
 
-public class Bans implements CommandManager {
+public class Bans extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
-    private PGuildMember author;
+    private PGuildMember messageAuthor;
 
-    public Bans(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Bans(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild, PGuildMember messageAuthor) {
+        super(event, args, command, guild);
+        this.messageAuthor = messageAuthor;
     }
 
-    public Bans(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author) {
-        this.event = event;
-        this.guild = guild;
-        this.author = author;
+    public Bans(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(gMember -> {
-                try {
-                    if (gMember.getUser().isBot()) {
-                        ban(gMember);
-                    } else {
-                        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-                        PGuildMember gMemberPojo = gMemberDao.find(event.getGuild().getId() + "#" + gMember.getId());
+        RestAction<Member> command = retrieveMentionnedMember(1, false);
+        if (command == null) { return; }
+        command.queue(mentionnedMember -> {
+            if (mentionnedMember.getUser().isBot()) {
+                ban(mentionnedMember);
+            } else {
+                ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+                PGuildMember mentionnedPGMember = gMemberDao.find(getGuild().getIdLong(), mentionnedMember.getIdLong());
 
-                        if (gMemberPojo.getId().equals(event.getAuthor().getId())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to ban yourself");
+                if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
+                    sendMessage("Impossible to ban yourself");
 
-                        } else if (((author.getPermId() == Permissions.MODERATOR.getLevel()) && (gMemberPojo.getPermId() == Permissions.MODERATOR.getLevel()))
-                                || ((author.getPermId() == Permissions.ADMINISTRATOR.getLevel()) && gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to ban a member with the same or a higher permission than yours.");
+                } else if (messageAuthor.getPermission().getLevel() <= mentionnedPGMember.getPermission().getLevel()) {
+                    sendMessage("Impossible to ban a member with the same or a higher permission than yours.");
 
-                        } else if (author.getPermId() == Permissions.MODERATOR.getLevel() && (gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to ban an administrator.");
-                        } else {
-                            ban(gMember);
-                        }
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
+                } else {
+                    ban(mentionnedMember);
                 }
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
-
-        } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
-        }
+            }
+        }, ContextException.here(acceptor -> sendMessage("**" + getArgs()[1] + "** is not a member.")));
     }
 
     private void ban(Member mentionnedMember) {
         try {
-            event.getGuild().ban(mentionnedMember.getId(), 1).queue();
-            ProxyUtils.sendMessage(event.getChannel(), "**" + mentionnedMember.getUser().getAsTag() + "** is successfully banned !");
+            getGuild().ban(mentionnedMember.getId(), 1).queue();
+            sendMessage("**" + mentionnedMember.getUser().getAsTag() + "** is successfully banned !");
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
+            sendMessage("Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
 
         } catch (HierarchyException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Impossible to ban a member with the same or a higher permission than yours.");
+            sendMessage("Impossible to ban a member with the same or a higher permission than yours.");
 
         } catch (IllegalArgumentException e) {
         } catch (ErrorResponseException e) {
@@ -91,17 +73,14 @@ public class Bans implements CommandManager {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.BAN.getName(),
+            sendHelpEmbed(
                     "Ban a specified member from your server.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.BAN.getName() + " @aMember`\n"
-                    + "*You can also mention a member by his ID*.",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "*You can also mention a member by his ID*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Ban a specified member from your server. **Example:** `" + guild.getPrefix() + Command.BAN.getName() + " @aMember`.");
+            sendMessage("Ban a specified member from your server. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 

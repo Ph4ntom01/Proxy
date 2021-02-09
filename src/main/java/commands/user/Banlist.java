@@ -1,86 +1,88 @@
 package commands.user;
 
 import java.awt.Color;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
+import dao.pojo.PBan;
 import dao.pojo.PGuild;
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild.Ban;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
+import net.dv8tion.jda.api.requests.RestAction;
 
-public class Banlist implements CommandManager {
+public class Banlist extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public Banlist(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public Banlist(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Banlist(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            event.getGuild().retrieveBanList().queue(banlist -> {
-                if (banlist.isEmpty()) {
-                    ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
-                } else {
-                    ProxyEmbed embed = new ProxyEmbed();
-                    embed.banList(banlist, guild.getPrefix());
-                    ProxyUtils.sendEmbed(event.getChannel(), embed);
+        RestAction<List<Ban>> command = retrieveBanlist();
+        if (command == null) { return; }
+        command.queue(banlist -> {
+            if (banlist.isEmpty()) {
+                sendMessage("No banned member.");
+            } else {
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setColor(Color.RED);
+                embed.setTitle(":skull_crossbones: __Ban List__");
+                for (int i = 0; i < banlist.size(); i++) {
+                    embed.addField("", "**" + (i + 1) + ". " + banlist.get(i).getUser().getName() + "**", false);
                 }
-            });
-        } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
-        }
+                embed.addField("", "**" + getGuildPrefix() + "banlist [a number]**", true);
+                sendEmbed(embed);
+            }
+        });
     }
 
     public void consultBannedMember() {
-        try {
-            event.getGuild().retrieveBanList().queue(banlist -> {
-                try {
-                    int value = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
-                    if (value > 0 && value <= banlist.size()) {
-                        if (banlist.isEmpty()) {
-                            ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
-                        } else {
-                            ProxyEmbed embed = new ProxyEmbed();
-                            embed.bannedMemberInfo(banlist, value - 1);
-                            ProxyUtils.sendEmbed(event.getChannel(), embed);
-                        }
-                    } else {
-                        ProxyUtils.sendMessage(event.getChannel(), "Please enter a number from the banlist.");
-                    }
-                } catch (NumberFormatException e) {
-                    // @formatter:off
-                    ProxyUtils.sendMessage(event.getChannel(),
-                            "To consult the banlist, use the command: `" + guild.getPrefix() + Command.BANLIST.getName()
-                            + "`, you can also consult the banned member information by using the command "
-                            + "**" + guild.getPrefix() + Command.BANLIST.getName() + " [a number from the banlist]**.");
-                    // @formatter:on
+        RestAction<List<Ban>> command = retrieveBanlist();
+        if (command == null) { return; }
+        command.queue(banlist -> {
+            int value = getIntArg(1);
+            if (value > 0 && value <= banlist.size()) {
+                if (banlist.isEmpty()) {
+                    sendMessage("No banned member.");
+                } else {
+                    int choice = value - 1;
+                    User bannedUser = banlist.get(choice).getUser();
+                    ADao<PBan> bMemberDao = DaoFactory.getBanDAO();
+                    PBan bMember = bMemberDao.find(getPGuild().getId(), bannedUser.getIdLong());
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setColor(Color.RED);
+                    embed.setThumbnail(bannedUser.getEffectiveAvatarUrl());
+                    embed.addField("Name", bannedUser.getName(), true);
+                    embed.addField("Discriminator", "#" + bannedUser.getDiscriminator(), true);
+                    embed.addField("Bot Account", String.valueOf(bannedUser.isBot()).replace("true", "Yes").replace("false", "No"), true);
+                    embed.addField("Discord Join", bannedUser.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
+                    embed.addField("Ban Date", bMember.getBanDate() == null ? "Not Available" : bMember.getBanDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
+                    embed.addField("ID", bannedUser.getId(), true);
+                    embed.addField("Reason", "_" + String.valueOf(banlist.get(choice).getReason()).replace("null", "No reason provided.") + "_", false);
+                    sendEmbed(embed);
                 }
-            });
-        } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
-        }
+            } else {
+                sendMessage("Please enter a number from the banlist.");
+            }
+        });
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.BANLIST.getName(),
-                    "Display the banned members.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.BANLIST.getName() + "`",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Display the banned members.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Display the banned members. **Example:** `" + guild.getPrefix() + Command.BANLIST.getName() + "`.");
+            sendMessage("Display the banned members. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
         }
     }
 

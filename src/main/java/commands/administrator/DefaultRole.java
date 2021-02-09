@@ -1,60 +1,50 @@
 package commands.administrator;
 
-import java.awt.Color;
+import java.util.Objects;
 
-import commands.CommandManager;
-import configuration.constant.Command;
-import dao.database.Dao;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.pojo.PGuild;
-import factory.DaoFactory;
-import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyString;
-import proxy.utility.ProxyUtils;
 
-public class DefaultRole implements CommandManager {
+public class DefaultRole extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public DefaultRole(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public DefaultRole(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public DefaultRole(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            Role role = event.getGuild().getRoleById(ProxyString.getMentionnedEntity(MentionType.ROLE, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]));
-            if (role.getId().equals(guild.getDefaultRole())) {
-                ProxyUtils.sendMessage(event.getChannel(), "Default role **" + role.getName() + "** has already been defined.");
-            } else {
-                Dao<PGuild> guildDao = DaoFactory.getGuildDAO();
-                guild.setDefaultRole(role.getId());
-                guildDao.update(guild);
-                ProxyUtils.sendMessage(event.getChannel(), "Default role is now **" + role.getName() + "**.");
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "**" + ProxyUtils.getArgs(event.getMessage())[1] + "** is not a role.");
+        Role role = retrieveMentionnedRole(1);
+        if (role == null) { return; }
+        if (Objects.equals(role.getIdLong(), getPGuild().getDefaultRole())) {
+            sendMessage("Default role **" + role.getName() + "** has already been defined.");
+        } else {
+            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            getPGuild().setDefaultRole(role.getIdLong());
+            guildDao.update(getPGuild());
+            sendMessage("Default role is now **" + role.getName() + "**.");
         }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.DEFROLE.getName(), 
+            sendHelpEmbed(
                     "Automatically assign a role when a member joins the server.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`\n\n"
-                    + "*You can also mention a role by his ID*.",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aRole`\n\n"
+                    + "*You can also mention a role by his ID*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Automatically assign a role when a member joins the server. **Example:** `" + guild.getPrefix() + Command.DEFROLE.getName() + " @aRole`.");
+            sendMessage("Automatically assign a role when a member joins the server. **Example:** `" + getGuildPrefix() + getCommandName() + " @aRole`.");
         }
     }
 

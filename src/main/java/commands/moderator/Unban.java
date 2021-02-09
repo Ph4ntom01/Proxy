@@ -1,76 +1,62 @@
 package commands.moderator;
 
-import java.awt.Color;
 import java.util.List;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild.Ban;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
+import net.dv8tion.jda.api.requests.RestAction;
 
-public class Unban implements CommandManager {
+public class Unban extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public Unban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public Unban(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Unban(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            event.getGuild().retrieveBanList().queue(banlist -> unban(banlist));
-        } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
-        }
-    }
-
-    private void unban(List<Ban> banlist) {
-        try {
+        RestAction<List<Ban>> command = retrieveBanlist();
+        if (command == null) { return; }
+        command.queue(banlist -> {
             if (banlist.isEmpty()) {
-                ProxyUtils.sendMessage(event.getChannel(), "No banned member.");
+                sendMessage("No banned member.");
             } else {
-                banlist.stream().findAny().ifPresent(mbr -> {
-                    event.getGuild().retrieveBanById(ProxyUtils.getArgs(event.getMessage())[1]).queue(bannedMember -> {
-
-                        if (mbr.getUser().getId().equals(bannedMember.getUser().getId())) {
-                            event.getGuild().unban(mbr.getUser().getId()).queue();
-                            ProxyUtils.sendMessage(event.getChannel(), "**" + bannedMember.getUser().getName() + "** is successfully unbanned !");
+                try {
+                    banlist.stream().findAny().ifPresent(mentionnedMember -> getGuild().retrieveBanById(getArgs()[1]).queue(bannedMember -> {
+                        if (mentionnedMember.getUser().getId().equals(bannedMember.getUser().getId())) {
+                            getGuild().unban(mentionnedMember.getUser().getId()).queue();
+                            sendMessage("**" + bannedMember.getUser().getName() + "** is successfully unbanned !");
                         }
-                    }, ContextException.here(e -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID.")));
-                });
+                    }, ContextException.here(acceptor -> sendMessage("**" + getArgs()[1] + "** is not a member."))));
+                } catch (IllegalArgumentException e) {
+                    sendMessage("**" + getArgs()[1] + "** is not a member.");
+                } catch (ErrorResponseException e) {
+                }
             }
-        } catch (IllegalArgumentException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID.");
-        } catch (ErrorResponseException e) {
-        }
+        });
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.UNBAN.getName(),
+            sendHelpEmbed(
                     "Unban any person who has previously been banned from this server, require an ID.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.UNBAN.getName() + " 500688503617749023`",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + getCommandName() + " 500688503617749023`");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
             // @formatter:off
-            ProxyUtils.sendMessage(event.getChannel(),
+            sendMessage(
                     "Unban any person who has previously been banned from this server, require an ID. "
-                    + "**Example:** `" + guild.getPrefix() + Command.UNBAN.getName() + " 500688503617749023`.");
+                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " 500688503617749023`.");
             // @formatter:on
         }
     }

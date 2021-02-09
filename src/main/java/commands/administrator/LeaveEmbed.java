@@ -1,77 +1,63 @@
 package commands.administrator;
 
-import java.awt.Color;
-
-import commands.CommandManager;
-import configuration.constant.Command;
-import dao.database.Dao;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.pojo.PGuild;
 import dao.pojo.PLeaveChannel;
-import factory.DaoFactory;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class LeaveEmbed implements CommandManager {
+public class LeaveEmbed extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public LeaveEmbed(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public LeaveEmbed(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public LeaveEmbed(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        if (guild.getLeaveChannel() != null) {
-
-            Dao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
-            PLeaveChannel leaveChannel = leaveChannelDao.find(guild.getLeaveChannel());
-
-            if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("on")) {
-
+        if (getPGuild().getLeaveChannel() != null) {
+            ADao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
+            PLeaveChannel leaveChannel = leaveChannelDao.find(getPGuild().getLeaveChannel());
+            if (getArgs()[1].equalsIgnoreCase("on")) {
                 if (leaveChannel.getEmbed()) {
-                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **enabled**.");
-
+                    sendMessage("Leaving box has already been **enabled**.");
                 } else if (!leaveChannel.getEmbed()) {
                     leaveChannel.setEmbed(true);
                     leaveChannelDao.update(leaveChannel);
-                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **enabled**.");
+                    sendMessage("Leaving box is now **enabled**.");
                 }
-            } else if (ProxyUtils.getArgs(event.getMessage())[1].equalsIgnoreCase("off")) {
-
+            } else if (getArgs()[1].equalsIgnoreCase("off")) {
                 if (!leaveChannel.getEmbed()) {
-                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box has already been **disabled**.");
-
+                    sendMessage("Leaving box has already been **disabled**.");
                 } else if (leaveChannel.getEmbed()) {
                     leaveChannel.setEmbed(false);
                     leaveChannelDao.update(leaveChannel);
-                    ProxyUtils.sendMessage(event.getChannel(), "Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
+                    sendMessage("Leaving box is now **disabled**, you will no longer receive a box when a member leaves the server.");
                 }
             } else {
-                ProxyUtils.sendMessage(event.getChannel(), "Please specify **on** or **off**.");
+                sendMessage("Please specify **on** or **off**.");
             }
         } else {
-            ProxyUtils.sendMessage(event.getChannel(),
-                    "In order to create a leaving box, please select your leaving channel first using `" + guild.getPrefix() + Command.LEAVECHAN.getName() + " #aTextChannel`.");
+            sendMessage("In order to create a leaving box, please select your leaving channel first using `" + getGuildPrefix() + ECommand.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.LEAVEEMBED.getName(),
+            sendHelpEmbed(
                     "Set the leaving box.\n\n"
-                    + "Example:\n\n`" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on` *enables the leaving box*.\n"
-                    + "`" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " off` *disables the leaving box*.",
-                    Color.ORANGE);
+                    + "Example:\n\n`" + getGuildPrefix() + getCommandName() + " on` *enables the leaving box*.\n"
+                    + "`" + getGuildPrefix() + getCommandName() + " off` *disables the leaving box*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Set the leaving box. **Example:** `" + guild.getPrefix() + Command.LEAVEEMBED.getName() + " on` *enables the leaving box*.");
+            sendMessage("Set the leaving box. **Example:** `" + getGuildPrefix() + getCommandName() + " on` *enables the leaving box*.");
         }
     }
 

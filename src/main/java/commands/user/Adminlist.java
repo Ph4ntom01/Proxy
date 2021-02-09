@@ -3,50 +3,51 @@ package commands.user;
 import java.awt.Color;
 import java.util.Set;
 
-import commands.CommandManager;
-import configuration.constant.Command;
-import configuration.constant.Permissions;
-import dao.database.Dao;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import configuration.constant.EPermission;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.database.GuildMemberDAO;
-import dao.pojo.PGuildMember;
 import dao.pojo.PGuild;
-import factory.DaoFactory;
+import dao.pojo.PGuildMember;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class Adminlist implements CommandManager {
+public class Adminlist extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
-
-    public Adminlist(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Adminlist(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-        Set<PGuildMember> administrators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(event.getGuild().getId(), Permissions.ADMINISTRATOR);
-        ProxyEmbed embed = new ProxyEmbed();
-        embed.adminList(administrators);
-        ProxyUtils.sendEmbed(event.getChannel(), embed);
+        ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+        Set<PGuildMember> administrators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(getGuild().getIdLong(), EPermission.ADMINISTRATOR);
+        if (administrators.isEmpty()) {
+            // @formatter:off
+            sendMessage(
+                    "No " + EPermission.ADMINISTRATOR.getName().toLowerCase() + "(s). "
+                    + "To define a " + EPermission.ADMINISTRATOR.getName().toLowerCase()
+                    + ", the guild owner has to use the command `" + getGuildPrefix() + ECommand.SETADMIN.getName() + " @aMember`.");
+            // @formatter:on
+        } else {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setColor(Color.RED);
+            embed.setTitle(":closed_lock_with_key: __Administrator(s)__");
+            for (PGuildMember admin : administrators) {
+                embed.addField("", "<@" + admin.getId() + ">", false);
+            }
+            sendEmbed(embed);
+        }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.ADMINLIST.getName(),
-                    "Display the bot administrators.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.ADMINLIST.getName() + "`.",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Display the bot administrators.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Display the bot administrators. **Example:** `" + guild.getPrefix() + Command.ADMINLIST.getName() + "`.");
+            sendMessage("Display the bot administrators. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
         }
     }
 

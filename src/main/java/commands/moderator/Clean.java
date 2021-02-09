@@ -1,30 +1,27 @@
 package commands.moderator;
 
-import java.awt.Color;
 import java.util.concurrent.TimeUnit;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class Clean implements CommandManager {
+public class Clean extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public Clean(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public Clean(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Clean(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        int messages = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
+        int messages = getIntArg(1);
         if (messages >= 2 && messages <= 100) {
             deleteMessages(messages);
         } else {
@@ -33,17 +30,16 @@ public class Clean implements CommandManager {
     }
 
     public void deleteMessages(int amount) {
-        event.getChannel().getHistory().retrievePast(amount).queue(messages -> {
+        getChannel().getHistory().retrievePast(amount).queue(messages -> {
             try {
-                event.getChannel().deleteMessages(messages).queue();
-                event.getChannel().sendMessage("**" + messages.size() + "** deleted messages.").queueAfter(500, TimeUnit.MILLISECONDS,
-                        response -> response.delete().queueAfter(1500, TimeUnit.MILLISECONDS));
+                getChannel().deleteMessages(messages).queue();
+                getChannel().sendMessage("**" + messages.size() + "** deleted messages.").queueAfter(500, TimeUnit.MILLISECONDS, response -> response.delete().queueAfter(1500, TimeUnit.MILLISECONDS));
 
             } catch (IllegalArgumentException e) {
-                event.getMessage().delete().queue();
+                getMessage().delete().queue();
 
             } catch (InsufficientPermissionException e) {
-                ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + "**.");
+                sendMessage("Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + "**.");
             }
         });
     }
@@ -51,20 +47,9 @@ public class Clean implements CommandManager {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.CLEAN.getName(),
-                    "Quickly cleans the last 10 messages, or however many you specify.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.CLEAN.getName() + " 20`",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Quickly cleans the last 10 messages, or however many you specify.\n\n" + "Example: `" + getGuildPrefix() + getCommandName() + " 20`");
         } else {
-            // @formatter:off
-            ProxyUtils.sendMessage(event.getChannel(),
-                    "Quickly cleans the last 10 messages, or however many you specify. "
-                    + "**Example:** `" + guild.getPrefix() + Command.CLEAN.getName() + " 20`.");
-            // @formatter:on
+            sendMessage("Quickly cleans the last 10 messages, or however many you specify. **Example:** `" + getGuildPrefix() + getCommandName() + " 20`.");
         }
     }
 

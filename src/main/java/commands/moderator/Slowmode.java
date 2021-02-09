@@ -1,68 +1,57 @@
 package commands.moderator;
 
-import java.awt.Color;
-
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class Slowmode implements CommandManager {
+public class Slowmode extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public Slowmode(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public Slowmode(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Slowmode(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            int slowmode = Integer.parseInt(ProxyUtils.getArgs(event.getMessage())[1]);
-            if (slowmode == 0) {
-                if (event.getChannel().getSlowmode() == 0) {
-                    ProxyUtils.sendMessage(event.getChannel(), "Slowmode has already been **disabled** !");
-                } else {
-                    event.getChannel().getManager().setSlowmode(slowmode).queue();
-                    ProxyUtils.sendMessage(event.getChannel(), "Slowmode is now **disabled** !");
-                }
-            } else if (slowmode == event.getChannel().getSlowmode()) {
-                ProxyUtils.sendMessage(event.getChannel(), "This amount has already been defined.");
-
-            } else if (slowmode > 0 && slowmode <= 30) {
-                event.getChannel().getManager().setSlowmode(slowmode).queue();
-                ProxyUtils.sendMessage(event.getChannel(), "Slowmode is now **enabled** !" + " (" + slowmode + "s).");
+        int slowmode = getIntArg(1);
+        if (slowmode == 0) {
+            if (getChannel().getSlowmode() == 0) {
+                sendMessage("Slowmode has already been **disabled** !");
             } else {
-                ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**.");
+                setSlowmode(slowmode);
+                sendMessage("Slowmode is now **disabled** !");
             }
-        } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + " **or** " + Permission.MANAGE_CHANNEL.getName() + "**.");
+        } else if (slowmode == getChannel().getSlowmode()) {
+            sendMessage("This amount has already been defined.");
 
-        } catch (IllegalStateException e) {
-        } catch (NumberFormatException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Please enter a number between **0** and **30**.");
+        } else if (slowmode > 0 && slowmode <= 30) {
+            setSlowmode(slowmode);
+            sendMessage("Slowmode is now **enabled** !" + " (" + slowmode + "s).");
+        } else {
+            sendMessage("Please enter a number between **0** and **30**.");
+        }
+    }
+
+    private void setSlowmode(int slowmode) {
+        try {
+            getChannel().getManager().setSlowmode(slowmode).queue();
+        } catch (InsufficientPermissionException e) {
+            sendMessage("Missing permission: **" + Permission.MESSAGE_MANAGE.getName() + " **or** " + Permission.MANAGE_CHANNEL.getName() + "**.");
         }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.SLOWMODE.getName(),
-                    "Change the slowmode amount on the current channel.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.SLOWMODE.getName() + " 5`",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Change the slowmode amount on the current channel.\n\nExample: `" + getGuildPrefix() + getCommandName() + " 5`");
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Change the slowmode amount on the current channel. **Example:** `" + guild.getPrefix() + Command.SLOWMODE.getName() + " 5`.");
+            sendMessage("Change the slowmode amount on the current channel. **Example:** `" + getGuildPrefix() + getCommandName() + " 5`.");
         }
     }
 

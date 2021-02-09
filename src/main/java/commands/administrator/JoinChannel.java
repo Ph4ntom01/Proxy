@@ -1,76 +1,61 @@
 package commands.administrator;
 
-import java.awt.Color;
+import java.util.Objects;
 
-import commands.CommandManager;
-import configuration.constant.Command;
-import dao.database.Dao;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.database.JoinChannelDAO;
 import dao.pojo.PGuild;
 import dao.pojo.PJoinChannel;
-import factory.DaoFactory;
-import factory.PojoFactory;
-import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyString;
-import proxy.utility.ProxyUtils;
 
-public class JoinChannel implements CommandManager {
+public class JoinChannel extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public JoinChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public JoinChannel(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public JoinChannel(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        String textChannelID = ProxyUtils.getArgs(event.getMessage())[1];
-        try {
-            Dao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
-            PJoinChannel joinChannel = joinChannelDao.find(guild.getJoinChannel());
-            TextChannel textChannel = event.getGuild().getTextChannelById(ProxyString.getMentionnedEntity(MentionType.CHANNEL, event.getMessage(), textChannelID));
-
-            if (textChannel.getId().equals(guild.getJoinChannel()) && textChannel.getId().equals(joinChannel.getChannelId())) {
-                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
-
-            } else if (guild.getJoinChannel() == null && joinChannel.getChannelId() == null) {
-                Dao<PGuild> guildDao = DaoFactory.getGuildDAO();
-                joinChannel = PojoFactory.getJoinChannel();
-                joinChannel.setChannelId(textChannel.getId());
-                guild.setJoinChannel(textChannel.getId());
-                joinChannelDao.create(joinChannel);
-                guildDao.update(guild);
-                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");
-
-            } else {
-                // No need to update the guild table because ON UPDATE CASCADE is defined to the foreign key.
-                ((JoinChannelDAO) joinChannelDao).update(joinChannel, textChannel.getId());
-                ProxyUtils.sendMessage(event.getChannel(), "The default channel for new members is now " + textChannel.getAsMention() + ".");
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "**" + textChannelID + "** is not a text channel.");
+        ADao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
+        PJoinChannel joinChannel = joinChannelDao.find(getPGuild().getJoinChannel());
+        TextChannel textChannel = retrieveMentionnedTextChannel(1);
+        if (textChannel == null) { return; }
+        if (Objects.equals(textChannel.getIdLong(), getPGuild().getJoinChannel()) && Objects.equals(textChannel.getIdLong(), joinChannel.getChannelId())) {
+            sendMessage("The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
+        } else if (getPGuild().getJoinChannel() == null && joinChannel.getChannelId() == null) {
+            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            joinChannel = new PJoinChannel();
+            joinChannel.setChannelId(textChannel.getIdLong());
+            getPGuild().setJoinChannel(textChannel.getIdLong());
+            joinChannelDao.create(joinChannel);
+            guildDao.update(getPGuild());
+            sendMessage("The default channel for new members is now " + textChannel.getAsMention() + ".");
+        } else {
+            // No need to update the guild table because ON UPDATE CASCADE is defined to the foreign key.
+            ((JoinChannelDAO) joinChannelDao).update(joinChannel, textChannel.getIdLong());
+            sendMessage("The default channel for new members is now " + textChannel.getAsMention() + ".");
         }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.JOINCHAN.getName(),
+            sendHelpEmbed(
                     "Send notification when a member joins the server.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`\n\n"
-                    + "*You can also mention a channel by his ID*.",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`\n\n"
+                    + "*You can also mention a channel by his ID*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Send notification when a member joins the server. **Example:** `" + guild.getPrefix() + Command.JOINCHAN.getName() + " #aTextChannel`.");
+            sendMessage("Send notification when a member joins the server. **Example:** `" + getGuildPrefix() + getCommandName() + " #aTextChannel`.");
         }
     }
 

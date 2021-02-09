@@ -2,54 +2,48 @@ package commands.user;
 
 import java.awt.Color;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
-import net.dv8tion.jda.api.entities.Message.MentionType;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyString;
-import proxy.utility.ProxyUtils;
+import net.dv8tion.jda.api.requests.RestAction;
 
-public class Avatar implements CommandManager {
+public class Avatar extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
+    public Avatar(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+        super(event, args, command, guild);
+    }
 
-    public Avatar(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Avatar(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            event.getJDA().retrieveUserById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1])).queue(user -> {
-                ProxyEmbed embed = new ProxyEmbed();
-                embed.avatar(user);
-                ProxyUtils.sendEmbed(event.getChannel(), embed);
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
-
-        } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
-        }
+        RestAction<Member> command = retrieveMentionnedMember(1, false);
+        if (command == null) { return; }
+        command.queue(mentionnedMember -> {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setColor(Color.GREEN);
+            embed.setImage(mentionnedMember.getUser().getEffectiveAvatarUrl() + "?size=512");
+            sendEmbed(embed);
+        }, ContextException.here(acceptor -> sendMessage("**" + getArgs()[1] + "** is not a member.")));
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.AVATAR.getName(),
+            sendHelpEmbed(
                     "Display the member's avatar.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.AVATAR.getName() + " @aMember`\n\n"
-                    + "*You can also mention a member by his ID*.",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n\n"
+                    + "*You can also mention a member by his ID*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-            ProxyUtils.sendMessage(event.getChannel(), "Display the member's avatar. **Example:** `" + guild.getPrefix() + Command.AVATAR.getName() + " @aMember`.");
+            sendMessage("Display the member's avatar. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 

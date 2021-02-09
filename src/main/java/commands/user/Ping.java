@@ -2,49 +2,35 @@ package commands.user;
 
 import java.awt.Color;
 
-import commands.CommandManager;
-import configuration.constant.Command;
+import commands.ACommand;
+import configuration.constant.ECommand;
 import dao.pojo.PGuild;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyUtils;
 
-public class Ping implements CommandManager {
+public class Ping extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
-
-    public Ping(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Ping(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        event.getJDA().getRestPing().queue(ping -> {
-            ProxyEmbed embed = new ProxyEmbed();
-            embed.ping(ping);
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+        getJDA().getRestPing().queue(ping -> {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setColor(Color.GREEN);
+            embed.setTitle(":ping_pong: Pong: `" + ping + "ms`");
+            embed.setImage("https://media1.tenor.com/images/75af5262d34d2d0b5dc8c404212665a8/tenor.gif?itemid=8942945");
+            sendEmbed(embed);
         });
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
-            // @formatter:off
-            embed.help(Command.PING.getName(),
-                    "Display the time in milliseconds that discord took to respond to a request.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.PING.getName() + "`.",
-                    Color.ORANGE);
-            // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
+            sendHelpEmbed("Display the time in milliseconds that discord took to respond to a request.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
         } else {
-            // @formatter:off
-            ProxyUtils.sendMessage(event.getChannel(),
-                    "Display the time in milliseconds that discord took to respond to a request. "
-                    + "**Example:** `" + guild.getPrefix() + Command.PING.getName() + "`.");
-            // @formatter:on
+            sendMessage("Display the time in milliseconds that discord took to respond to a request. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
         }
     }
 

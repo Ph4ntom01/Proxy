@@ -1,89 +1,71 @@
 package commands.moderator;
 
-import java.awt.Color;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import commands.CommandManager;
-import configuration.constant.Command;
-import configuration.constant.Permissions;
-import dao.database.Dao;
-import dao.pojo.PGuildMember;
+import commands.ACommand;
+import configuration.constant.ECommand;
+import dao.database.ADao;
+import dao.database.DaoFactory;
 import dao.pojo.PGuild;
-import factory.DaoFactory;
+import dao.pojo.PGuildMember;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import proxy.utility.ProxyEmbed;
-import proxy.utility.ProxyString;
-import proxy.utility.ProxyUtils;
+import net.dv8tion.jda.api.requests.RestAction;
 
-public class Softban implements CommandManager {
+public class Softban extends ACommand {
 
-    private GuildMessageReceivedEvent event;
-    private PGuild guild;
-    private PGuildMember author;
+    private PGuildMember messageAuthor;
 
-    public Softban(GuildMessageReceivedEvent event, PGuild guild) {
-        this.event = event;
-        this.guild = guild;
+    public Softban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild, PGuildMember messageAuthor) {
+        super(event, args, command, guild);
+        this.messageAuthor = messageAuthor;
     }
 
-    public Softban(GuildMessageReceivedEvent event, PGuild guild, PGuildMember author) {
-        this.event = event;
-        this.guild = guild;
-        this.author = author;
+    public Softban(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+        super(event, command, guild);
     }
 
     @Override
     public void execute() {
-        try {
-            event.getGuild().retrieveMemberById(ProxyString.getMentionnedEntity(MentionType.USER, event.getMessage(), ProxyUtils.getArgs(event.getMessage())[1]), false).queue(gMember -> {
-                try {
-                    if (gMember.getUser().isBot()) {
-                        softban(gMember);
-                    } else {
-                        Dao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-                        PGuildMember gMemberPojo = gMemberDao.find(event.getGuild().getId() + "#" + gMember.getId());
+        RestAction<Member> command = retrieveMentionnedMember(1, false);
+        if (command == null) { return; }
+        command.queue(mentionnedMember -> {
+            if (mentionnedMember.getUser().isBot()) {
+                softban(mentionnedMember);
+            } else {
+                ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+                PGuildMember mentionnedPGMember = gMemberDao.find(getGuild().getIdLong(), mentionnedMember.getIdLong());
 
-                        if (gMemberPojo.getId().equals(event.getAuthor().getId())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick yourself.");
+                if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
+                    sendMessage("Impossible to kick yourself.");
 
-                        } else if (((author.getPermId() == Permissions.MODERATOR.getLevel()) && (gMemberPojo.getPermId() == Permissions.MODERATOR.getLevel()))
-                                || ((author.getPermId() == Permissions.ADMINISTRATOR.getLevel()) && gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick a member with the same or a higher permission than yours.");
+                } else if (messageAuthor.getPermission().getLevel() <= mentionnedPGMember.getPermission().getLevel()) {
+                    sendMessage("Impossible to kick a member with the same or a higher permission than yours.");
 
-                        } else if (author.getPermId() == Permissions.MODERATOR.getLevel() && (gMemberPojo.getPermId() == Permissions.ADMINISTRATOR.getLevel())) {
-                            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick an administrator.");
-                        } else {
-                            softban(gMember);
-                        }
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
+                } else {
+                    softban(mentionnedMember);
                 }
-            }, ContextException.here(acceptor -> ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.")));
-
-        } catch (IllegalArgumentException | NullPointerException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Invalid ID or mention.");
-        }
+            }
+        }, ContextException.here(acceptor -> sendMessage("**" + getArgs()[1] + "** is not a member.")));
     }
 
     private void softban(Member mentionnedMember) {
         try {
-            event.getGuild().ban(mentionnedMember.getId(), 1).queue();
-            event.getGuild().unban(mentionnedMember.getId()).queueAfter(500, TimeUnit.MILLISECONDS);
-            ProxyUtils.sendMessage(event.getChannel(), "**" + mentionnedMember.getUser().getAsTag() + "** is successfully kicked !");
+            getGuild().ban(mentionnedMember.getId(), 1).queue();
+            getGuild().unban(mentionnedMember.getId()).queueAfter(500, TimeUnit.MILLISECONDS);
+            sendMessage("**" + mentionnedMember.getUser().getAsTag() + "** is successfully kicked !");
 
         } catch (InsufficientPermissionException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
+            sendMessage("Missing permission: **" + Permission.BAN_MEMBERS.getName() + "**.");
 
         } catch (HierarchyException e) {
-            ProxyUtils.sendMessage(event.getChannel(), "Impossible to kick a member with the same or a higher permission than yours.");
+            sendMessage("Impossible to kick a member with the same or a higher permission than yours.");
 
         } catch (IllegalArgumentException e) {
         } catch (ErrorResponseException e) {
@@ -93,20 +75,17 @@ public class Softban implements CommandManager {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            ProxyEmbed embed = new ProxyEmbed();
             // @formatter:off
-            embed.help(Command.SOFTBAN.getName(),
+            sendHelpEmbed(
                     "Kick a specified member and deletes his past messages since one day.\n\n"
-                    + "Example: `" + guild.getPrefix() + Command.SOFTBAN.getName() + " @aMember`\n"
-                    + "*You can also mention a member by his ID*.",
-                    Color.ORANGE);
+                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "*You can also mention a member by his ID*.");
             // @formatter:on
-            ProxyUtils.sendEmbed(event.getChannel(), embed);
         } else {
-         // @formatter:off
-            ProxyUtils.sendMessage(event.getChannel(),
+            // @formatter:off
+            sendMessage(
                     "Kick a specified member and deletes his past messages since one day. "
-                    + "**Example:** `" + guild.getPrefix() + Command.BAN.getName() + " @aMember`.");        
+                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");        
             // @formatter:on
         }
     }
