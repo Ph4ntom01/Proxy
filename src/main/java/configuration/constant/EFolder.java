@@ -1,12 +1,12 @@
 package configuration.constant;
 
-public enum Folder {
+public enum EFolder {
 
-    RESOURCES("resources/"), LOG("logs/"), IMG("img/"), ISSOU("img/issou/");
+    RESOURCES("/home/orlando/discordbots/proxy/resources/"), IMG("img/"), ISSOU("img/issou/");
 
     private final String name;
 
-    private Folder(String name) {
+    private EFolder(String name) {
         this.name = name;
     }
 
