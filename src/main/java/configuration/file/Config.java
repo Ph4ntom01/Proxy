@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.moandjiezana.toml.Toml;
 
@@ -15,6 +16,14 @@ public class Config {
     public Config(String filePath) {
         toml = new Toml();
         toml.read(readFileAsString(filePath));
+    }
+
+    private String readFileAsString(String filePath) {
+        try {
+            return Files.readString(Paths.get(filePath));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     public String getString(String key) {
@@ -37,11 +46,16 @@ public class Config {
         return toml.getList(key);
     }
 
-    private String readFileAsString(String filePath) {
-        try {
-            return Files.readString(Paths.get(filePath));
-        } catch (IOException e) {
-            return null;
+    public TimeUnit getTimeUnit(String unit) {
+        switch (getString(unit)) {
+        case "hour":
+            return TimeUnit.HOURS;
+        case "min":
+            return TimeUnit.MINUTES;
+        case "sec":
+            return TimeUnit.SECONDS;
+        default:
+            return TimeUnit.MILLISECONDS;
         }
     }
 
