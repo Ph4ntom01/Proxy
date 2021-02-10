@@ -120,12 +120,12 @@ public class GuildListener extends ListenerAdapter {
 
             // Create the json object.
             JSONObject guildLog = new JSONObject();
-            guildLog.put("id", guild.getId());
+            guildLog.put("id", guild.getId().toString());
             guildLog.put("name", guild.getName());
-            guildLog.put("join_channel_id", guild.getJoinChannel());
-            guildLog.put("leave_channel_id", guild.getLeaveChannel());
-            guildLog.put("control_channel_id", guild.getControlChannel());
-            guildLog.put("default_role_id", guild.getDefaultRole());
+            guildLog.put("join_channel_id", guild.getJoinChannel().toString());
+            guildLog.put("leave_channel_id", guild.getLeaveChannel().toString());
+            guildLog.put("control_channel_id", guild.getControlChannel().toString());
+            guildLog.put("default_role_id", guild.getDefaultRole().toString());
             guildLog.put("prefix", guild.getPrefix());
             guildLog.put("shield", guild.getShield());
             guildLog.put("date", new Timestamp(System.currentTimeMillis()));
