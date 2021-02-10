@@ -2,16 +2,16 @@ package dao.pojo;
 
 public class PGuild {
 
-    private String id;
+    private Long id;
     private String name;
-    private String joinChannel;
-    private String leaveChannel;
-    private String controlChannel;
-    private String defaultRole;
+    private Long joinChannel;
+    private Long leaveChannel;
+    private Long controlChannel;
+    private Long defaultRole;
     private String prefix;
     private int shield;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -19,19 +19,19 @@ public class PGuild {
         return name;
     }
 
-    public String getJoinChannel() {
+    public Long getJoinChannel() {
         return joinChannel;
     }
 
-    public String getLeaveChannel() {
+    public Long getLeaveChannel() {
         return leaveChannel;
     }
 
-    public String getControlChannel() {
+    public Long getControlChannel() {
         return controlChannel;
     }
 
-    public String getDefaultRole() {
+    public Long getDefaultRole() {
         return defaultRole;
     }
 
@@ -43,7 +43,7 @@ public class PGuild {
         return shield;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -51,19 +51,19 @@ public class PGuild {
         this.name = name;
     }
 
-    public void setJoinChannel(String joinChannel) {
+    public void setJoinChannel(Long joinChannel) {
         this.joinChannel = joinChannel;
     }
 
-    public void setLeaveChannel(String leaveChannel) {
+    public void setLeaveChannel(Long leaveChannel) {
         this.leaveChannel = leaveChannel;
     }
 
-    public void setControlChannel(String controlChannel) {
+    public void setControlChannel(Long controlChannel) {
         this.controlChannel = controlChannel;
     }
 
-    public void setDefaultRole(String defaultRole) {
+    public void setDefaultRole(Long defaultRole) {
         this.defaultRole = defaultRole;
     }
 
@@ -76,23 +76,28 @@ public class PGuild {
     }
 
     public boolean isEmpty() {
-        return (getId() == null && getName() == null && getJoinChannel() == null && getLeaveChannel() == null && getDefaultRole() == null && getPrefix() == null && getShield() == 0);
+        // @formatter:off
+        return (getId() == null &&
+                getName() == null &&
+                getJoinChannel() == null &&
+                getLeaveChannel() == null &&
+                getControlChannel() == null &&
+                getDefaultRole() == null &&
+                getPrefix() == null &&
+                getShield() == 0);
+        // @formatter:on
     }
 
     @Override
     public boolean equals(Object object) {
-
-        if (!(object instanceof PGuild)) {
-            return false;
-        }
-
+        if (!(object instanceof PGuild)) { return false; }
         PGuild guild = (PGuild) object;
-        return guild.getId().equals(getId());
+        return guild.getId().equals(this.getId());
     }
 
     @Override
     public int hashCode() {
-        return this.id.hashCode() + 1;
+        return this.getId().hashCode() + 1;
     }
 
 }

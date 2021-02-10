@@ -2,11 +2,11 @@ package dao.pojo;
 
 public class PLeaveChannel {
 
-    private String channelId;
+    private Long channelId;
     private String message;
     private boolean embed;
 
-    public String getChannelId() {
+    public Long getChannelId() {
         return channelId;
     }
 
@@ -18,7 +18,7 @@ public class PLeaveChannel {
         return embed;
     }
 
-    public void setChannelId(String channelId) {
+    public void setChannelId(Long channelId) {
         this.channelId = channelId;
     }
 

@@ -1,17 +1,19 @@
 package dao.pojo;
 
+import configuration.constant.EPermission;
+
 public class PGuildMember {
 
-    private String guildId;
-    private String id;
+    private Long guildId;
+    private Long id;
     private String name;
-    private int permId;
+    private EPermission permission;
 
-    public String getGuildId() {
+    public Long getGuildId() {
         return guildId;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -19,15 +21,15 @@ public class PGuildMember {
         return name;
     }
 
-    public int getPermId() {
-        return permId;
+    public EPermission getPermission() {
+        return permission;
     }
 
-    public void setGuildId(String guildId) {
+    public void setGuildId(Long guildId) {
         this.guildId = guildId;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -35,12 +37,12 @@ public class PGuildMember {
         this.name = name;
     }
 
-    public void setPermId(int permId) {
-        this.permId = permId;
+    public void setPermission(EPermission permission) {
+        this.permission = permission;
     }
 
     public boolean isEmpty() {
-        return (getGuildId() == null && getId() == null && getPermId() == 0);
+        return (getGuildId() == null && getId() == null && getPermission() == null);
     }
 
 }

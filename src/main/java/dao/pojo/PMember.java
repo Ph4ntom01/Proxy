@@ -2,10 +2,10 @@ package dao.pojo;
 
 public class PMember {
 
-    private String id;
+    private Long id;
     private String name;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -13,7 +13,7 @@ public class PMember {
         return name;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
