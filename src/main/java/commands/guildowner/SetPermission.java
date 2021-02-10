@@ -3,6 +3,7 @@ package commands.guildowner;
 import commands.ACommand;
 import configuration.cache.EGuildMemberCache;
 import configuration.constant.ECommand;
+import configuration.constant.EID;
 import configuration.constant.EPermission;
 import dao.database.ADao;
 import dao.database.DaoFactory;
@@ -36,6 +37,8 @@ public class SetPermission extends ACommand {
                     sendMessage("Impossible to set a permission for a bot.");
                 } else if (mentionnedMember.isOwner()) {
                     sendMessage("Impossible to set a permission for yourself.");
+                } else if (mentionnedMember.getId().equals(EID.BOT_OWNER.getId())) {
+                    sendMessage("Impossible to set a permission for the bot owner.");
                 } else {
                     String userTag = mentionnedMember.getUser().getAsTag();
                     EGuildMemberCache.INSTANCE.getGuildMemberAsync(mentionnedMember).thenAcceptAsync(member -> {
