@@ -4,15 +4,15 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import configuration.file.Config;
-import factory.ConfigFactory;
+import configuration.file.ConfigFactory;
 
-public enum DBService {
+public enum EDBService {
 
     INSTANCE;
 
-    private final HikariDataSource dataSource;
+    private final HikariDataSource datasource;
 
-    private DBService() {
+    private EDBService() {
         Config conf = ConfigFactory.getConf();
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName(conf.getString("database.className"));
@@ -27,11 +27,11 @@ public enum DBService {
         config.addDataSourceProperty("sslrootcert", conf.getString("database.ca"));
         config.addDataSourceProperty("prepareThreshold", conf.getLong("database.prepareThreshold"));
         config.addDataSourceProperty("preparedStatementCacheSizeMiB", conf.getLong("database.preparedStatementCacheSizeMiB"));
-        dataSource = new HikariDataSource(config);
+        datasource = new HikariDataSource(config);
     }
 
     public HikariDataSource getDatasource() {
-        return dataSource;
+        return datasource;
     }
 
 }
