@@ -3,9 +3,9 @@ package commands.moderator;
 import java.util.Objects;
 
 import commands.ACommand;
+import configuration.cache.EGuildMemberCache;
 import configuration.constant.ECommand;
-import dao.database.ADao;
-import dao.database.DaoFactory;
+import configuration.constant.EID;
 import dao.pojo.PGuild;
 import dao.pojo.PGuildMember;
 import net.dv8tion.jda.api.Permission;
@@ -38,8 +38,7 @@ public class Kick extends ACommand {
             if (mentionnedMember.getUser().isBot()) {
                 kick(mentionnedMember);
             } else {
-                ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-                PGuildMember mentionnedPGMember = gMemberDao.find(getGuild().getIdLong(), mentionnedMember.getIdLong());
+                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getGuildMember(mentionnedMember);
 
                 if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
                     sendMessage("Impossible to kick yourself.");
@@ -63,7 +62,7 @@ public class Kick extends ACommand {
             sendMessage("Missing permission: **" + Permission.KICK_MEMBERS.getName() + "**.");
 
         } catch (HierarchyException e) {
-            sendMessage("Impossible to kick a member with the same or a higher permission than yours.");
+            sendMessage("**" + mentionnedMember.getUser().getAsTag() + "** has the same or a higher permission than <@" + EID.BOT_ID.getId() + "> !");
 
         } catch (IllegalArgumentException e) {
         } catch (ErrorResponseException e) {
