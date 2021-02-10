@@ -2,19 +2,10 @@ package proxy;
 
 import javax.security.auth.login.LoginException;
 
-import commands.CommandRouter;
 import configuration.file.Config;
-import factory.ConfigFactory;
-import factory.StatsFactory;
-import listeners.guild.GuildChannelDelete;
-import listeners.guild.GuildJoin;
-import listeners.guild.GuildLeave;
-import listeners.guild.GuildRoleDelete;
-import listeners.guild.GuildUpdateName;
-import listeners.guild.GuildUpdateOwner;
-import listeners.member.MemberJoin;
-import listeners.member.MemberLeave;
-import listeners.member.MemberName;
+import configuration.file.ConfigFactory;
+import listeners.GuildListener;
+import listeners.MemberListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -43,27 +34,25 @@ public class Discord {
 
     private void configureMemoryUsage(JDABuilder builder) {
         builder.setChunkingFilter(ChunkingFilter.NONE);
-        builder.setMemberCachePolicy(MemberCachePolicy.ALL);
+        builder.setMemberCachePolicy(MemberCachePolicy.OWNER);
     }
 
     private void addEventListeners(JDABuilder builder) {
-        builder.addEventListeners(new Ready(), new GuildJoin(), new GuildLeave(), new MemberJoin(), new MemberLeave(), new MemberName(), new GuildChannelDelete(), new GuildRoleDelete(),
-                new GuildUpdateName(), new GuildUpdateOwner(), new CommandRouter());
+        builder.addEventListeners(new Ready(), new GuildListener(), new MemberListener());
     }
 
     private void build(JDABuilder builder) {
         try {
             JDA jda = builder.build().awaitReady();
-            setStats(jda);
+            // Send stats.
+            BotStats stats = new BotStats(conf, Math.toIntExact(jda.getGuildCache().size()));
+            stats.setDiscordBotListGuildCount();
+            stats.setBotsOnDiscordGuildCount();
         } catch (LoginException e) {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (NullPointerException e) {
         }
-    }
-
-    private void setStats(JDA jda) {
-        StatsFactory.getDBL(conf).setStats(Math.toIntExact(jda.getGuildCache().size()));
     }
 
 }
