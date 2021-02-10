@@ -8,19 +8,18 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dao.pojo.PJoinChannel;
-import factory.PojoFactory;
 
-public class JoinChannelDAO extends Dao<PJoinChannel> {
+public class JoinChannelDAO extends ADao<PJoinChannel> {
 
-    public JoinChannelDAO(HikariDataSource dataSource) {
-        super(dataSource);
+    protected JoinChannelDAO(HikariDataSource datasource) {
+        super(datasource);
     }
 
     @Override
     public boolean create(PJoinChannel joinChannel) {
         String query = "INSERT INTO join_channel(channel_id) VALUES(?);";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, joinChannel.getChannelId());
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, joinChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -31,8 +30,8 @@ public class JoinChannelDAO extends Dao<PJoinChannel> {
     @Override
     public boolean delete(PJoinChannel joinChannel) {
         String query = "DELETE FROM join_channel WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, joinChannel.getChannelId());
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, joinChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -43,10 +42,10 @@ public class JoinChannelDAO extends Dao<PJoinChannel> {
     @Override
     public boolean update(PJoinChannel joinChannel) {
         String query = "UPDATE join_channel SET message = ?, embed = ? WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setString(1, joinChannel.getMessage());
             pst.setBoolean(2, joinChannel.getEmbed());
-            pst.setString(3, joinChannel.getChannelId());
+            pst.setLong(3, joinChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -54,13 +53,13 @@ public class JoinChannelDAO extends Dao<PJoinChannel> {
         return true;
     }
 
-    public boolean update(PJoinChannel joinChannel, String channelId) {
+    public boolean update(PJoinChannel joinChannel, Long channelId) {
         String query = "UPDATE join_channel SET channel_id = ?, message = ?, embed = ? WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, channelId);
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, channelId);
             pst.setString(2, joinChannel.getMessage());
             pst.setBoolean(3, joinChannel.getEmbed());
-            pst.setString(4, joinChannel.getChannelId());
+            pst.setLong(4, joinChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -69,17 +68,22 @@ public class JoinChannelDAO extends Dao<PJoinChannel> {
     }
 
     @Override
-    public PJoinChannel find(String channelId) {
+    public PJoinChannel find(Long... channelLong) {
         PJoinChannel joinChannel = null;
         String query = "SELECT channel_id, message, embed FROM join_channel WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, channelId);
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            setNLong(1, pst, channelLong[0]);
             ResultSet rs = pst.executeQuery();
             rs.next();
-            joinChannel = PojoFactory.getJoinChannel();
-            joinChannel.setChannelId(rs.getString("channel_id"));
-            joinChannel.setMessage(rs.getString("message"));
-            joinChannel.setEmbed(rs.getBoolean("embed"));
+            joinChannel = new PJoinChannel();
+            // If the channel does not exists, no row is sent and an error occurs if we try to get a value from
+            // the result set.
+            // In that case, only the freshly instantiated channel object is returned without any setters.
+            if (rs.getRow() != 0) {
+                joinChannel.setChannelId(rs.getLong("channel_id"));
+                joinChannel.setMessage(rs.getString("message"));
+                joinChannel.setEmbed(rs.getBoolean("embed"));
+            }
         } catch (SQLException e) {
         }
         return joinChannel;

@@ -8,19 +8,18 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dao.pojo.PLeaveChannel;
-import factory.PojoFactory;
 
-public class LeaveChannelDAO extends Dao<PLeaveChannel> {
+public class LeaveChannelDAO extends ADao<PLeaveChannel> {
 
-    public LeaveChannelDAO(HikariDataSource dataSource) {
-        super(dataSource);
+    protected LeaveChannelDAO(HikariDataSource datasource) {
+        super(datasource);
     }
 
     @Override
     public boolean create(PLeaveChannel leaveChannel) {
         String query = "INSERT INTO leave_channel(channel_id) VALUES(?);";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, leaveChannel.getChannelId());
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -31,8 +30,8 @@ public class LeaveChannelDAO extends Dao<PLeaveChannel> {
     @Override
     public boolean delete(PLeaveChannel leaveChannel) {
         String query = "DELETE FROM leave_channel WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, leaveChannel.getChannelId());
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -43,10 +42,10 @@ public class LeaveChannelDAO extends Dao<PLeaveChannel> {
     @Override
     public boolean update(PLeaveChannel leaveChannel) {
         String query = "UPDATE leave_channel SET message = ?, embed = ? WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setString(1, leaveChannel.getMessage());
             pst.setBoolean(2, leaveChannel.getEmbed());
-            pst.setString(3, leaveChannel.getChannelId());
+            pst.setLong(3, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -54,13 +53,13 @@ public class LeaveChannelDAO extends Dao<PLeaveChannel> {
         return true;
     }
 
-    public boolean update(PLeaveChannel leaveChannel, String channelId) {
+    public boolean update(PLeaveChannel leaveChannel, Long channelId) {
         String query = "UPDATE leave_channel SET channel_id = ?, message = ?, embed = ? WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, channelId);
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, channelId);
             pst.setString(2, leaveChannel.getMessage());
             pst.setBoolean(3, leaveChannel.getEmbed());
-            pst.setString(4, leaveChannel.getChannelId());
+            pst.setLong(4, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -69,17 +68,22 @@ public class LeaveChannelDAO extends Dao<PLeaveChannel> {
     }
 
     @Override
-    public PLeaveChannel find(String channelId) {
+    public PLeaveChannel find(Long... channelLong) {
         PLeaveChannel leaveChannel = null;
         String query = "SELECT channel_id, message, embed FROM leave_channel WHERE channel_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, channelId);
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            setNLong(1, pst, channelLong[0]);
             ResultSet rs = pst.executeQuery();
             rs.next();
-            leaveChannel = PojoFactory.getLeaveChannel();
-            leaveChannel.setChannelId(rs.getString("channel_id"));
-            leaveChannel.setMessage(rs.getString("message"));
-            leaveChannel.setEmbed(rs.getBoolean("embed"));
+            leaveChannel = new PLeaveChannel();
+            // If the channel does not exists, no row is sent and an error occurs if we try to get a value from
+            // the result set.
+            // In that case, only the freshly instantiated channel object is returned without any setters.
+            if (rs.getRow() != 0) {
+                leaveChannel.setChannelId(rs.getLong("channel_id"));
+                leaveChannel.setMessage(rs.getString("message"));
+                leaveChannel.setEmbed(rs.getBoolean("embed"));
+            }
         } catch (SQLException e) {
         }
         return leaveChannel;

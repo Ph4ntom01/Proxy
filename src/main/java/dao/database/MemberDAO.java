@@ -8,12 +8,11 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dao.pojo.PMember;
-import factory.PojoFactory;
 
-public class MemberDAO extends Dao<PMember> {
+public class MemberDAO extends ADao<PMember> {
 
-    public MemberDAO(HikariDataSource dataSource) {
-        super(dataSource);
+    protected MemberDAO(HikariDataSource datasource) {
+        super(datasource);
     }
 
     @Override
@@ -29,9 +28,9 @@ public class MemberDAO extends Dao<PMember> {
     @Override
     public boolean update(PMember member) {
         String query = "UPDATE member SET name = ? WHERE member_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setString(1, member.getName());
-            pst.setString(2, member.getId());
+            pst.setLong(2, member.getId());
             pst.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
@@ -41,16 +40,21 @@ public class MemberDAO extends Dao<PMember> {
     }
 
     @Override
-    public PMember find(String memberId) {
+    public PMember find(Long... memberLong) {
         PMember member = null;
         String query = "SELECT member_id, name FROM member WHERE member_id = ?;";
-        try (Connection conn = this.dataSource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, memberId);
+        try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
+            pst.setLong(1, memberLong[0]);
             ResultSet rs = pst.executeQuery();
             rs.next();
-            member = PojoFactory.getMember();
-            member.setId(rs.getString("member_id"));
-            member.setName(rs.getString("name"));
+            member = new PMember();
+            // If the user does not exists, no row is sent and an error occurs if we try to get a value from the
+            // result set.
+            // In that case, only the freshly instantiated member object is returned without any setters.
+            if (rs.getRow() != 0) {
+                member.setId(rs.getLong("member_id"));
+                member.setName(rs.getString("name"));
+            }
         } catch (SQLException e) {
         }
         return member;
