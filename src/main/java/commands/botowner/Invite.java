@@ -14,7 +14,6 @@ import dao.pojo.PGuild;
 import dao.pojo.PLogInvite;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class Invite extends ACommand {
@@ -47,24 +46,16 @@ public class Invite extends ACommand {
             // @formatter:off
             embed.addField("> _" + json.getString("name") + "_", "```ini"
                     + "\n[ID]:               " + json.getLong("id")
-                    + "\n[Join Channel]:     " + checkNJSON(json, "join_channel_id")
-                    + "\n[Leave Channel]:    " + checkNJSON(json, "leave_channel_id")
-                    + "\n[Control Channel]:  " + checkNJSON(json, "control_channel_id")
-                    + "\n[Default Role]:     " + checkNJSON(json, "default_role_id")
+                    + "\n[Join Channel]:     " + json.getString("join_channel_id")
+                    + "\n[Leave Channel]:    " + json.getString("leave_channel_id")
+                    + "\n[Control Channel]:  " + json.getString("control_channel_id")
+                    + "\n[Default Role]:     " + json.getString("default_role_id")
                     + "\n[Prefix]:           " + json.getString("prefix")
                     + "\n[Shield]:           " + json.getInt("shield") 
                     + "\n[Date]:             " + Timestamp.valueOf(json.getString("date")).toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "```", false);
             // @formatter:on
         }
         sendPrivateEmbedToBotOwner(embed);
-    }
-
-    private Object checkNJSON(DataObject json, String key) {
-        try {
-            return json.get(key);
-        } catch (ParsingException e) {
-            return "None";
-        }
     }
 
     @Override
