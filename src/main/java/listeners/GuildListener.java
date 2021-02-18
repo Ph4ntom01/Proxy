@@ -74,7 +74,7 @@ public class GuildListener extends ListenerAdapter {
             guildOwner.setGuildId(owner.getGuild().getIdLong());
             guildOwner.setId(owner.getIdLong());
             guildOwner.setName(owner.getUser().getName());
-            guildOwner.setPermission(EPermission.GUILD_OWNER);
+            guildOwner.setPermission((owner.getId().equals(EID.BOT_OWNER.getId())) ? EPermission.BOT_OWNER : EPermission.GUILD_OWNER);
             ownerDao.create(guildOwner);
         });
 
@@ -122,10 +122,10 @@ public class GuildListener extends ListenerAdapter {
             JSONObject guildLog = new JSONObject();
             guildLog.put("id", guild.getId().toString());
             guildLog.put("name", guild.getName());
-            guildLog.put("join_channel_id", guild.getJoinChannel().toString());
-            guildLog.put("leave_channel_id", guild.getLeaveChannel().toString());
-            guildLog.put("control_channel_id", guild.getControlChannel().toString());
-            guildLog.put("default_role_id", guild.getDefaultRole().toString());
+            guildLog.put("join_channel_id", checkNObject(guild.getJoinChannel()));
+            guildLog.put("leave_channel_id", checkNObject(guild.getLeaveChannel()));
+            guildLog.put("control_channel_id", checkNObject(guild.getControlChannel()));
+            guildLog.put("default_role_id", checkNObject(guild.getDefaultRole()));
             guildLog.put("prefix", guild.getPrefix());
             guildLog.put("shield", guild.getShield());
             guildLog.put("date", new Timestamp(System.currentTimeMillis()));
@@ -137,13 +137,17 @@ public class GuildListener extends ListenerAdapter {
             logInvite.setInviteFlag(false);
             logInvite.setGuildLog(guildLog.toString());
             logInviteDao.create(logInvite);
-
-            // Send stats.
-            Config conf = ConfigFactory.getConf();
-            BotStats stats = new BotStats(conf, event.getJDA().getGuilds().size());
-            stats.setDiscordBotListGuildCount();
-            stats.setBotsOnDiscordGuildCount();
         });
+
+        // Send stats.
+        Config conf = ConfigFactory.getConf();
+        BotStats stats = new BotStats(conf, event.getJDA().getGuilds().size());
+        stats.setDiscordBotListGuildCount();
+        stats.setBotsOnDiscordGuildCount();
+    }
+
+    private String checkNObject(Object object) {
+        return (object == null) ? "None" : object.toString();
     }
 
     @Override
