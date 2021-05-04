@@ -32,7 +32,6 @@ public class MemberDAO extends ADao<PMember> {
             pst.setString(1, member.getName());
             pst.setLong(2, member.getId());
             pst.executeUpdate();
-            conn.commit();
         } catch (SQLException e) {
             return false;
         }

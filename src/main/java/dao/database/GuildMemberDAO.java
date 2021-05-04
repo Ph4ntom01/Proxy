@@ -83,7 +83,6 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
             pst.setLong(2, gMember.getGuildId());
             pst.setLong(3, gMember.getId());
             pst.executeUpdate();
-            conn.commit();
         } catch (SQLException e) {
             return false;
         }
