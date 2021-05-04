@@ -49,7 +49,7 @@ public class GuildDAO extends ADao<PGuild> {
             // Delete members from the GuildMember table.
             deleteMembers.setLong(1, guild.getId());
             deleteMembers.executeUpdate();
-            // Delete members from the member table if their ids are no more referenced into the GuildMember table.
+            // Delete members from the member table if their id's are no more referenced into the GuildMember table.
             deleteOrphans.executeUpdate();
             // Delete the banned members from the guild.
             deleteBans.setLong(1, guild.getId());

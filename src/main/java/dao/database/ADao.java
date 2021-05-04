@@ -13,7 +13,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * type. <br>
  * <br>
  * The goal with interface {@code SQLCloseable} is to override the {@code close} method (and throw
- * {@code SQLException} instead of {@code Exception}) to rollback the connection if necessary.
+ * {@code SQLException} instead of {@code Exception}) to roll back the connection if necessary.
  */
 @FunctionalInterface
 interface SQLCloseable extends AutoCloseable {
@@ -84,7 +84,7 @@ public abstract class ADao<T> {
     /**
      * Send a long value or null. <br>
      * {@code setLong} method only accepts a primitive long value, null is not allowed. This method fix
-     * that behaviour by swapping between {@code setLong} and {@code setNull} methods.
+     * that behavior by swapping between {@code setLong} and {@code setNull} methods.
      * 
      * @param parameterIndex The first parameter is 1, the second is 2, etc.
      * @param pst            The current prepared statement.

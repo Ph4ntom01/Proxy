@@ -276,9 +276,9 @@ public abstract class ACommand {
      * @param mention  The {@link net.dv8tion.jda.api.entities.Message.MentionType Mention} type.
      * @param position The position of the mention.
      * @param message  The {@link net.dv8tion.jda.api.entities.Message Message}.
-     * @param id       The mentionned entity id.
+     * @param id       The mentioned entity id.
      * 
-     * @return The mentionned entity id.
+     * @return The mentioned entity id.
      */
     @Nonnull
     private String retrieveMentionnedEntity(Message message, MentionType mention, int position, String id) {

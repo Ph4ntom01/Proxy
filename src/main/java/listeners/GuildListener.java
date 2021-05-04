@@ -40,10 +40,12 @@ public class GuildListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+
         if (!EBlacklistCache.INSTANCE.isGuildBlacklisted(event.getGuild().getId()) && !EBlacklistCache.INSTANCE.isMemberBlacklisted(event.getAuthor().getId()) && !event.getAuthor().isBot()) {
+
             EGuildCache.INSTANCE.getGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(guild -> {
                 CommandChecker checker = new CommandChecker(event, guild, event.getMessage().getContentRaw());
-                // Check if the command contains the prefix AND exists OR check if the bot is mentionned.
+                // Check if the command contains the prefix AND exists OR check if the bot is mentioned.
                 if (checker.isValid() || checker.isSelfbotMention()) {
                     ECommand command = checker.buildCommand();
                     PGuildMember member = EGuildMemberCache.INSTANCE.getGuildMember(event.getMember());
@@ -250,9 +252,9 @@ public class GuildListener extends ListenerAdapter {
         }
 
         /**
-         * Check if the bot is mentionned.
+         * Check if the bot is mentioned.
          * 
-         * @return True if the bot is mentionned, otherwise false.
+         * @return True if the bot is mentioned, otherwise false.
          */
         private boolean isSelfbotMention() {
             if (event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser()) && args.length == 1) {
