@@ -9,7 +9,9 @@ import java.util.Set;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import configuration.constant.EInviteState;
 import dao.pojo.PLogInvite;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class LogInviteDAO extends ADao<PLogInvite> {
 
@@ -19,11 +21,9 @@ public class LogInviteDAO extends ADao<PLogInvite> {
 
     @Override
     public boolean create(PLogInvite log) {
-        String query = "INSERT INTO log_invite(guild_id, invite, guild) VALUES(?, ?, to_jsonb(?::JSON));";
+        String query = "INSERT INTO log_invite(guild) VALUES(to_jsonb(?::JSON));";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setLong(1, log.getId());
-            pst.setBoolean(2, log.getInviteFlag());
-            pst.setString(3, log.getGuildLog());
+            pst.setString(1, log.getGuild());
             pst.executeUpdate();
         } catch (SQLException e) {
             return false;
@@ -46,19 +46,16 @@ public class LogInviteDAO extends ADao<PLogInvite> {
         return null;
     }
 
-    public Set<PLogInvite> findLogs(boolean inviteFlag) {
-        Set<PLogInvite> logs = null;
-        String query = "SELECT guild_id, invite, guild FROM log_invite WHERE invite = ? ORDER BY log_date DESC LIMIT 3;";
+    public Set<DataObject> findLogs(EInviteState state) {
+        Set<DataObject> logs = null;
+        String query = "SELECT guild FROM log_invite WHERE guild->>'state' = ? ORDER BY guild->>'date' DESC LIMIT 3;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setBoolean(1, inviteFlag);
+            pst.setString(1, state.getName());
             ResultSet rs = pst.executeQuery();
+            // LinkedHashSet for insertion order.
             logs = new LinkedHashSet<>();
             while (rs.next()) {
-                PLogInvite log = new PLogInvite();
-                log.setId(rs.getLong("guild_id"));
-                log.setInviteFlag(rs.getBoolean("invite"));
-                log.setGuildLog(rs.getString("guild"));
-                logs.add(log);
+                logs.add(DataObject.fromJson(rs.getString("guild")));
             }
         } catch (SQLException e) {
         }
