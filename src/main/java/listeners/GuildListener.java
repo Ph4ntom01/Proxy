@@ -1,12 +1,9 @@
 package listeners;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import org.json.JSONObject;
 
 import configuration.cache.EBlacklistCache;
 import configuration.cache.ECommandCache;
@@ -49,9 +46,9 @@ public class GuildListener extends ListenerAdapter {
                 if (checker.isValid() || checker.isSelfbotMention()) {
                     ECommand command = checker.buildCommand();
                     PGuildMember member = EGuildMemberCache.INSTANCE.getGuildMember(event.getMember());
-                    ACommandListener listener = ACommandListener.buildListener(event, checker.getArgs(), command, guild, member);
                     // Check the user's permission.
-                    if (listener.isAllowed(member)) {
+                    if (ACommandListener.isAllowed(event, command, member)) {
+                        ACommandListener listener = ACommandListener.buildListener(event, checker.getArgs(), command, guild, member);
                         listener.route();
                     }
                 }
@@ -80,18 +77,10 @@ public class GuildListener extends ListenerAdapter {
             ownerDao.create(guildOwner);
         });
 
-        // Create the json object.
-        JSONObject guildLog = new JSONObject();
-        guildLog.put("id", guild.getId());
-        guildLog.put("name", guild.getName());
-        guildLog.put("date", new Timestamp(System.currentTimeMillis()));
-
         // Create the guild log.
         ADao<PLogInvite> logInviteDao = DaoFactory.getLogInviteDAO();
         PLogInvite logInvite = new PLogInvite();
-        logInvite.setId(guild.getIdLong());
-        logInvite.setInviteFlag(true);
-        logInvite.setGuildLog(guildLog.toString());
+        logInvite.setGuild(logInvite.getJSONGuildJoin(guild).toString());
         logInviteDao.create(logInvite);
 
         // Send stats.
@@ -120,24 +109,10 @@ public class GuildListener extends ListenerAdapter {
             // Delete the guild from the cache.
             EGuildCache.INSTANCE.invalidate(guild.getId());
 
-            // Create the json object.
-            JSONObject guildLog = new JSONObject();
-            guildLog.put("id", guild.getId().toString());
-            guildLog.put("name", guild.getName());
-            guildLog.put("join_channel_id", checkNObject(guild.getJoinChannel()));
-            guildLog.put("leave_channel_id", checkNObject(guild.getLeaveChannel()));
-            guildLog.put("control_channel_id", checkNObject(guild.getControlChannel()));
-            guildLog.put("default_role_id", checkNObject(guild.getDefaultRole()));
-            guildLog.put("prefix", guild.getPrefix());
-            guildLog.put("shield", guild.getShield());
-            guildLog.put("date", new Timestamp(System.currentTimeMillis()));
-
             // Create the guild log.
             ADao<PLogInvite> logInviteDao = DaoFactory.getLogInviteDAO();
             PLogInvite logInvite = new PLogInvite();
-            logInvite.setId(guild.getId());
-            logInvite.setInviteFlag(false);
-            logInvite.setGuildLog(guildLog.toString());
+            logInvite.setGuild(logInvite.getJSONGuildLeave(guild).toString());
             logInviteDao.create(logInvite);
         });
 
@@ -146,10 +121,6 @@ public class GuildListener extends ListenerAdapter {
         BotStats stats = new BotStats(conf, event.getJDA().getGuilds().size());
         stats.setDiscordBotListGuildCount();
         stats.setBotsOnDiscordGuildCount();
-    }
-
-    private String checkNObject(Object object) {
-        return (object == null) ? "None" : object.toString();
     }
 
     @Override
