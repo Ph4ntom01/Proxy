@@ -19,17 +19,13 @@ public class Prefix extends ACommand {
 
     @Override
     public void execute() {
-        if (getArgs()[1].length() <= 2) {
-            if (getGuildPrefix().equalsIgnoreCase(getArgs()[1])) {
-                sendMessage("Prefix " + "**" + getGuildPrefix() + "**" + " has already been defined.");
-            } else {
-                ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
-                getPGuild().setPrefix(getArgs()[1]);
-                guildDao.update(getPGuild());
-                sendMessage("Prefix is now: " + "**" + getGuildPrefix() + "**");
-            }
+        if (getGuildPrefix().equalsIgnoreCase(getArgs()[1])) {
+            sendMessage("Prefix " + "**" + getGuildPrefix() + "**" + " has already been defined.");
         } else {
-            sendMessage("Two characters maximum are allowed.");
+            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            getPGuild().setPrefix(getArgs()[1]);
+            guildDao.update(getPGuild());
+            sendMessage("Prefix is now: " + "**" + getGuildPrefix() + "**");
         }
     }
 
