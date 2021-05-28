@@ -40,7 +40,7 @@ public abstract class ACommandListener {
      * 
      * @return True if the user is allowed, otherwise false.
      */
-    public final boolean isAllowed(PGuildMember member) {
+    public static final boolean isAllowed(GuildMessageReceivedEvent event, ECommand command, PGuildMember member) {
         if (command.getPermission() == EPermission.USER) { return true; }
         if (command.getPermission() == EPermission.BOT_OWNER && member.getPermission() == EPermission.BOT_OWNER) { return true; }
         if (command.getPermission().getLevel() <= member.getPermission().getLevel()) { return true; }
