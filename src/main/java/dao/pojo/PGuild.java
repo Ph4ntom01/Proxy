@@ -75,19 +75,6 @@ public class PGuild {
         this.shield = shield;
     }
 
-    public boolean isEmpty() {
-        // @formatter:off
-        return (getId() == null &&
-                getName() == null &&
-                getJoinChannel() == null &&
-                getLeaveChannel() == null &&
-                getControlChannel() == null &&
-                getDefaultRole() == null &&
-                getPrefix() == null &&
-                getShield() == 0);
-        // @formatter:on
-    }
-
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof PGuild)) { return false; }
