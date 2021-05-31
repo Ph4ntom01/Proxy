@@ -1,15 +1,22 @@
 package proxy;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.json.JSONObject;
 
 import configuration.constant.EID;
 import configuration.file.Config;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class BotStats {
+
+    private static final Logger LOG = Logger.getLogger(BotStats.class.getName());
 
     private Config conf;
     private int guildCount;
@@ -29,7 +36,7 @@ public class BotStats {
             .botId(EID.BOT_ID.getId())
             .build()
             .setStats(guildCount);
-        // @formatter:off
+        // @formatter:on
     }
 
     /**
@@ -38,14 +45,25 @@ public class BotStats {
     public void setBotsOnDiscordGuildCount() {
         JSONObject json = new JSONObject();
         json.put("guildCount", guildCount);
-        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json; charset=utf-8"));
+        OkHttpClient client = new OkHttpClient();
+        @SuppressWarnings("deprecation")
+        RequestBody body = RequestBody.create(MediaType.get("application/json; charset=utf-8"), json.toString());
         // @formatter:off
-        new Request.Builder()
-            .url("https://bots.ondiscord.xyz/bot-api/bots/" + EID.BOT_ID.getId() + "/guilds")
-            .addHeader("Authorization", conf.getString("token.bod"))
-            .post(body)
-            .build();
+        Request request = new Request.Builder()
+                .url("https://bots.ondiscord.xyz/bot-api/bots/" + EID.BOT_ID.getId() + "/guilds")
+                .addHeader("Authorization", conf.getString("token.bod"))
+                .post(body)
+                .build();
         // @formatter:on
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                LOG.log(java.util.logging.Level.INFO, "Successfully sent guild count to API.");
+            } else {
+                LOG.log(java.util.logging.Level.INFO, "An error occurred (Response : {0})", response.body().string());
+            }
+        } catch (IOException e) {
+            LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+        }
     }
 
 }
