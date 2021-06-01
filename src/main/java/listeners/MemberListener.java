@@ -1,12 +1,24 @@
 package listeners;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Timestamp;
+import java.text.AttributedString;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
+
 import configuration.cache.EGuildCache;
+import configuration.constant.EFolder;
 import dao.database.ADao;
 import dao.database.DaoFactory;
 import dao.pojo.PBan;
@@ -15,7 +27,6 @@ import dao.pojo.PGuildMember;
 import dao.pojo.PJoinChannel;
 import dao.pojo.PLeaveChannel;
 import dao.pojo.PMember;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -164,15 +175,12 @@ public class MemberListener extends ListenerAdapter {
                     event.getGuild().getTextChannelById(guild.getJoinChannel()).sendMessage(joinChannel.getMessage().replace("[member]", event.getUser().getName())).queue();
 
                 } else if (joinChannel.getMessage() != null && joinChannel.getEmbed()) {
-                    EmbedBuilder embed = controlGateEvent(event.getUser());
-                    // @formatter:off
-                    event.getGuild().getTextChannelById(guild.getJoinChannel()).sendMessage(embed.build())
-                        .append(joinChannel.getMessage().replace("[member]", event.getUser().getName())).queue();
-                    // @formatter:on
+                    GuildMemberJoinRemoveModel join = new GuildMemberJoinRemoveModel();
+                    join.sendJoinMessage(event, guild, "join_channel_box", joinChannel);
 
                 } else if (joinChannel.getMessage() == null && joinChannel.getEmbed()) {
-                    EmbedBuilder embed = controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guild.getJoinChannel()).sendMessage(embed.build()).queue();
+                    GuildMemberJoinRemoveModel join = new GuildMemberJoinRemoveModel();
+                    join.sendJoinMessage(event, guild, "join_channel", joinChannel);
                 }
             } catch (InsufficientPermissionException e) {
             }
@@ -186,31 +194,103 @@ public class MemberListener extends ListenerAdapter {
             try {
                 if (leaveChannel.getMessage() != null && !leaveChannel.getEmbed()) {
                     event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(leaveChannel.getMessage().replace("[member]", event.getUser().getName())).queue();
+                }
 
-                } else if (leaveChannel.getMessage() != null && leaveChannel.getEmbed()) {
-                    EmbedBuilder embed = controlGateEvent(event.getUser());
-                    // @formatter:off
-                    event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(embed.build())
-                        .append(leaveChannel.getMessage().replace("[member]", event.getUser().getName())).queue();
-                    // @formatter:on
+                else if (leaveChannel.getMessage() != null && leaveChannel.getEmbed()) {
+                    GuildMemberJoinRemoveModel leave = new GuildMemberJoinRemoveModel();
+                    leave.sendLeaveMessage(event, guild, "leave_channel_box", leaveChannel);
+                }
 
-                } else if (leaveChannel.getMessage() == null && leaveChannel.getEmbed()) {
-                    EmbedBuilder embed = controlGateEvent(event.getUser());
-                    event.getGuild().getTextChannelById(guild.getLeaveChannel()).sendMessage(embed.build()).queue();
+                else if (leaveChannel.getMessage() == null && leaveChannel.getEmbed()) {
+                    GuildMemberJoinRemoveModel leave = new GuildMemberJoinRemoveModel();
+                    leave.sendLeaveMessage(event, guild, "leave_channel", leaveChannel);
                 }
             } catch (InsufficientPermissionException e) {
             }
         }
     }
 
-    private EmbedBuilder controlGateEvent(User user) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setColor(Color.GREEN);
-        embed.addField("Tag", user.getAsTag(), false);
-        embed.addField("Discord Join", user.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), true);
-        embed.addField("ID", user.getId(), true);
-        embed.setImage(user.getEffectiveAvatarUrl() + "?size=256");
-        return embed;
+    private class GuildMemberJoinRemoveModel {
+
+        private void sendJoinMessage(GuildMemberJoinEvent eventJoin, PGuild guild, String channel, PJoinChannel joinChannel) {
+            File file = new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome_tmp.png");
+            if (channel.equals("join_channel")) {
+                eventJoin.getGuild().loadMembers().onSuccess(members -> {
+                    sendCustomImage(eventJoin.getUser(), members.size());
+                    eventJoin.getGuild().getTextChannelById(guild.getJoinChannel()).sendFile(file).queue();
+                }).onError(e -> {
+                    sendCustomImage(eventJoin.getUser(), eventJoin.getGuild().getMemberCount());
+                    eventJoin.getGuild().getTextChannelById(guild.getJoinChannel()).sendFile(file).queue();
+                });
+            }
+
+            else if (channel.equals("join_channel_box")) {
+                eventJoin.getGuild().loadMembers().onSuccess(members -> {
+                    sendCustomImage(eventJoin.getUser(), members.size());
+                    eventJoin.getGuild().getTextChannelById(guild.getJoinChannel()).sendFile(file).append(joinChannel.getMessage().replace("[member]", eventJoin.getUser().getName())).queue();
+                }).onError(e -> {
+                    sendCustomImage(eventJoin.getUser(), eventJoin.getGuild().getMemberCount());
+                    eventJoin.getGuild().getTextChannelById(guild.getJoinChannel()).sendFile(file).append(joinChannel.getMessage().replace("[member]", eventJoin.getUser().getName())).queue();
+                });
+            }
+        }
+
+        private void sendLeaveMessage(GuildMemberRemoveEvent eventRemove, PGuild guild, String channel, PLeaveChannel leaveChannel) {
+            File file = new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome_tmp.png");
+            if (channel.equals("leave_channel")) {
+                eventRemove.getGuild().loadMembers().onSuccess(members -> {
+                    sendCustomImage(eventRemove.getUser(), members.size());
+                    eventRemove.getGuild().getTextChannelById(guild.getLeaveChannel()).sendFile(file).queue();
+                }).onError(e -> {
+                    sendCustomImage(eventRemove.getUser(), eventRemove.getGuild().getMemberCount());
+                    eventRemove.getGuild().getTextChannelById(guild.getLeaveChannel()).sendFile(file).queue();
+                });
+            }
+
+            else if (channel.equals("leave_channel_box")) {
+                eventRemove.getGuild().loadMembers().onSuccess(members -> {
+                    sendCustomImage(eventRemove.getUser(), members.size());
+                    eventRemove.getGuild().getTextChannelById(guild.getLeaveChannel()).sendFile(file).append(leaveChannel.getMessage().replace("[member]", eventRemove.getUser().getName())).queue();
+                }).onError(e -> {
+                    sendCustomImage(eventRemove.getUser(), eventRemove.getGuild().getMemberCount());
+                    eventRemove.getGuild().getTextChannelById(guild.getLeaveChannel()).sendFile(file).append(leaveChannel.getMessage().replace("[member]", eventRemove.getUser().getName())).queue();
+                });
+            }
+        }
+
+        private void sendCustomImage(User user, int memberCount) {
+            try {
+                BufferedImage image = ImageIO.read(new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome.png"));
+                BufferedImage avatar = null;
+                if (user.getAvatarUrl() == null) {
+                    avatar = ImageIO.read(new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "default_discord_avatar.png"));
+                } else {
+                    avatar = ImageIO.read(new URL(user.getAvatarUrl() + "?size=128"));
+                }
+
+                Font font = new Font("Calibri", Font.TRUETYPE_FONT, 24);
+
+                Graphics2D g = image.createGraphics();
+                FontMetrics metrics = g.getFontMetrics(font);
+
+                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g.drawImage(avatar, (image.getWidth() - avatar.getWidth()) / 2, 27, null);
+                g.drawString(defineAttributedText(font, user.getAsTag(), Color.WHITE).getIterator(), (image.getWidth() - metrics.stringWidth(user.getAsTag())) / 2, 195);
+                g.drawString(defineAttributedText(new Font("Lato", Font.BOLD, 14), "#" + memberCount, Color.WHITE).getIterator(), 10, 225);
+                g.dispose();
+
+                ImageIO.write(image, "png", new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome_tmp.png"));
+            } catch (IOException e) {
+            }
+        }
+
+        private AttributedString defineAttributedText(Font font, String text, Color textColor) {
+            AttributedString attributedText = new AttributedString(text);
+            attributedText.addAttribute(TextAttribute.FONT, font);
+            attributedText.addAttribute(TextAttribute.FOREGROUND, textColor);
+            return attributedText;
+        }
+
     }
 
 }
