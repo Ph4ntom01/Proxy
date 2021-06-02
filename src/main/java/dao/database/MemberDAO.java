@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import com.zaxxer.hikari.HikariDataSource;
 
 import dao.pojo.PMember;
 
 public class MemberDAO extends ADao<PMember> {
+
+    private static final Logger LOG = Logger.getLogger(MemberDAO.class.getName());
 
     protected MemberDAO(HikariDataSource datasource) {
         super(datasource);
@@ -33,6 +36,7 @@ public class MemberDAO extends ADao<PMember> {
             pst.setLong(2, member.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
@@ -55,6 +59,7 @@ public class MemberDAO extends ADao<PMember> {
                 member.setName(rs.getString("name"));
             }
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
         }
         return member;
     }

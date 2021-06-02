@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -14,6 +15,8 @@ import dao.pojo.PLogInvite;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class LogInviteDAO extends ADao<PLogInvite> {
+
+    private static final Logger LOG = Logger.getLogger(LogInviteDAO.class.getName());
 
     protected LogInviteDAO(HikariDataSource datasource) {
         super(datasource);
@@ -26,6 +29,7 @@ public class LogInviteDAO extends ADao<PLogInvite> {
             pst.setString(1, log.getGuild());
             pst.executeUpdate();
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
@@ -58,6 +62,7 @@ public class LogInviteDAO extends ADao<PLogInvite> {
                 logs.add(DataObject.fromJson(rs.getString("guild")));
             }
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
         }
         return logs;
     }

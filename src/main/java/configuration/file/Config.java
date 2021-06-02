@@ -6,10 +6,13 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import com.moandjiezana.toml.Toml;
 
 public class Config {
+
+    private static final Logger LOG = Logger.getLogger(Config.class.getName());
 
     private final Toml toml;
 
@@ -22,6 +25,7 @@ public class Config {
         try {
             return Files.readString(Paths.get(filePath));
         } catch (IOException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return null;
         }
     }

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -15,6 +16,8 @@ import dao.pojo.PGuildMember;
 import dao.pojo.PMember;
 
 public class GuildMemberDAO extends ADao<PGuildMember> {
+
+    private static final Logger LOG = Logger.getLogger(GuildMemberDAO.class.getName());
 
     protected GuildMemberDAO(HikariDataSource datasource) {
         super(datasource);
@@ -45,6 +48,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
             conn.setAutoCommit(true);
             // @formatter:on
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
@@ -70,6 +74,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
             conn.setAutoCommit(true);
             // @formatter:on
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
@@ -84,6 +89,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
             pst.setLong(3, gMember.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
@@ -108,6 +114,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
                 gMember.setPermission(EPermission.getPermission(rs.getInt("permission_id")));
             }
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
         }
         return gMember;
     }
@@ -128,6 +135,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
                 gMembers.add(gMember);
             }
         } catch (SQLException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
         }
         return gMembers;
     }

@@ -1,11 +1,14 @@
 package proxy;
 
+import java.util.logging.Logger;
+
 import javax.security.auth.login.LoginException;
 
 import configuration.file.Config;
 import configuration.file.ConfigFactory;
-import listeners.GuildListener;
-import listeners.MemberListener;
+import listeners.generics.GuildListener;
+import listeners.generics.MemberListener;
+import listeners.generics.ReadyListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -15,6 +18,8 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class Discord {
+
+    private static final Logger LOG = Logger.getLogger(Discord.class.getName());
 
     private Config conf;
 
@@ -38,7 +43,7 @@ public class Discord {
     }
 
     private void addEventListeners(JDABuilder builder) {
-        builder.addEventListeners(new Ready(), new GuildListener(), new MemberListener());
+        builder.addEventListeners(new ReadyListener(), new GuildListener(), new MemberListener());
     }
 
     private void build(JDABuilder builder) {
@@ -48,10 +53,11 @@ public class Discord {
             BotStats stats = new BotStats(conf, Math.toIntExact(jda.getGuildCache().size()));
             stats.setDiscordBotListGuildCount();
             stats.setBotsOnDiscordGuildCount();
-        } catch (LoginException e) {
+        } catch (LoginException | NullPointerException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
         } catch (InterruptedException e) {
+            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
             Thread.currentThread().interrupt();
-        } catch (NullPointerException e) {
         }
     }
 
