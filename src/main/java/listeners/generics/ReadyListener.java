@@ -1,4 +1,4 @@
-package proxy;
+package listeners.generics;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +13,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class Ready extends ListenerAdapter {
-
-    protected Ready() {}
+public class ReadyListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
