@@ -13,9 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.AttributedString;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import configuration.constant.EFolder;
 import dao.database.ADao;
@@ -35,7 +37,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class MemberModel {
 
-    private static final Logger LOG = Logger.getLogger(MemberModel.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(MemberModel.class);
 
     private Event event;
     private PGuild guild;
@@ -53,7 +55,7 @@ public class MemberModel {
                 Role defaultRole = guildJda.getRoleById(guild.getDefaultRole());
                 guildJda.addRoleToMember(user.getId(), defaultRole).queue();
             } catch (HierarchyException | ErrorResponseException e) {
-                LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+                LOG.error(e.getMessage());
             }
         }
     }
@@ -74,7 +76,7 @@ public class MemberModel {
                     sendJoinMessage(joinEvent, "join_channel_only_box", joinChannel);
                 }
             } catch (InsufficientPermissionException e) {
-                LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+                LOG.error(e.getMessage());
             }
         }
     }
@@ -97,7 +99,7 @@ public class MemberModel {
                     sendLeaveMessage(removeEvent, "leave_channel_only_box", leaveChannel);
                 }
             } catch (InsufficientPermissionException e) {
-                LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+                LOG.error(e.getMessage());
             }
         }
     }
@@ -194,7 +196,7 @@ public class MemberModel {
             ImageIO.write(image, "png", os);
             return new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
-            LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+            LOG.error(e.getMessage());
         }
         return null;
     }

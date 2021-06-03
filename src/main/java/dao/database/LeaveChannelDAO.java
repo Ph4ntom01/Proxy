@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -12,7 +14,7 @@ import dao.pojo.PLeaveChannel;
 
 public class LeaveChannelDAO extends ADao<PLeaveChannel> {
 
-    private static final Logger LOG = Logger.getLogger(LeaveChannelDAO.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(LeaveChannelDAO.class);
 
     protected LeaveChannelDAO(HikariDataSource datasource) {
         super(datasource);
@@ -25,7 +27,7 @@ public class LeaveChannelDAO extends ADao<PLeaveChannel> {
             pst.setLong(1, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -38,7 +40,7 @@ public class LeaveChannelDAO extends ADao<PLeaveChannel> {
             pst.setLong(1, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -53,7 +55,7 @@ public class LeaveChannelDAO extends ADao<PLeaveChannel> {
             pst.setLong(3, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -68,7 +70,7 @@ public class LeaveChannelDAO extends ADao<PLeaveChannel> {
             pst.setLong(4, leaveChannel.getChannelId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -92,7 +94,7 @@ public class LeaveChannelDAO extends ADao<PLeaveChannel> {
                 leaveChannel.setEmbed(rs.getBoolean("embed"));
             }
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
         }
         return leaveChannel;
     }

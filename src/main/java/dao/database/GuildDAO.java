@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -15,7 +17,7 @@ import dao.pojo.PGuild;
 
 public class GuildDAO extends ADao<PGuild> {
 
-    private static final Logger LOG = Logger.getLogger(GuildDAO.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(GuildDAO.class);
 
     protected GuildDAO(HikariDataSource datasource) {
         super(datasource);
@@ -29,7 +31,7 @@ public class GuildDAO extends ADao<PGuild> {
             pst.setString(2, guild.getName());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -65,7 +67,7 @@ public class GuildDAO extends ADao<PGuild> {
             conn.setAutoCommit(true);
             // @formatter:on
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -85,7 +87,7 @@ public class GuildDAO extends ADao<PGuild> {
             pst.setLong(8, guild.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -109,7 +111,7 @@ public class GuildDAO extends ADao<PGuild> {
             guild.setPrefix(rs.getString("prefix"));
             guild.setShield(rs.getInt("shield"));
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
         }
         return guild;
     }
@@ -133,7 +135,7 @@ public class GuildDAO extends ADao<PGuild> {
                 guilds.add(guild);
             }
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
         }
         return guilds;
     }

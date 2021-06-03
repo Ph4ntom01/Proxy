@@ -1,8 +1,9 @@
 package proxy;
 
-import java.util.logging.Logger;
-
 import javax.security.auth.login.LoginException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import configuration.file.Config;
 import configuration.file.ConfigFactory;
@@ -19,7 +20,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class Discord {
 
-    private static final Logger LOG = Logger.getLogger(Discord.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Discord.class);
 
     private Config conf;
 
@@ -54,9 +55,9 @@ public class Discord {
             stats.setDiscordBotListGuildCount();
             stats.setBotsOnDiscordGuildCount();
         } catch (LoginException | NullPointerException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
         } catch (InterruptedException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
     }

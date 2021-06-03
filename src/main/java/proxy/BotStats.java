@@ -1,10 +1,11 @@
 package proxy;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import configuration.constant.EID;
 import configuration.file.Config;
@@ -16,7 +17,7 @@ import okhttp3.Response;
 
 public class BotStats {
 
-    private static final Logger LOG = Logger.getLogger(BotStats.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(BotStats.class);
 
     private Config conf;
     private int guildCount;
@@ -57,12 +58,12 @@ public class BotStats {
         // @formatter:on
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                LOG.log(java.util.logging.Level.INFO, "Successfully sent guild count to API.");
+                LOG.info("Successfully sent guild count to API.");
             } else {
-                LOG.log(java.util.logging.Level.INFO, "An error occurred (Response : {0})", response.body().string());
+                LOG.error("An error occurred (Response : {})", response.body().string());
             }
         } catch (IOException e) {
-            LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+            LOG.error(e.getMessage());
         }
     }
 

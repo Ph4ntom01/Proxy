@@ -3,7 +3,9 @@ package listeners.generics;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import configuration.cache.EGuildCache;
 import dao.database.ADao;
@@ -26,7 +28,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MemberListener extends ListenerAdapter {
 
-    private static final Logger LOG = Logger.getLogger(MemberListener.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(MemberListener.class);
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
@@ -38,7 +40,7 @@ public class MemberListener extends ListenerAdapter {
                     try {
                         event.getMember().kick().queue();
                     } catch (InsufficientPermissionException | HierarchyException e) {
-                        LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+                        LOG.error(e.getMessage());
                     }
                 } else {
                     MemberModel member = new MemberModel(event, guild);
@@ -108,7 +110,7 @@ public class MemberListener extends ListenerAdapter {
                     Role defaultRole = event.getGuild().getRoleById(guild.getDefaultRole());
                     event.getGuild().removeRoleFromMember(event.getUserId(), defaultRole).queue();
                 } catch (NullPointerException | HierarchyException | ErrorResponseException e) {
-                    LOG.log(java.util.logging.Level.WARNING, e.getMessage());
+                    LOG.error(e.getMessage());
                 }
             }
         });

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -12,7 +14,7 @@ import dao.pojo.PBan;
 
 public class BanDAO extends ADao<PBan> {
 
-    private static final Logger LOG = Logger.getLogger(BanDAO.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(BanDAO.class);
 
     protected BanDAO(HikariDataSource datasource) {
         super(datasource);
@@ -27,7 +29,7 @@ public class BanDAO extends ADao<PBan> {
             pst.setTimestamp(3, bMember.getBanDate());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -41,7 +43,7 @@ public class BanDAO extends ADao<PBan> {
             pst.setLong(2, bMember.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
             return false;
         }
         return true;
@@ -68,7 +70,7 @@ public class BanDAO extends ADao<PBan> {
                 bMember.setBanDate(rs.getTimestamp("ban_date"));
             }
         } catch (SQLException e) {
-            LOG.log(java.util.logging.Level.SEVERE, e.getMessage());
+            LOG.error(e.getMessage());
         }
         return bMember;
     }
