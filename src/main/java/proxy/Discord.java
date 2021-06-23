@@ -33,6 +33,7 @@ public class Discord {
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.playing("@Proxy"));
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
+        builder.enableIntents(GatewayIntent.GUILD_VOICE_STATES);
         configureMemoryUsage(builder);
         addEventListeners(builder);
         build(builder);
@@ -40,7 +41,7 @@ public class Discord {
 
     private void configureMemoryUsage(JDABuilder builder) {
         builder.setChunkingFilter(ChunkingFilter.NONE);
-        builder.setMemberCachePolicy(MemberCachePolicy.OWNER);
+        builder.setMemberCachePolicy(MemberCachePolicy.VOICE);
     }
 
     private void addEventListeners(JDABuilder builder) {
