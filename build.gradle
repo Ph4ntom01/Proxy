@@ -22,16 +22,16 @@ repositories {
 dependencies {
 
     // https://github.com/DV8FromTheWorld/JDA
-    compile group: 'net.dv8tion', name:'JDA', version: '4.2.1_265'
+    compile group: 'net.dv8tion', name:'JDA', version: '4.2.1_276'
 
     // https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine
-    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.0.2'
+    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.0.3'
 
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
 
     // https://jitpack.io/#DiscordBotList/DBL-Java-Library/2.0.1
     compile 'com.github.DiscordBotList:DBL-Java-Library:2.0.1'
@@ -46,7 +46,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.5'
 }
 
 jar {
