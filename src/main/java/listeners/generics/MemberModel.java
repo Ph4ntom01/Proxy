@@ -1,11 +1,13 @@
 package listeners.generics;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -175,7 +177,7 @@ public class MemberModel {
     private ByteArrayInputStream sendCustomImage(User user, int memberCount) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
             ImageIO.setUseCache(false);
-            BufferedImage image = ImageIO.read(new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome.png"));
+            BufferedImage template = ImageIO.read(new File(EFolder.RESOURCES.getName() + EFolder.TEMPLATE.getName() + "welcome_redline.png"));
 
             // @formatter:off
             BufferedImage avatar = (user.getAvatarUrl() == null) ? 
@@ -183,17 +185,36 @@ public class MemberModel {
                     ImageIO.read(new URL(user.getAvatarUrl() + "?size=128"));
             // @formatter:on
 
-            Font font = new Font("Calibri", Font.TRUETYPE_FONT, 24);
-            Graphics2D g = image.createGraphics();
-            FontMetrics metrics = g.getFontMetrics(font);
+            int avatarPosX = (template.getWidth() - avatar.getWidth()) / 2;
+            int avatarPosY = ((template.getHeight() - avatar.getHeight()) / 2) / 2;
+            Color fontColor = new Color(220, 220, 220);
+            Font fontTitle = new Font("Calibri", Font.TRUETYPE_FONT, 21);
+            Font fontContent = new Font("Lato", Font.BOLD, 14);
 
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g.drawImage(avatar, (image.getWidth() - avatar.getWidth()) / 2, 27, null);
-            g.drawString(defineAttributedText(font, user.getAsTag(), Color.WHITE).getIterator(), (image.getWidth() - metrics.stringWidth(user.getAsTag())) / 2, 195);
-            g.drawString(defineAttributedText(new Font("Lato", Font.BOLD, 14), "#" + memberCount, Color.WHITE).getIterator(), 10, 225);
+            Ellipse2D ellipse = new Ellipse2D.Float(avatarPosX, avatarPosY, avatar.getWidth(), avatar.getHeight());
+            Graphics2D g = template.createGraphics();
+            FontMetrics metrics = g.getFontMetrics(fontTitle);
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+            g.setColor(fontColor);
+            g.setStroke(new BasicStroke(3));
+
+            g.drawString(defineAttributedText(fontTitle, user.getAsTag(), fontColor).getIterator(), (template.getWidth() - metrics.stringWidth(user.getAsTag())) / 2, 195);
+            g.drawString(defineAttributedText(fontContent, "#" + memberCount, fontColor).getIterator(), 10, 225);
+
+            // Draw the first ellipse. (round the outside of the ellipse).
+            g.draw(ellipse);
+            // Define the ellipse as a clip. Useful to omit part of the image that lies outside of the clip.
+            g.setClip(ellipse);
+            // Draw the user's avatar.
+            g.drawImage(avatar, avatarPosX, avatarPosY, null);
+            // Draw the second ellipse. (round the inside of the ellipse).
+            g.draw(ellipse);
+
             g.dispose();
 
-            ImageIO.write(image, "png", os);
+            ImageIO.write(template, "png", os);
             return new ByteArrayInputStream(os.toByteArray());
         } catch (IOException e) {
             LOG.error(e.getMessage());
