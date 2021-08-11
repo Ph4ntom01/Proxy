@@ -21,6 +21,7 @@ public class GuildInfo extends ACommand {
         super(event, command, guild);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void execute() {
         getGuild().retrieveOwner().queue(owner -> {
