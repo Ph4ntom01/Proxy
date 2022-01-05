@@ -1,4 +1,4 @@
-package listeners.command;
+package handlers.commands;
 
 import commands.ACommand;
 import commands.administrator.ControlChannel;
@@ -16,7 +16,6 @@ import commands.guildowner.SetPermission;
 import commands.moderator.Bans;
 import commands.moderator.Clean;
 import commands.moderator.Kick;
-import commands.moderator.Purge;
 import commands.moderator.ResetChan;
 import commands.moderator.Slowmode;
 import commands.moderator.Softban;
@@ -42,19 +41,21 @@ import configuration.constant.ECommand;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class CommandHelp extends ACommandListener {
+public class HelpHandler extends AHandler {
 
-    public CommandHelp(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public HelpHandler(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
     @Override
     public void route() {
 
-        Help helpCmd = new Help(event, command, guild);
+        Help helpCmd = new Help(event, command, pguild);
 
         if (args.length == 1) {
+
             helpCmd.categories();
+
         } else {
 
             ECommand command = ECommandCache.INSTANCE.getCommand(args[1]);
@@ -76,182 +77,177 @@ public class CommandHelp extends ACommandListener {
             }
 
             else if (command == ECommand.PREFIX) {
-                ACommand prefixCmd = new Prefix(event, command, guild);
+                ACommand prefixCmd = new Prefix(event, command, pguild);
                 prefixCmd.help(true);
             }
 
             else if (command == ECommand.SETADMIN) {
-                ACommand setAdminCmd = new SetPermission(event, command, guild);
+                ACommand setAdminCmd = new SetPermission(event, command, pguild);
                 setAdminCmd.help(true);
             }
 
             else if (command == ECommand.SETMODO) {
-                ACommand setModoCmd = new SetPermission(event, command, guild);
+                ACommand setModoCmd = new SetPermission(event, command, pguild);
                 setModoCmd.help(true);
             }
 
             else if (command == ECommand.SETUSER) {
-                ACommand setUserCmd = new SetPermission(event, command, guild);
+                ACommand setUserCmd = new SetPermission(event, command, pguild);
                 setUserCmd.help(true);
             }
 
             else if (command == ECommand.JOINCHAN) {
-                ACommand joinChanCmd = new JoinChannel(event, command, guild);
+                ACommand joinChanCmd = new JoinChannel(event, command, pguild);
                 joinChanCmd.help(true);
             }
 
             else if (command == ECommand.JOINMESSAGE) {
-                ACommand joinMsgCmd = new JoinMessage(event, command, guild);
+                ACommand joinMsgCmd = new JoinMessage(event, command, pguild);
                 joinMsgCmd.help(true);
             }
 
             else if (command == ECommand.JOINEMBED) {
-                ACommand joinEmbedCmd = new JoinEmbed(event, command, guild);
+                ACommand joinEmbedCmd = new JoinEmbed(event, command, pguild);
                 joinEmbedCmd.help(true);
             }
 
             else if (command == ECommand.LEAVECHAN) {
-                ACommand leaveChanCmd = new LeaveChannel(event, command, guild);
+                ACommand leaveChanCmd = new LeaveChannel(event, command, pguild);
                 leaveChanCmd.help(true);
             }
 
             else if (command == ECommand.LEAVEMESSAGE) {
-                ACommand leaveMsgCmd = new LeaveMessage(event, command, guild);
+                ACommand leaveMsgCmd = new LeaveMessage(event, command, pguild);
                 leaveMsgCmd.help(true);
             }
 
             else if (command == ECommand.LEAVEEMBED) {
-                ACommand leaveEmbedCmd = new LeaveEmbed(event, command, guild);
+                ACommand leaveEmbedCmd = new LeaveEmbed(event, command, pguild);
                 leaveEmbedCmd.help(true);
             }
 
             else if (command == ECommand.CONTROLCHAN) {
-                ACommand controlChanCmd = new ControlChannel(event, command, guild);
+                ACommand controlChanCmd = new ControlChannel(event, command, pguild);
                 controlChanCmd.help(true);
             }
 
             else if (command == ECommand.DEFROLE) {
-                ACommand defRoleCmd = new DefaultRole(event, command, guild);
+                ACommand defRoleCmd = new DefaultRole(event, command, pguild);
                 defRoleCmd.help(true);
             }
 
             else if (command == ECommand.SHIELD) {
-                ACommand shieldCmd = new Shield(event, command, guild);
+                ACommand shieldCmd = new Shield(event, command, pguild);
                 shieldCmd.help(true);
             }
 
             else if (command == ECommand.DISABLE) {
-                ACommand disableCmd = new Disable(event, command, guild);
+                ACommand disableCmd = new Disable(event, args, command, pguild);
                 disableCmd.help(true);
             }
 
             else if (command == ECommand.CLEAN) {
-                ACommand cleanCmd = new Clean(event, command, guild);
+                ACommand cleanCmd = new Clean(event, command, pguild);
                 cleanCmd.help(true);
             }
 
             else if (command == ECommand.SLOWMODE) {
-                ACommand slowmodeCmd = new Slowmode(event, command, guild);
+                ACommand slowmodeCmd = new Slowmode(event, command, pguild);
                 slowmodeCmd.help(true);
             }
 
             else if (command == ECommand.VOICEKICK) {
-                ACommand voiceKickCmd = new VoiceKick(event, command, guild);
+                ACommand voiceKickCmd = new VoiceKick(event, command, pguild);
                 voiceKickCmd.help(true);
             }
 
             else if (command == ECommand.VOICEMUTE) {
-                ACommand voiceMuteCmd = new VoiceMute(event, command, guild);
+                ACommand voiceMuteCmd = new VoiceMute(event, command, pguild);
                 voiceMuteCmd.help(true);
             }
 
             else if (command == ECommand.VOICEUNMUTE) {
-                ACommand voiceUnmuteCmd = new VoiceUnmute(event, command, guild);
+                ACommand voiceUnmuteCmd = new VoiceUnmute(event, command, pguild);
                 voiceUnmuteCmd.help(true);
             }
 
             else if (command == ECommand.KICK) {
-                ACommand kickCmd = new Kick(event, command, guild);
+                ACommand kickCmd = new Kick(event, command, pguild);
                 kickCmd.help(true);
             }
 
             else if (command == ECommand.BAN) {
-                ACommand banCmd = new Bans(event, command, guild);
+                ACommand banCmd = new Bans(event, command, pguild);
                 banCmd.help(true);
             }
 
             else if (command == ECommand.SOFTBAN) {
-                ACommand softbanCmd = new Softban(event, command, guild);
+                ACommand softbanCmd = new Softban(event, command, pguild);
                 softbanCmd.help(true);
             }
 
             else if (command == ECommand.UNBAN) {
-                ACommand unbanCmd = new Unban(event, command, guild);
+                ACommand unbanCmd = new Unban(event, command, pguild);
                 unbanCmd.help(true);
             }
 
-            else if (command == ECommand.PURGE) {
-                ACommand purgeCmd = new Purge(event, command, guild);
-                purgeCmd.help(true);
-            }
-
             else if (command == ECommand.RESETCHAN) {
-                ACommand resetChanCmd = new ResetChan(event, command, guild);
+                ACommand resetChanCmd = new ResetChan(event, command, pguild);
                 resetChanCmd.help(true);
             }
 
             else if (command == ECommand.PING) {
-                ACommand pingCmd = new Ping(event, command, guild);
+                ACommand pingCmd = new Ping(event, command, pguild);
                 pingCmd.help(true);
             }
 
             else if (command == ECommand.UPTIME) {
-                ACommand uptimeCmd = new Uptime(event, command, guild);
+                ACommand uptimeCmd = new Uptime(event, command, pguild);
                 uptimeCmd.help(true);
             }
 
             else if (command == ECommand.GUILDINFO) {
-                ACommand guildInfoCmd = new GuildInfo(event, command, guild);
+                ACommand guildInfoCmd = new GuildInfo(event, command, pguild);
                 guildInfoCmd.help(true);
             }
 
             else if (command == ECommand.MEMBERINFO) {
-                ACommand memberInfoCmd = new MemberInfo(event, command, guild);
+                ACommand memberInfoCmd = new MemberInfo(event, command, pguild);
                 memberInfoCmd.help(true);
             }
 
             else if (command == ECommand.AVATAR) {
-                ACommand avatarCmd = new Avatar(event, command, guild);
+                ACommand avatarCmd = new Avatar(event, command, pguild);
                 avatarCmd.help(true);
             }
 
             else if (command == ECommand.TEXTCHANINFO) {
-                ACommand textChanInfoCmd = new TextChanInfo(event, command, guild);
+                ACommand textChanInfoCmd = new TextChanInfo(event, command, pguild);
                 textChanInfoCmd.help(true);
             }
 
             else if (command == ECommand.CONTROLGATE) {
-                ACommand controlGateCmd = new ControlGate(event, command, guild);
+                ACommand controlGateCmd = new ControlGate(event, command, pguild);
                 controlGateCmd.help(true);
             }
 
             else if (command == ECommand.BANLIST) {
-                ACommand banlistCmd = new Banlist(event, command, guild);
+                ACommand banlistCmd = new Banlist(event, command, pguild);
                 banlistCmd.help(true);
             }
 
             else if (command == ECommand.MODOLIST) {
-                ACommand modolistCmd = new Modolist(event, command, guild);
+                ACommand modolistCmd = new Modolist(event, command, pguild);
                 modolistCmd.help(true);
             }
 
             else if (command == ECommand.ADMINLIST) {
-                ACommand adminlistCmd = new Adminlist(event, command, guild);
+                ACommand adminlistCmd = new Adminlist(event, command, pguild);
                 adminlistCmd.help(true);
             }
 
             else if (command == ECommand.ISSOU) {
-                ACommand memeCmd = new SendImage(event, command, guild);
+                ACommand memeCmd = new SendImage(event, command, pguild);
                 memeCmd.help(true);
             }
         }
