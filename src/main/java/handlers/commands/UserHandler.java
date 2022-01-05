@@ -1,4 +1,4 @@
-package listeners.command;
+package handlers.commands;
 
 import commands.ACommand;
 import commands.user.Adminlist;
@@ -18,10 +18,10 @@ import configuration.constant.EFolder;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class CommandUser extends ACommandListener {
+public class UserHandler extends AHandler {
 
-    public CommandUser(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public UserHandler(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
     @Override
@@ -29,56 +29,47 @@ public class CommandUser extends ACommandListener {
 
         if (command == ECommand.INFO) {
 
-            ACommand infoCmd = new Info(event, command, guild);
+            ACommand infoCmd = new Info(event, command, pguild);
             infoCmd.execute();
 
         } else if (command == ECommand.PING) {
 
-            ACommand pingCmd = new Ping(event, command, guild);
+            ACommand pingCmd = new Ping(event, command, pguild);
             pingCmd.execute();
 
         } else if (command == ECommand.UPTIME) {
 
-            ACommand uptimeCmd = new Uptime(event, command, guild);
+            ACommand uptimeCmd = new Uptime(event, command, pguild);
             uptimeCmd.execute();
 
         } else if (command == ECommand.GUILDINFO) {
 
-            ACommand guildInfoCmd = new GuildInfo(event, command, guild);
+            ACommand guildInfoCmd = new GuildInfo(event, command, pguild);
             guildInfoCmd.execute();
 
         } else if (command == ECommand.MEMBERINFO) {
 
-            ACommand memberInfoCmd = new MemberInfo(event, args, command, guild);
-            if (args.length == 2)
-                memberInfoCmd.execute();
-            else
-                memberInfoCmd.help(false);
+            ACommand memberInfoCmd = new MemberInfo(event, args, command, pguild);
+            executeCommand(memberInfoCmd, 2);
 
         } else if (command == ECommand.AVATAR) {
 
-            ACommand avatarCmd = new Avatar(event, args, command, guild);
-            if (args.length == 2)
-                avatarCmd.execute();
-            else
-                avatarCmd.help(false);
+            ACommand avatarCmd = new Avatar(event, args, command, pguild);
+            executeCommand(avatarCmd, 2);
 
         } else if (command == ECommand.TEXTCHANINFO) {
 
-            ACommand textChanCmd = new TextChanInfo(event, args, command, guild);
-            if (args.length == 2)
-                textChanCmd.execute();
-            else
-                textChanCmd.help(false);
+            ACommand textChanCmd = new TextChanInfo(event, args, command, pguild);
+            executeCommand(textChanCmd, 2);
 
         } else if (command == ECommand.CONTROLGATE) {
 
-            ACommand controlGateCmd = new ControlGate(event, command, guild);
+            ACommand controlGateCmd = new ControlGate(event, command, pguild);
             controlGateCmd.execute();
 
         } else if (command == ECommand.BANLIST) {
 
-            ACommand banlistCmd = new Banlist(event, args, command, guild);
+            ACommand banlistCmd = new Banlist(event, args, command, pguild);
             if (args.length == 1)
                 banlistCmd.execute();
             else if (args.length == 2)
@@ -88,17 +79,17 @@ public class CommandUser extends ACommandListener {
 
         } else if (command == ECommand.MODOLIST) {
 
-            ACommand modolistCmd = new Modolist(event, command, guild);
+            ACommand modolistCmd = new Modolist(event, command, pguild);
             modolistCmd.execute();
 
         } else if (command == ECommand.ADMINLIST) {
 
-            ACommand adminlistCmd = new Adminlist(event, command, guild);
+            ACommand adminlistCmd = new Adminlist(event, command, pguild);
             adminlistCmd.execute();
 
         } else if (command == ECommand.ISSOU) {
 
-            ACommand memeCmd = new SendImage(event, command, guild, EFolder.RESOURCES.getName() + EFolder.ISSOU.getName());
+            ACommand memeCmd = new SendImage(event, command, pguild, EFolder.RESOURCES.getName() + EFolder.ISSOU.getName());
             memeCmd.execute();
         }
     }
