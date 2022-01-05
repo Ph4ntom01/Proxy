@@ -1,4 +1,4 @@
-package listeners.command;
+package handlers.commands;
 
 import commands.ACommand;
 import commands.botowner.Invite;
@@ -6,10 +6,10 @@ import configuration.constant.ECommand;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class CommandBotOwner extends ACommandListener {
+public class BotOwnerHandler extends AHandler {
 
-    protected CommandBotOwner(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public BotOwnerHandler(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class CommandBotOwner extends ACommandListener {
 
         if (command == ECommand.INVITE && args.length == 1) {
 
-            ACommand inviteCmd = new Invite(event, command, guild);
+            ACommand inviteCmd = new Invite(event, command, pguild);
             inviteCmd.execute();
         }
     }
