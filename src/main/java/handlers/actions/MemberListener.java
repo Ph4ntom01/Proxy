@@ -1,4 +1,4 @@
-package listeners.generics;
+package handlers.actions;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -30,11 +30,19 @@ public class MemberListener extends ListenerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(MemberListener.class);
 
+    private MemberModel memberModel;
+    private MemberView memberView;
+
+    public MemberListener(MemberModel memberModel, MemberView memberView) {
+        this.memberModel = memberModel;
+        this.memberView = memberView;
+    }
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (!event.getUser().isBot()) {
-            EGuildCache.INSTANCE.getGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(guild -> {
-                LocalDate shield = LocalDate.now().minusDays(guild.getShield());
+            EGuildCache.INSTANCE.getPGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(pguild -> {
+                LocalDate shield = LocalDate.now().minusDays(pguild.getShield());
                 LocalDate userTimeCreated = event.getUser().getTimeCreated().toLocalDate();
                 if (userTimeCreated.isAfter(shield)) {
                     try {
@@ -43,10 +51,9 @@ public class MemberListener extends ListenerAdapter {
                         LOG.error(e.getMessage());
                     }
                 } else {
-                    MemberModel member = new MemberModel(event, guild);
-                    member.sendWelcomeMessage();
-                    if (guild.getControlChannel() == null) {
-                        member.addDefRole(event.getGuild(), event.getUser());
+                    memberModel.join(event.getGuild(), event.getUser(), pguild, memberView);
+                    if (pguild.getControlChannel() == null) {
+                        memberModel.addDefRole(event.getGuild(), pguild, event.getUser());
                     }
                 }
             });
@@ -56,17 +63,16 @@ public class MemberListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
         if (!event.getUser().isBot()) {
-            EGuildCache.INSTANCE.getGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(guild -> {
-                LocalDate shield = LocalDate.now().minusDays(guild.getShield());
+            EGuildCache.INSTANCE.getPGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(pguild -> {
+                LocalDate shield = LocalDate.now().minusDays(pguild.getShield());
                 LocalDate userTimeCreated = event.getUser().getTimeCreated().toLocalDate();
                 if (!userTimeCreated.isAfter(shield)) {
-                    ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-                    PGuildMember gMember = gMemberDao.find(event.getGuild().getIdLong(), event.getUser().getIdLong());
-                    if (!gMember.isEmpty()) {
-                        gMemberDao.delete(gMember);
+                    ADao<PGuildMember> pguildMemberDao = DaoFactory.getPGuildMemberDAO();
+                    PGuildMember pguildMember = pguildMemberDao.find(event.getGuild().getIdLong(), event.getUser().getIdLong());
+                    if (!pguildMember.isEmpty()) {
+                        pguildMemberDao.delete(pguildMember);
                     }
-                    MemberModel member = new MemberModel(event, guild);
-                    member.sendLeaveMessage();
+                    memberModel.remove(event.getGuild(), event.getUser(), pguild, memberView);
                 }
             });
         }
@@ -74,40 +80,39 @@ public class MemberListener extends ListenerAdapter {
 
     @Override
     public void onGuildBan(GuildBanEvent event) {
-        ADao<PBan> pMemberDao = DaoFactory.getBanDAO();
+        ADao<PBan> pmemberDao = DaoFactory.getBanDAO();
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        PBan bMember = new PBan();
-        bMember.setGuildId(event.getGuild().getIdLong());
-        bMember.setId(event.getUser().getIdLong());
-        bMember.setBanDate(now);
-        pMemberDao.create(bMember);
+        PBan bannedMember = new PBan();
+        bannedMember.setGuildId(event.getGuild().getIdLong());
+        bannedMember.setId(event.getUser().getIdLong());
+        bannedMember.setBanDate(now);
+        pmemberDao.create(bannedMember);
     }
 
     @Override
     public void onGuildUnban(GuildUnbanEvent event) {
-        ADao<PBan> pMemberDao = DaoFactory.getBanDAO();
-        PBan bMember = new PBan();
-        bMember.setGuildId(event.getGuild().getIdLong());
-        bMember.setId(event.getUser().getIdLong());
-        pMemberDao.delete(bMember);
+        ADao<PBan> pmemberDao = DaoFactory.getBanDAO();
+        PBan bannedMember = new PBan();
+        bannedMember.setGuildId(event.getGuild().getIdLong());
+        bannedMember.setId(event.getUser().getIdLong());
+        pmemberDao.delete(bannedMember);
     }
 
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
-        EGuildCache.INSTANCE.getGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(guild -> {
-            if (Objects.equals(event.getChannel().getIdLong(), guild.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
-                MemberModel member = new MemberModel();
-                member.addDefRole(event.getGuild(), event.getUser());
+        EGuildCache.INSTANCE.getPGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(pguild -> {
+            if (Objects.equals(event.getChannel().getIdLong(), pguild.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+                memberModel.addDefRole(event.getGuild(), pguild, event.getUser());
             }
         });
     }
 
     @Override
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-        EGuildCache.INSTANCE.getGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(guild -> {
-            if (Objects.equals(event.getChannel().getIdLong(), guild.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
+        EGuildCache.INSTANCE.getPGuildAsync(event.getGuild().getIdLong()).thenAcceptAsync(pguild -> {
+            if (Objects.equals(event.getChannel().getIdLong(), pguild.getControlChannel()) && event.getReactionEmote().getAsCodepoints().equalsIgnoreCase("U+2705")) {
                 try {
-                    Role defaultRole = event.getGuild().getRoleById(guild.getDefaultRole());
+                    Role defaultRole = event.getGuild().getRoleById(pguild.getDefaultRole());
                     event.getGuild().removeRoleFromMember(event.getUserId(), defaultRole).queue();
                 } catch (NullPointerException | HierarchyException | ErrorResponseException e) {
                     LOG.error(e.getMessage());
@@ -134,11 +139,11 @@ public class MemberListener extends ListenerAdapter {
     @Override
     public void onUserUpdateName(UserUpdateNameEvent event) {
         if (!event.getUser().isBot()) {
-            ADao<PMember> memberDao = DaoFactory.getMemberDAO();
-            PMember member = memberDao.find(event.getUser().getIdLong());
-            if (!member.isEmpty()) {
-                member.setName(event.getNewName());
-                memberDao.update(member);
+            ADao<PMember> pmemberDao = DaoFactory.getPMemberDAO();
+            PMember pmember = pmemberDao.find(event.getUser().getIdLong());
+            if (!pmember.isEmpty()) {
+                pmember.setName(event.getNewName());
+                pmemberDao.update(pmember);
             }
         }
     }
