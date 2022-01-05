@@ -77,14 +77,16 @@ public class PGuild {
 
     @Override
     public boolean equals(Object object) {
+        // If the entered object is not a PGuild type object then leave.
         if (!(object instanceof PGuild)) { return false; }
         PGuild guild = (PGuild) object;
+        // Defines equality through ids.
         return guild.getId().equals(this.getId());
     }
 
     @Override
     public int hashCode() {
-        return this.getId().hashCode() + 1;
+        return this.getId().hashCode();
     }
 
 }
