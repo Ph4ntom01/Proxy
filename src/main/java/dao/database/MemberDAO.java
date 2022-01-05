@@ -21,21 +21,21 @@ public class MemberDAO extends ADao<PMember> {
     }
 
     @Override
-    public boolean create(PMember member) {
+    public boolean create(PMember pmember) {
         return false;
     }
 
     @Override
-    public boolean delete(PMember member) {
+    public boolean delete(PMember pmember) {
         return false;
     }
 
     @Override
-    public boolean update(PMember member) {
+    public boolean update(PMember pmember) {
         String query = "UPDATE member SET name = ? WHERE member_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, member.getName());
-            pst.setLong(2, member.getId());
+            pst.setString(1, pmember.getName());
+            pst.setLong(2, pmember.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage());
@@ -46,24 +46,24 @@ public class MemberDAO extends ADao<PMember> {
 
     @Override
     public PMember find(Long... memberLong) {
-        PMember member = null;
+        PMember pmember = null;
         String query = "SELECT member_id, name FROM member WHERE member_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setLong(1, memberLong[0]);
             ResultSet rs = pst.executeQuery();
             rs.next();
-            member = new PMember();
+            pmember = new PMember();
             // If the user does not exists, no row is sent and an error occurs if we try to get a value from the
             // result set.
             // In that case, only the freshly instantiated member object is returned without any setters.
             if (rs.getRow() != 0) {
-                member.setId(rs.getLong("member_id"));
-                member.setName(rs.getString("name"));
+                pmember.setId(rs.getLong("member_id"));
+                pmember.setName(rs.getString("name"));
             }
         } catch (SQLException e) {
             LOG.error(e.getMessage());
         }
-        return member;
+        return pmember;
     }
 
 }
