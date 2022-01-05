@@ -37,7 +37,6 @@ public enum ECommand {
     BAN("ban", EPermission.MODERATOR, ECategory.MODERATION),
     SOFTBAN("softban", EPermission.MODERATOR, ECategory.MODERATION),
     UNBAN("unban", EPermission.MODERATOR, ECategory.MODERATION),
-    PURGE("purge", EPermission.MODERATOR, ECategory.MODERATION),
     RESETCHAN("resetchan", EPermission.MODERATOR, ECategory.MODERATION),
 
     // User commands.
