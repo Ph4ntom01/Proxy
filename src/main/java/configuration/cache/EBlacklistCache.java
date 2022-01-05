@@ -1,23 +1,21 @@
 package configuration.cache;
 
-import java.util.List;
+import org.apache.tuweni.toml.TomlArray;
 
-import org.apache.commons.collections4.list.UnmodifiableList;
-
-import configuration.file.Config;
 import configuration.file.ConfigFactory;
+import configuration.file.TOMLConfig;
 
 public enum EBlacklistCache {
 
     INSTANCE;
 
-    private final List<String> guildsCache;
-    private final List<String> membersCache;
+    private final TomlArray guildsCache;
+    private final TomlArray membersCache;
 
     private EBlacklistCache() {
-        Config conf = ConfigFactory.getConf();
-        guildsCache = UnmodifiableList.unmodifiableList(conf.getList("blacklist.guilds.id"));
-        membersCache = UnmodifiableList.unmodifiableList(conf.getList("blacklist.members.id"));
+        TOMLConfig file = ConfigFactory.getProxy();
+        guildsCache = file.getArray("blacklist.guilds.id");
+        membersCache = file.getArray("blacklist.members.id");
     }
 
     /**
@@ -28,7 +26,7 @@ public enum EBlacklistCache {
      * @return True if the guild is blacklisted, otherwise false.
      */
     public boolean isGuildBlacklisted(String guildId) {
-        return guildsCache.contains(guildId);
+        return isBlacklisted(guildsCache, guildId);
     }
 
     /**
@@ -39,7 +37,15 @@ public enum EBlacklistCache {
      * @return True if the member is blacklisted, otherwise false.
      */
     public boolean isMemberBlacklisted(String memberId) {
-        return membersCache.contains(memberId);
+        return isBlacklisted(membersCache, memberId);
+    }
+
+    private boolean isBlacklisted(TomlArray blacklist, String id) {
+        if (blacklist.size() == 0) { return false; }
+        for (int i = 0; i < blacklist.size(); i++) {
+            if (blacklist.get(i).toString().equals(id)) { return true; }
+        }
+        return false;
     }
 
 }
