@@ -9,12 +9,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Shield extends ACommand {
 
-    public Shield(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Shield(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Shield(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Shield(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Shield extends ACommand {
                         ? "Shield is now **disabled**, the bot will no longer kick accounts that have been created less than **" + getPGuild().getShield() + "** day(s) ago."
                         : "Shield is now set to **" + days + "** day(s).";
                 // @formatter:on
-                ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+                ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
                 getPGuild().setShield(days);
                 guildDao.update(getPGuild());
                 sendMessage(message);
@@ -46,14 +46,14 @@ public class Shield extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Provide protection against fake accounts who join your server, the bot will kick accounts that have "
-                  + "been created less than **[0 - 30]** days ago.\n\nExample:\n\n`" + getGuildPrefix() + getCommandName()
-                  + " 0` *disables the shield.*\n`" + getGuildPrefix() + getCommandName() + " 3` *kicks an account created less than 3 days*.");
+                  + "been created less than **[0 - 30]** days ago.\n\nExample:\n\n`" + getPGuildPrefix() + getCommandName()
+                  + " 0` *disables the shield.*\n`" + getPGuildPrefix() + getCommandName() + " 3` *kicks an account created less than 3 days*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
                     "Provide protection against fake accounts who join your server. "
-                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " 0` *disables the shield*.");
+                    + "**Example:** `" + getPGuildPrefix() + getCommandName() + " 0` *disables the shield*.");
             // @formatter:on
         }
     }

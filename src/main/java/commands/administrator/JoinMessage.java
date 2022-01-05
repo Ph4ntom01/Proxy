@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class JoinMessage extends ACommand {
 
-    public JoinMessage(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public JoinMessage(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public JoinMessage(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public JoinMessage(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class JoinMessage extends ACommand {
             joinChannelDao.update(joinChannel);
             sendMessage("Welcoming message has been successfully defined.");
         } else {
-            sendMessage("In order to create a welcoming message, please select your welcoming channel first using `" + getGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`.");
+            sendMessage("In order to create a welcoming message, please select your welcoming channel first using `" + getPGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -45,13 +45,13 @@ public class JoinMessage extends ACommand {
         if (embedState) {
             // @formatter:off
             sendHelpEmbed(
-                    "Set the welcoming message.\n\nExample: `" + getGuildPrefix() + getCommandName() + " Welcome [member] !`\n\n"
+                    "Set the welcoming message.\n\nExample: `" + getPGuildPrefix() + getCommandName() + " Welcome [member] !`\n\n"
                     + "*Add `[member]` if you want the bot to mention the joining member*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
-                    "Set the welcoming message. **Example:** `" + getGuildPrefix() + getCommandName()
+                    "Set the welcoming message. **Example:** `" + getPGuildPrefix() + getCommandName()
                     + " Welcome [member] !`\n*Add `[member]` if you want the bot to mention the joining member*.");
             // @formatter:on
         }

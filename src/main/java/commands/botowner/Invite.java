@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class Invite extends ACommand {
 
-    public Invite(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Invite(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override

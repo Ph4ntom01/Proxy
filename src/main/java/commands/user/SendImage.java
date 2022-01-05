@@ -14,13 +14,13 @@ public class SendImage extends ACommand {
 
     private String path;
 
-    public SendImage(GuildMessageReceivedEvent event, ECommand command, PGuild guild, String path) {
-        super(event, command, guild);
+    public SendImage(GuildMessageReceivedEvent event, ECommand command, PGuild pguild, String path) {
+        super(event, command, pguild);
         this.path = path;
     }
 
-    public SendImage(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public SendImage(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SendImage extends ACommand {
                 embed.setImage("attachment://" + pathTmp);
                 embed.setFooter(getAuthor().getAsTag(), getAuthor().getAvatarUrl());
                 getMessage().delete().queue();
-                getChannel().sendFile(image).embed(embed.build()).queue();
+                getChannel().sendFile(image).setEmbeds(embed.build()).queue();
             }
         }
     }
@@ -59,9 +59,9 @@ public class SendImage extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Generate a random issou image.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Generate a random issou image.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Generate a random issou image. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Generate a random issou image. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

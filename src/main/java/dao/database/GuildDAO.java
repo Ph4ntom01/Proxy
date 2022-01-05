@@ -24,11 +24,11 @@ public class GuildDAO extends ADao<PGuild> {
     }
 
     @Override
-    public boolean create(PGuild guild) {
+    public boolean create(PGuild pguild) {
         String query = "INSERT INTO guild(guild_id, name) VALUES(?, ?);";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setLong(1, guild.getId());
-            pst.setString(2, guild.getName());
+            pst.setLong(1, pguild.getId());
+            pst.setString(2, pguild.getName());
             pst.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage());
@@ -38,7 +38,7 @@ public class GuildDAO extends ADao<PGuild> {
     }
 
     @Override
-    public boolean delete(PGuild guild) {
+    public boolean delete(PGuild pguild) {
         String gMemberQuery = "DELETE FROM guild_member WHERE guild_id = ?;";
         String orphanQuery = "CALL delete_orphan_members();";
         String banQuery = "DELETE FROM ban WHERE guild_id = ?;";
@@ -53,15 +53,15 @@ public class GuildDAO extends ADao<PGuild> {
             
             conn.setAutoCommit(false);
             // Delete members from the GuildMember table.
-            deleteMembers.setLong(1, guild.getId());
+            deleteMembers.setLong(1, pguild.getId());
             deleteMembers.executeUpdate();
             // Delete members from the member table if their id's are no more referenced into the GuildMember table.
             deleteOrphans.executeUpdate();
             // Delete the banned members from the guild.
-            deleteBans.setLong(1, guild.getId());
+            deleteBans.setLong(1, pguild.getId());
             deleteBans.executeUpdate();
             // Delete the guild.
-            deleteGuild.setLong(1, guild.getId());
+            deleteGuild.setLong(1, pguild.getId());
             deleteGuild.executeUpdate();
             conn.commit();
             conn.setAutoCommit(true);
@@ -74,17 +74,17 @@ public class GuildDAO extends ADao<PGuild> {
     }
 
     @Override
-    public boolean update(PGuild guild) {
+    public boolean update(PGuild pguild) {
         String query = "UPDATE guild SET name = ?, join_channel_id = ?, leave_channel_id = ?, control_channel_id = ?, default_role_id = ?, prefix = ?, shield = ? WHERE guild_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, guild.getName());
-            setNLong(2, pst, guild.getJoinChannel());
-            setNLong(3, pst, guild.getLeaveChannel());
-            setNLong(4, pst, guild.getControlChannel());
-            setNLong(5, pst, guild.getDefaultRole());
-            pst.setString(6, guild.getPrefix());
-            pst.setInt(7, guild.getShield());
-            pst.setLong(8, guild.getId());
+            pst.setString(1, pguild.getName());
+            setNLong(2, pst, pguild.getJoinChannel());
+            setNLong(3, pst, pguild.getLeaveChannel());
+            setNLong(4, pst, pguild.getControlChannel());
+            setNLong(5, pst, pguild.getDefaultRole());
+            pst.setString(6, pguild.getPrefix());
+            pst.setInt(7, pguild.getShield());
+            pst.setLong(8, pguild.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage());
@@ -95,49 +95,49 @@ public class GuildDAO extends ADao<PGuild> {
 
     @Override
     public PGuild find(Long... guildLong) {
-        PGuild guild = null;
+        PGuild pguild = null;
         String query = "SELECT guild_id, name, join_channel_id, leave_channel_id, control_channel_id, default_role_id, prefix, shield FROM guild WHERE guild_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setLong(1, guildLong[0]);
             ResultSet rs = pst.executeQuery();
             rs.next();
-            guild = new PGuild();
-            guild.setId(rs.getLong("guild_id"));
-            guild.setName(rs.getString("name"));
-            guild.setJoinChannel(rsGetLong(rs, "join_channel_id"));
-            guild.setLeaveChannel(rsGetLong(rs, "leave_channel_id"));
-            guild.setControlChannel(rsGetLong(rs, "control_channel_id"));
-            guild.setDefaultRole(rsGetLong(rs, "default_role_id"));
-            guild.setPrefix(rs.getString("prefix"));
-            guild.setShield(rs.getInt("shield"));
+            pguild = new PGuild();
+            pguild.setId(rs.getLong("guild_id"));
+            pguild.setName(rs.getString("name"));
+            pguild.setJoinChannel(rsGetLong(rs, "join_channel_id"));
+            pguild.setLeaveChannel(rsGetLong(rs, "leave_channel_id"));
+            pguild.setControlChannel(rsGetLong(rs, "control_channel_id"));
+            pguild.setDefaultRole(rsGetLong(rs, "default_role_id"));
+            pguild.setPrefix(rs.getString("prefix"));
+            pguild.setShield(rs.getInt("shield"));
         } catch (SQLException e) {
             LOG.error(e.getMessage());
         }
-        return guild;
+        return pguild;
     }
 
-    public Set<PGuild> findGuilds() {
-        Set<PGuild> guilds = null;
+    public Set<PGuild> findPGuilds() {
+        Set<PGuild> pguilds = null;
         String query = "SELECT guild_id, name, join_channel_id, leave_channel_id, control_channel_id, default_role_id, prefix, shield FROM guild;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             ResultSet rs = pst.executeQuery();
-            guilds = new HashSet<>();
+            pguilds = new HashSet<>();
             while (rs.next()) {
-                PGuild guild = new PGuild();
-                guild.setId(rs.getLong("guild_id"));
-                guild.setName(rs.getString("name"));
-                guild.setJoinChannel(rsGetLong(rs, "join_channel_id"));
-                guild.setLeaveChannel(rsGetLong(rs, "leave_channel_id"));
-                guild.setControlChannel(rsGetLong(rs, "control_channel_id"));
-                guild.setDefaultRole(rsGetLong(rs, "default_role_id"));
-                guild.setPrefix(rs.getString("prefix"));
-                guild.setShield(rs.getInt("shield"));
-                guilds.add(guild);
+                PGuild pguild = new PGuild();
+                pguild.setId(rs.getLong("guild_id"));
+                pguild.setName(rs.getString("name"));
+                pguild.setJoinChannel(rsGetLong(rs, "join_channel_id"));
+                pguild.setLeaveChannel(rsGetLong(rs, "leave_channel_id"));
+                pguild.setControlChannel(rsGetLong(rs, "control_channel_id"));
+                pguild.setDefaultRole(rsGetLong(rs, "default_role_id"));
+                pguild.setPrefix(rs.getString("prefix"));
+                pguild.setShield(rs.getInt("shield"));
+                pguilds.add(pguild);
             }
         } catch (SQLException e) {
             LOG.error(e.getMessage());
         }
-        return guilds;
+        return pguilds;
     }
 
 }

@@ -26,25 +26,25 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
     }
 
     @Override
-    public boolean create(PGuildMember gMember) {
+    public boolean create(PGuildMember pguildMember) {
         String memberQuery = "INSERT INTO member(member_id, name) VALUES(?, ?);";
-        String gMemberQuery = "INSERT INTO guild_member(guild_id, member_id, permission_id) VALUES(?, ?, ?);";
+        String guildMemberQuery = "INSERT INTO guild_member(guild_id, member_id, permission_id) VALUES(?, ?, ?);";
         // @formatter:off
         try (Connection conn = datasource.getConnection();
              PreparedStatement createMember = conn.prepareStatement(memberQuery);
-             PreparedStatement createGMember = conn.prepareStatement(gMemberQuery);
+             PreparedStatement createGMember = conn.prepareStatement(guildMemberQuery);
              SQLCloseable finish = () -> { if (!conn.getAutoCommit()) conn.rollback(); };) {
 
             conn.setAutoCommit(false);
-            ADao<PMember> memberDao = DaoFactory.getMemberDAO();
-            if (memberDao.find(gMember.getId()).isEmpty()) {
-                createMember.setLong(1, gMember.getId());
-                createMember.setString(2, gMember.getName());
+            ADao<PMember> memberDao = DaoFactory.getPMemberDAO();
+            if (memberDao.find(pguildMember.getId()).isEmpty()) {
+                createMember.setLong(1, pguildMember.getId());
+                createMember.setString(2, pguildMember.getName());
                 createMember.executeUpdate();
             }
-            createGMember.setLong(1, gMember.getGuildId());
-            createGMember.setLong(2, gMember.getId());
-            createGMember.setInt(3, gMember.getPermission().getLevel());
+            createGMember.setLong(1, pguildMember.getGuildId());
+            createGMember.setLong(2, pguildMember.getId());
+            createGMember.setInt(3, pguildMember.getPermission().getLevel());
             createGMember.executeUpdate();
             conn.commit();
             conn.setAutoCommit(true);
@@ -57,7 +57,7 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
     }
 
     @Override
-    public boolean delete(PGuildMember gMember) {
+    public boolean delete(PGuildMember pguildMember) {
         String gMemberQuery = "DELETE FROM guild_member WHERE guild_id = ? AND member_id = ?;";
         String orphansQuery = "CALL delete_orphan_members();";
         // @formatter:off
@@ -67,8 +67,8 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
              SQLCloseable finish = () -> { if(!conn.getAutoCommit()) conn.rollback(); };) {
 
             conn.setAutoCommit(false);
-            deleteMembers.setLong(1, gMember.getGuildId());
-            deleteMembers.setLong(2, gMember.getId());
+            deleteMembers.setLong(1, pguildMember.getGuildId());
+            deleteMembers.setLong(2, pguildMember.getId());
             deleteMembers.executeUpdate();
             // Delete a member from the member table if his id is no more referenced into the GuildMember table.
             deleteOrphans.executeUpdate();
@@ -83,12 +83,12 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
     }
 
     @Override
-    public boolean update(PGuildMember gMember) {
+    public boolean update(PGuildMember pguildMember) {
         String query = "UPDATE guild_member SET permission_id = ? WHERE guild_id = ? AND member_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setInt(1, gMember.getPermission().getLevel());
-            pst.setLong(2, gMember.getGuildId());
-            pst.setLong(3, gMember.getId());
+            pst.setInt(1, pguildMember.getPermission().getLevel());
+            pst.setLong(2, pguildMember.getGuildId());
+            pst.setLong(3, pguildMember.getId());
             pst.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage());
@@ -121,25 +121,25 @@ public class GuildMemberDAO extends ADao<PGuildMember> {
         return gMember;
     }
 
-    public Set<PGuildMember> findMembersByPerm(Long guildId, EPermission perm) {
-        Set<PGuildMember> gMembers = null;
+    public Set<PGuildMember> findPGuildMembersByPerm(Long guildId, EPermission perm) {
+        Set<PGuildMember> pguildMembers = null;
         String query = "SELECT guild_id, member_id, permission_id FROM guild_member WHERE guild_id = ? AND permission_id = ?;";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
             pst.setLong(1, guildId);
             pst.setInt(2, perm.getLevel());
             ResultSet rs = pst.executeQuery();
-            gMembers = new HashSet<>();
+            pguildMembers = new HashSet<>();
             while (rs.next()) {
-                PGuildMember gMember = new PGuildMember();
-                gMember.setGuildId(rs.getLong("guild_id"));
-                gMember.setId(rs.getLong("member_id"));
-                gMember.setPermission(EPermission.getPermission(rs.getInt("permission_id")));
-                gMembers.add(gMember);
+                PGuildMember pguildMember = new PGuildMember();
+                pguildMember.setGuildId(rs.getLong("guild_id"));
+                pguildMember.setId(rs.getLong("member_id"));
+                pguildMember.setPermission(EPermission.getPermission(rs.getInt("permission_id")));
+                pguildMembers.add(pguildMember);
             }
         } catch (SQLException e) {
             LOG.error(e.getMessage());
         }
-        return gMembers;
+        return pguildMembers;
     }
 
 }

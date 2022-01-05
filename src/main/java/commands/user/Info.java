@@ -13,8 +13,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Info extends ACommand {
 
-    public Info(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Info(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -24,8 +24,8 @@ public class Info extends ACommand {
         embed.setTitle(":scroll: __Commands List__");
         // @formatter:off
         embed.setDescription(
-                "The bot's prefix is __**" + getGuildPrefix() + "**__\n"
-                + "_For more information about a specific command, use_ __**" + getGuildPrefix() + ECommand.HELP.getName() + "**__");
+                "The bot's prefix is __**" + getPGuildPrefix() + "**__\n"
+                + "_For more information about a specific command, use_ __**" + getPGuildPrefix() + ECommand.HELP.getName() + "**__");
         embed.addField(
                 ":closed_lock_with_key: " + StringUtils.capitalize(ECategory.ADMINISTRATION.getName()),
                 getCommandsByCategory(ECategory.ADMINISTRATION),

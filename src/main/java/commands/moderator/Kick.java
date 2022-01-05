@@ -21,13 +21,13 @@ public class Kick extends ACommand {
 
     private PGuildMember messageAuthor;
 
-    public Kick(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild, PGuildMember messageAuthor) {
-        super(event, args, command, guild);
+    public Kick(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild, PGuildMember messageAuthor) {
+        super(event, args, command, pguild);
         this.messageAuthor = messageAuthor;
     }
 
-    public Kick(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Kick(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Kick extends ACommand {
             if (mentionnedMember.getUser().isBot()) {
                 kick(mentionnedMember);
             } else {
-                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getGuildMember(mentionnedMember);
+                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getPGuildMember(mentionnedMember);
 
                 if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
                     sendMessage("Impossible to kick yourself.");
@@ -75,11 +75,11 @@ public class Kick extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Kick a specified member from your server.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Kick a specified member from your server. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
+            sendMessage("Kick a specified member from your server. **Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 

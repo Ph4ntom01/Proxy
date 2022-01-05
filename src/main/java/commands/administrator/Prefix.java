@@ -9,32 +9,32 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Prefix extends ACommand {
 
-    public Prefix(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Prefix(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Prefix(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Prefix(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
     public void execute() {
-        if (getGuildPrefix().equalsIgnoreCase(getArgs()[1])) {
-            sendMessage("Prefix " + "**" + getGuildPrefix() + "**" + " has already been defined.");
+        if (getPGuildPrefix().equalsIgnoreCase(getArgs()[1])) {
+            sendMessage("Prefix " + "**" + getPGuildPrefix() + "**" + " has already been defined.");
         } else {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             getPGuild().setPrefix(getArgs()[1]);
             guildDao.update(getPGuild());
-            sendMessage("Prefix is now: " + "**" + getGuildPrefix() + "**");
+            sendMessage("Prefix is now: " + "**" + getPGuildPrefix() + "**");
         }
     }
 
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Change the prefix of the server.\n\nExample: `" + getGuildPrefix() + getCommandName() + " $`");
+            sendHelpEmbed("Change the prefix of the server.\n\nExample: `" + getPGuildPrefix() + getCommandName() + " $`");
         } else {
-            sendMessage("Change the prefix of the server. **Example:** `" + getGuildPrefix() + getCommandName() + " $`.");
+            sendMessage("Change the prefix of the server. **Example:** `" + getPGuildPrefix() + getCommandName() + " $`.");
         }
     }
 

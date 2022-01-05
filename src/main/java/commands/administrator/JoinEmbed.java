@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class JoinEmbed extends ACommand {
 
-    public JoinEmbed(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public JoinEmbed(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public JoinEmbed(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public JoinEmbed(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class JoinEmbed extends ACommand {
                 sendMessage("Please specify **on** or **off**.");
             }
         } else {
-            sendMessage("In order to create a welcoming box, please select your welcoming channel first using `" + getGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`.");
+            sendMessage("In order to create a welcoming box, please select your welcoming channel first using `" + getPGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -54,11 +54,11 @@ public class JoinEmbed extends ACommand {
             sendHelpEmbed(
                     "Set the welcoming box.\n\n"
                     + "Example:\n\n`"
-                    + getGuildPrefix() + getCommandName() + " on` *enables the welcoming box*.\n`"
-                    + getGuildPrefix() + getCommandName() + " off` *disables the welcoming box*.");
+                    + getPGuildPrefix() + getCommandName() + " on` *enables the welcoming box*.\n`"
+                    + getPGuildPrefix() + getCommandName() + " off` *disables the welcoming box*.");
             // @formatter:on
         } else {
-            sendMessage("Set the welcoming box. **Example:** `" + getGuildPrefix() + getCommandName() + " on` *enables the welcoming box*.");
+            sendMessage("Set the welcoming box. **Example:** `" + getPGuildPrefix() + getCommandName() + " on` *enables the welcoming box*.");
         }
     }
 

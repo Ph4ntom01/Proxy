@@ -14,12 +14,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class TextChanInfo extends ACommand {
 
-    public TextChanInfo(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public TextChanInfo(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public TextChanInfo(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public TextChanInfo(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -57,9 +57,9 @@ public class TextChanInfo extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the text channel information.\n\nExample: `" + getGuildPrefix() + getCommandName() + " #aTextChannel`");
+            sendHelpEmbed("Display the text channel information.\n\nExample: `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`");
         } else {
-            sendMessage("Display the text channel information. **Example:** `" + getGuildPrefix() + getCommandName() + " #aTextChannel`.");
+            sendMessage("Display the text channel information. **Example:** `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`.");
         }
     }
 

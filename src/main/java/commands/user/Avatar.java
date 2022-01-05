@@ -13,12 +13,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class Avatar extends ACommand {
 
-    public Avatar(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Avatar(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Avatar(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Avatar(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -39,11 +39,11 @@ public class Avatar extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Display the member's avatar.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Display the member's avatar. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
+            sendMessage("Display the member's avatar. **Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 

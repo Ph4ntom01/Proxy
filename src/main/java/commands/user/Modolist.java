@@ -16,20 +16,20 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Modolist extends ACommand {
 
-    public Modolist(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Modolist(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
     public void execute() {
-        ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-        Set<PGuildMember> moderators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(getGuild().getIdLong(), EPermission.MODERATOR);
+        ADao<PGuildMember> gMemberDao = DaoFactory.getPGuildMemberDAO();
+        Set<PGuildMember> moderators = ((GuildMemberDAO) gMemberDao).findPGuildMembersByPerm(getGuild().getIdLong(), EPermission.MODERATOR);
         if (moderators.isEmpty()) {
             // @formatter:off
             sendMessage(
                     "No " + EPermission.MODERATOR.getName().toLowerCase() + "(s). "
                     + "To define a " + EPermission.MODERATOR.getName().toLowerCase()
-                    + ", the guild owner has to use the command `" + getGuildPrefix() + ECommand.SETMODO.getName() + " @aMember`.");
+                    + ", the guild owner has to use the command `" + getPGuildPrefix() + ECommand.SETMODO.getName() + " @aMember`.");
             // @formatter:on
         } else {
             EmbedBuilder embed = new EmbedBuilder();
@@ -45,9 +45,9 @@ public class Modolist extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the bot moderators.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the bot moderators.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the bot moderators. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the bot moderators. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

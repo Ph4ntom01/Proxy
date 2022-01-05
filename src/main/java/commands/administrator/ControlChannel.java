@@ -12,12 +12,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ControlChannel extends ACommand {
 
-    public ControlChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public ControlChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public ControlChannel(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public ControlChannel(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -28,9 +28,9 @@ public class ControlChannel extends ACommand {
             sendMessage("The control channel for new members has already been set to " + textChannel.getAsMention() + ".");
         } else {
             if (getPGuild().getDefaultRole() == null) {
-                sendMessage("In order to create your control channel, please select your default role first by using `" + getGuildPrefix() + ECommand.DEFROLE.getName() + " @aRole`.");
+                sendMessage("In order to create your control channel, please select your default role first by using `" + getPGuildPrefix() + ECommand.DEFROLE.getName() + " @aRole`.");
             } else {
-                ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+                ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
                 getPGuild().setControlChannel(textChannel.getIdLong());
                 guildDao.update(getPGuild());
                 sendMessage("The control channel for new members is now " + textChannel.getAsMention() + ".");
@@ -44,13 +44,13 @@ public class ControlChannel extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Invite the new member to accept the server's terms of use by having him add a reaction.\n\nDefault reaction is: :white_check_mark:\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " #aTextChannel`\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`\n\n"
                     + "*You can also mention a channel by his ID*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage("Invite the new member to accept the server's terms of use by having him add a reaction. "
-                    + "Default reaction is: :white_check_mark:. **Example:** `" + getGuildPrefix() + getCommandName() + " #aTextChannel`.");
+                    + "Default reaction is: :white_check_mark:. **Example:** `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`.");
             // @formatter:on
         }
     }

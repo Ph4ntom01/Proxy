@@ -16,20 +16,20 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Adminlist extends ACommand {
 
-    public Adminlist(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Adminlist(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
     public void execute() {
-        ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
-        Set<PGuildMember> administrators = ((GuildMemberDAO) gMemberDao).findMembersByPerm(getGuild().getIdLong(), EPermission.ADMINISTRATOR);
+        ADao<PGuildMember> gMemberDao = DaoFactory.getPGuildMemberDAO();
+        Set<PGuildMember> administrators = ((GuildMemberDAO) gMemberDao).findPGuildMembersByPerm(getGuild().getIdLong(), EPermission.ADMINISTRATOR);
         if (administrators.isEmpty()) {
             // @formatter:off
             sendMessage(
                     "No " + EPermission.ADMINISTRATOR.getName().toLowerCase() + "(s). "
                     + "To define a " + EPermission.ADMINISTRATOR.getName().toLowerCase()
-                    + ", the guild owner has to use the command `" + getGuildPrefix() + ECommand.SETADMIN.getName() + " @aMember`.");
+                    + ", the guild owner has to use the command `" + getPGuildPrefix() + ECommand.SETADMIN.getName() + " @aMember`.");
             // @formatter:on
         } else {
             EmbedBuilder embed = new EmbedBuilder();
@@ -45,9 +45,9 @@ public class Adminlist extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the bot administrators.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the bot administrators.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the bot administrators. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the bot administrators. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

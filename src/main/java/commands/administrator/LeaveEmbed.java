@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class LeaveEmbed extends ACommand {
 
-    public LeaveEmbed(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public LeaveEmbed(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public LeaveEmbed(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public LeaveEmbed(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LeaveEmbed extends ACommand {
                 sendMessage("Please specify **on** or **off**.");
             }
         } else {
-            sendMessage("In order to create a leaving box, please select your leaving channel first using `" + getGuildPrefix() + ECommand.LEAVECHAN.getName() + " #aTextChannel`.");
+            sendMessage("In order to create a leaving box, please select your leaving channel first using `" + getPGuildPrefix() + ECommand.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -53,11 +53,11 @@ public class LeaveEmbed extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Set the leaving box.\n\n"
-                    + "Example:\n\n`" + getGuildPrefix() + getCommandName() + " on` *enables the leaving box*.\n"
-                    + "`" + getGuildPrefix() + getCommandName() + " off` *disables the leaving box*.");
+                    + "Example:\n\n`" + getPGuildPrefix() + getCommandName() + " on` *enables the leaving box*.\n"
+                    + "`" + getPGuildPrefix() + getCommandName() + " off` *disables the leaving box*.");
             // @formatter:on
         } else {
-            sendMessage("Set the leaving box. **Example:** `" + getGuildPrefix() + getCommandName() + " on` *enables the leaving box*.");
+            sendMessage("Set the leaving box. **Example:** `" + getPGuildPrefix() + getCommandName() + " on` *enables the leaving box*.");
         }
     }
 

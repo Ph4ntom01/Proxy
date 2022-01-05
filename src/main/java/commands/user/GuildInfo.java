@@ -17,8 +17,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class GuildInfo extends ACommand {
 
-    public GuildInfo(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public GuildInfo(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @SuppressWarnings("deprecation")
@@ -104,7 +104,7 @@ public class GuildInfo extends ACommand {
             }
 
             embed.addField("Default Role", (getPGuild().getDefaultRole() == null) ? "No Default Role" : getGuild().getRoleById(getPGuild().getDefaultRole()).getAsMention(), true);
-            embed.addField("Prefix", getGuildPrefix(), true);
+            embed.addField("Prefix", getPGuildPrefix(), true);
             embed.addField("Shield", getPGuild().getShield() == 0 ? "Inactive" : "Active: " + getPGuild().getShield() + " day(s)", true);
 
             // @formatter:off
@@ -120,9 +120,9 @@ public class GuildInfo extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the server information.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the server information.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the server information. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the server information. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

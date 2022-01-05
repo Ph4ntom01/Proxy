@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Ping extends ACommand {
 
-    public Ping(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Ping(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -28,9 +28,9 @@ public class Ping extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the time in milliseconds that discord took to respond to a request.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the time in milliseconds that discord took to respond to a request.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the time in milliseconds that discord took to respond to a request. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the time in milliseconds that discord took to respond to a request. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

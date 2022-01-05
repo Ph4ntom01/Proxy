@@ -8,7 +8,7 @@ import configuration.cache.EGuildMemberCache;
 import configuration.constant.ECommand;
 import configuration.constant.EID;
 import configuration.constant.EPermission;
-import configuration.file.Config;
+import configuration.file.TOMLConfig;
 import configuration.file.ConfigFactory;
 import dao.pojo.PGuild;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class MemberInfo extends ACommand {
 
-    public MemberInfo(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public MemberInfo(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public MemberInfo(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public MemberInfo(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MemberInfo extends ACommand {
                     sendEmbed(botInfo(mentionnedMember));
                 }
             } else {
-                EGuildMemberCache.INSTANCE.getGuildMemberAsync(mentionnedMember)
+                EGuildMemberCache.INSTANCE.getPGuildMemberAsync(mentionnedMember)
                         .thenAcceptAsync(member -> sendEmbed(memberInfo(mentionnedMember, EPermission.getPermission(member.getPermission().getLevel()))));
             }
         }, ContextException.here(acceptor -> sendMessage("**" + getArgs()[1] + "** is not a member.")));
@@ -53,11 +53,11 @@ public class MemberInfo extends ACommand {
         if (embedState) {
             // @formatter:off
             sendHelpEmbed("Display the member information.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Display the member information. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
+            sendMessage("Display the member information. **Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 
@@ -108,7 +108,7 @@ public class MemberInfo extends ACommand {
             embed.addField("Role(s)", getMemberRoles(bot), false);
         }
 
-        Config conf = ConfigFactory.getConf();
+        TOMLConfig conf = ConfigFactory.getProxy();
         // @formatter:off
         embed.addField(
                 "Links", 

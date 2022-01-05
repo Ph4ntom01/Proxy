@@ -16,7 +16,7 @@ public class DaoFactory {
 
     private DaoFactory() {}
 
-    public static ADao<PGuild> getGuildDAO() {
+    public static ADao<PGuild> getPGuildDAO() {
         return new GuildDAO(datasource);
     }
 
@@ -28,11 +28,11 @@ public class DaoFactory {
         return new LeaveChannelDAO(datasource);
     }
 
-    public static ADao<PGuildMember> getGuildMemberDAO() {
+    public static ADao<PGuildMember> getPGuildMemberDAO() {
         return new GuildMemberDAO(datasource);
     }
 
-    public static ADao<PMember> getMemberDAO() {
+    public static ADao<PMember> getPMemberDAO() {
         return new MemberDAO(datasource);
     }
 

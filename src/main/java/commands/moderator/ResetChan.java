@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class ResetChan extends ACommand {
 
-    public ResetChan(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public ResetChan(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public ResetChan(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public ResetChan(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -34,9 +34,9 @@ public class ResetChan extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Create a copy and delete the current text channel.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`");
+            sendHelpEmbed("Create a copy and delete the current text channel.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`");
         } else {
-            sendMessage("Create a copy and delete the current text channel. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Create a copy and delete the current text channel. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

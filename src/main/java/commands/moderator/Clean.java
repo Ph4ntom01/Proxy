@@ -11,18 +11,20 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class Clean extends ACommand {
 
-    public Clean(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Clean(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Clean(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Clean(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
     public void execute() {
         int messages = getIntArg(1);
-        if (messages >= 2 && messages <= 100) {
+        if (messages == -1) {
+            deleteMessages(10);
+        } else if (messages >= 2 && messages <= 100) {
             deleteMessages(messages);
         } else {
             deleteMessages(100);
@@ -47,9 +49,9 @@ public class Clean extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Quickly cleans the last 10 messages, or however many you specify.\n\n" + "Example: `" + getGuildPrefix() + getCommandName() + " 20`");
+            sendHelpEmbed("Quickly cleans the last 10 messages, or however many you specify.\n\n" + "Example: `" + getPGuildPrefix() + getCommandName() + " 20`");
         } else {
-            sendMessage("Quickly cleans the last 10 messages, or however many you specify. **Example:** `" + getGuildPrefix() + getCommandName() + " 20`.");
+            sendMessage("Quickly cleans the last 10 messages, or however many you specify. **Example:** `" + getPGuildPrefix() + getCommandName() + " 20`.");
         }
     }
 

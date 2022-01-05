@@ -22,13 +22,13 @@ public class Softban extends ACommand {
 
     private PGuildMember messageAuthor;
 
-    public Softban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild, PGuildMember messageAuthor) {
-        super(event, args, command, guild);
+    public Softban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild, PGuildMember messageAuthor) {
+        super(event, args, command, pguild);
         this.messageAuthor = messageAuthor;
     }
 
-    public Softban(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Softban(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Softban extends ACommand {
             if (mentionnedMember.getUser().isBot()) {
                 softban(mentionnedMember);
             } else {
-                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getGuildMember(mentionnedMember);
+                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getPGuildMember(mentionnedMember);
 
                 if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
                     sendMessage("Impossible to kick yourself.");
@@ -77,14 +77,14 @@ public class Softban extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Kick a specified member and deletes his past messages since one day.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
                     "Kick a specified member and deletes his past messages since one day. "
-                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");        
+                    + "**Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");        
             // @formatter:on
         }
     }

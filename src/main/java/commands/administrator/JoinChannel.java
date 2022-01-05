@@ -14,12 +14,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class JoinChannel extends ACommand {
 
-    public JoinChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public JoinChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public JoinChannel(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public JoinChannel(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class JoinChannel extends ACommand {
         if (Objects.equals(textChannel.getIdLong(), getPGuild().getJoinChannel()) && Objects.equals(textChannel.getIdLong(), joinChannel.getChannelId())) {
             sendMessage("The default channel for new members has already been set to " + textChannel.getAsMention() + ".");
         } else if (getPGuild().getJoinChannel() == null && joinChannel.getChannelId() == null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             joinChannel = new PJoinChannel();
             joinChannel.setChannelId(textChannel.getIdLong());
             getPGuild().setJoinChannel(textChannel.getIdLong());
@@ -51,11 +51,11 @@ public class JoinChannel extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Send notification when a member joins the server.\n\n"
-                    + "Example: `" + getGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`\n\n"
+                    + "Example: `" + getPGuildPrefix() + ECommand.JOINCHAN.getName() + " #aTextChannel`\n\n"
                     + "*You can also mention a channel by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Send notification when a member joins the server. **Example:** `" + getGuildPrefix() + getCommandName() + " #aTextChannel`.");
+            sendMessage("Send notification when a member joins the server. **Example:** `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`.");
         }
     }
 

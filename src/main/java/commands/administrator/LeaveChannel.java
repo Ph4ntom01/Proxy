@@ -14,12 +14,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class LeaveChannel extends ACommand {
 
-    public LeaveChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public LeaveChannel(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public LeaveChannel(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public LeaveChannel(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class LeaveChannel extends ACommand {
         if (Objects.equals(textChannel.getIdLong(), getPGuild().getLeaveChannel()) && Objects.equals(textChannel.getIdLong(), leaveChannel.getChannelId())) {
             sendMessage("The default channel for leaving members has already been set to " + textChannel.getAsMention() + ".");
         } else if (getPGuild().getLeaveChannel() == null && leaveChannel.getChannelId() == null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             leaveChannel = new PLeaveChannel();
             leaveChannel.setChannelId(textChannel.getIdLong());
             getPGuild().setLeaveChannel(textChannel.getIdLong());
@@ -51,11 +51,11 @@ public class LeaveChannel extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Send notification when a member leaves the server.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " #aTextChannel`\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`\n\n"
                     + "*You can also mention a channel by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Send notification when a member leaves the server. **Example:** `" + getGuildPrefix() + getCommandName() + " #aTextChannel`.");
+            sendMessage("Send notification when a member leaves the server. **Example:** `" + getPGuildPrefix() + getCommandName() + " #aTextChannel`.");
         }
     }
 

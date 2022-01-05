@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.apache.commons.lang3.StringUtils;
 
 import commands.ACommand;
+import configuration.cache.ECommandCache;
 import configuration.constant.ECommand;
 import dao.database.ADao;
 import dao.database.DaoFactory;
@@ -16,19 +17,13 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Disable extends ACommand {
 
-    private ECommand mentionnedCommand;
-
-    public Disable(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
-    }
-
-    public Disable(GuildMessageReceivedEvent event, ECommand command, PGuild guild, ECommand mentionnedCommand) {
-        super(event, command, guild);
-        this.mentionnedCommand = mentionnedCommand;
+    public Disable(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
     @Override
     public void execute() {
+        ECommand mentionnedCommand = ECommandCache.INSTANCE.getCommand(getArgs()[1]);
         if (mentionnedCommand == ECommand.JOINCHAN) {
             disableJoinChannel();
         }
@@ -64,8 +59,17 @@ public class Disable extends ACommand {
         else if (mentionnedCommand == ECommand.SHIELD) {
             disableShield();
         }
+    }
 
-        else {
+    @Override
+    public void help(boolean helpState) {
+        if (helpState) {
+            // @formatter:off
+            sendHelpEmbed(
+                    "Disable the welcoming channel-message-box, leaving channel-message-box, the default role or the shield.\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " " + ECommand.JOINCHAN.getName() + "`");
+            // @formatter:on
+        } else {
             EmbedBuilder embed = new EmbedBuilder();
             embed.setColor(Color.YELLOW);
             embed.setTitle("__**" + StringUtils.capitalize(getCommandName()) + "**__");
@@ -76,31 +80,14 @@ public class Disable extends ACommand {
                     + ECommand.SHIELD.getName() + "`",
                     false);
             // @formatter:on
-            embed.addField("", "Example: `" + getGuildPrefix() + getCommandName() + " " + ECommand.JOINCHAN.getName() + "`", false);
+            embed.addField("", "Example: `" + getPGuildPrefix() + getCommandName() + " " + ECommand.JOINCHAN.getName() + "`", false);
             sendEmbed(embed);
-        }
-    }
-
-    @Override
-    public void help(boolean embedState) {
-        if (embedState) {
-            // @formatter:off
-            sendHelpEmbed(
-                    "Disable the welcoming channel-message-box, leaving channel-message-box, the default role or the shield.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " " + ECommand.JOINCHAN.getName() + "`");
-            // @formatter:on
-        } else {
-            // @formatter:off
-            sendMessage(
-                    "Disable the welcoming channel-message-embed, leaving channel-message-embed, the default role or the shield. "
-                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " " + ECommand.JOINCHAN.getName() + "`.");
-            // @formatter:on
         }
     }
 
     private void disableJoinChannel() {
         if (getPGuild().getJoinChannel() != null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             ADao<PJoinChannel> joinChannelDao = DaoFactory.getJoinChannelDAO();
             PJoinChannel joinChannel = joinChannelDao.find(getPGuild().getJoinChannel());
             getPGuild().setJoinChannel(null);
@@ -124,8 +111,8 @@ public class Disable extends ACommand {
                 sendMessage("Welcoming message has already been **disabled**.");
             }
         } else {
-            sendMessage("In order to disable the welcoming message, please select your welcoming channel first using **" + getGuildPrefix() + ECommand.JOINCHAN.getName()
-                    + " #aTextChannel** and set your message by using **" + getGuildPrefix() + ECommand.JOINMESSAGE.getName() + " your message**.");
+            sendMessage("In order to disable the welcoming message, please select your welcoming channel first using **" + getPGuildPrefix() + ECommand.JOINCHAN.getName()
+                    + " #aTextChannel** and set your message by using **" + getPGuildPrefix() + ECommand.JOINMESSAGE.getName() + " your message**.");
         }
     }
 
@@ -141,14 +128,14 @@ public class Disable extends ACommand {
                 sendMessage("Welcoming box has already been **disabled**.");
             }
         } else {
-            sendMessage("In order to disable the welcoming box, please select your welcoming channel first using **" + getGuildPrefix() + ECommand.JOINCHAN.getName()
-                    + " #aTextChannel** and enable the box by using **" + getGuildPrefix() + ECommand.JOINEMBED.getName() + " on**.");
+            sendMessage("In order to disable the welcoming box, please select your welcoming channel first using **" + getPGuildPrefix() + ECommand.JOINCHAN.getName()
+                    + " #aTextChannel** and enable the box by using **" + getPGuildPrefix() + ECommand.JOINEMBED.getName() + " on**.");
         }
     }
 
     private void disableLeaveChannel() {
         if (getPGuild().getLeaveChannel() != null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             ADao<PLeaveChannel> leaveChannelDao = DaoFactory.getLeaveChannelDAO();
             PLeaveChannel leaveChannel = leaveChannelDao.find(getPGuild().getLeaveChannel());
             getPGuild().setLeaveChannel(null);
@@ -172,8 +159,8 @@ public class Disable extends ACommand {
                 sendMessage("Leaving message has already been **disabled**.");
             }
         } else {
-            sendMessage("In order to disable the leaving message, please select your leaving channel first using **" + getGuildPrefix() + ECommand.LEAVECHAN.getName()
-                    + " #aTextChannel** and set your message by using **" + getGuildPrefix() + ECommand.LEAVEMESSAGE.getName() + " your message**.");
+            sendMessage("In order to disable the leaving message, please select your leaving channel first using **" + getPGuildPrefix() + ECommand.LEAVECHAN.getName()
+                    + " #aTextChannel** and set your message by using **" + getPGuildPrefix() + ECommand.LEAVEMESSAGE.getName() + " your message**.");
         }
     }
 
@@ -189,14 +176,14 @@ public class Disable extends ACommand {
                 sendMessage("Leaving box has already been **disabled**.");
             }
         } else {
-            sendMessage("In order to disable the leaving box, please select your leaving channel first using **" + getGuildPrefix() + ECommand.LEAVECHAN.getName()
-                    + " #aTextChannel** and enable the box by using **" + getGuildPrefix() + ECommand.LEAVEEMBED.getName() + " on**.");
+            sendMessage("In order to disable the leaving box, please select your leaving channel first using **" + getPGuildPrefix() + ECommand.LEAVECHAN.getName()
+                    + " #aTextChannel** and enable the box by using **" + getPGuildPrefix() + ECommand.LEAVEEMBED.getName() + " on**.");
         }
     }
 
     private void disableControlChan() {
         if (getPGuild().getControlChannel() != null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             getPGuild().setControlChannel(null);
             guildDao.update(getPGuild());
             sendMessage("Control channel is now **disabled**.");
@@ -207,7 +194,7 @@ public class Disable extends ACommand {
 
     private void disableDefaultRole() {
         if (getPGuild().getDefaultRole() != null) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             getPGuild().setDefaultRole(null);
             guildDao.update(getPGuild());
             sendMessage("Default role is now **disabled**, the bot will no longer add a role when a member joins the server.");
@@ -218,7 +205,7 @@ public class Disable extends ACommand {
 
     private void disableShield() {
         if (getPGuild().getShield() != 0) {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             int oldShield = getPGuild().getShield();
             getPGuild().setShield(0);
             guildDao.update(getPGuild());

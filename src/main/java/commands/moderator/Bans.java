@@ -21,13 +21,13 @@ public class Bans extends ACommand {
 
     private PGuildMember messageAuthor;
 
-    public Bans(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild, PGuildMember messageAuthor) {
-        super(event, args, command, guild);
+    public Bans(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild, PGuildMember messageAuthor) {
+        super(event, args, command, pguild);
         this.messageAuthor = messageAuthor;
     }
 
-    public Bans(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Bans(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Bans extends ACommand {
             if (mentionnedMember.getUser().isBot()) {
                 ban(mentionnedMember);
             } else {
-                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getGuildMember(mentionnedMember);
+                PGuildMember mentionnedPGMember = EGuildMemberCache.INSTANCE.getPGuildMember(mentionnedMember);
 
                 if (Objects.equals(mentionnedPGMember.getId(), getAuthor().getIdLong())) {
                     sendMessage("Impossible to ban yourself");
@@ -75,11 +75,11 @@ public class Bans extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Ban a specified member from your server.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Ban a specified member from your server. **Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
+            sendMessage("Ban a specified member from your server. **Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");
         }
     }
 

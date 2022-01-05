@@ -13,12 +13,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class Unban extends ACommand {
 
-    public Unban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Unban(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Unban(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Unban(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -50,13 +50,13 @@ public class Unban extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Unban any person who has previously been banned from this server, require an ID.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " 500688503617749023`");
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " 500688503617749023`");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
                     "Unban any person who has previously been banned from this server, require an ID. "
-                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " 500688503617749023`.");
+                    + "**Example:** `" + getPGuildPrefix() + getCommandName() + " 500688503617749023`.");
             // @formatter:on
         }
     }

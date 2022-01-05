@@ -37,19 +37,19 @@ public abstract class ACommand {
     private GuildMessageReceivedEvent event;
     private String[] args;
     private ECommand command;
-    private PGuild guild;
+    private PGuild pguild;
 
-    protected ACommand(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
+    protected ACommand(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
         this.event = event;
         this.command = command;
-        this.guild = guild;
+        this.pguild = pguild;
     }
 
-    protected ACommand(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
+    protected ACommand(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
         this.event = event;
         this.args = args;
         this.command = command;
-        this.guild = guild;
+        this.pguild = pguild;
     }
 
     /**
@@ -92,7 +92,7 @@ public abstract class ACommand {
      */
     protected void sendEmbed(EmbedBuilder embed) {
         getChannel().sendTyping().queue();
-        getChannel().sendMessage(embed.build()).queueAfter(300, TimeUnit.MILLISECONDS);
+        getChannel().sendMessageEmbeds(embed.build()).queueAfter(300, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class ACommand {
      * @param embed The embed to send.
      */
     protected void sendPrivateEmbedToBotOwner(EmbedBuilder embed) {
-        getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue(response -> response.delete().queueAfter(5, TimeUnit.MINUTES));
+        getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(embed.build())).queue(response -> response.delete().queueAfter(5, TimeUnit.MINUTES));
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class ACommand {
     protected int getIntArg(int position) {
         try {
             return Integer.parseInt(getArgs()[position]);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return -1;
         }
     }
@@ -292,7 +292,7 @@ public abstract class ACommand {
      */
     @Nullable
     protected PGuild getPGuild() {
-        return guild;
+        return pguild;
     }
 
     /**
@@ -302,8 +302,8 @@ public abstract class ACommand {
      *         error occurs.
      */
     @Nullable
-    protected String getGuildPrefix() {
-        return guild.getPrefix();
+    protected String getPGuildPrefix() {
+        return pguild.getPrefix();
     }
 
     /**

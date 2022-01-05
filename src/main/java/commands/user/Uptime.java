@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Uptime extends ACommand {
 
-    public Uptime(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Uptime(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -38,9 +38,9 @@ public class Uptime extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the percentage of time the bot has been available.\n\n" + "Example: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the percentage of time the bot has been available.\n\n" + "Example: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the percentage of time the bot has been available. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the percentage of time the bot has been available. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

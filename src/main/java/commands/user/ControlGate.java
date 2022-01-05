@@ -14,8 +14,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class ControlGate extends ACommand {
 
-    public ControlGate(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public ControlGate(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -81,9 +81,9 @@ public class ControlGate extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the welcoming and leaving channel information.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the welcoming and leaving channel information.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the welcoming and leaving channel information. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the welcoming and leaving channel information. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

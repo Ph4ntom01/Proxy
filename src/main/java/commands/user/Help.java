@@ -13,8 +13,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help extends ACommand {
 
-    public Help(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Help(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Help extends ACommand {
         // @formatter:off
         sendHelpEmbed(
                 getCommandsByCategory(ECategory.ADMINISTRATION)
-                + "\n\nExample: `" + getGuildPrefix() + getCommand().getName() + " " + ECommand.SHIELD.getName() + "`");
+                + "\n\nExample: `" + getPGuildPrefix() + getCommand().getName() + " " + ECommand.SHIELD.getName() + "`");
         // @formatter:on
     }
 
@@ -60,7 +60,7 @@ public class Help extends ACommand {
         // @formatter:off
         sendHelpEmbed(
                 getCommandsByCategory(ECategory.MODERATION)
-                + "\n\nExample: `" + getGuildPrefix() + getCommandName() + " " + ECommand.PURGE.getName() + "`");
+                + "\n\nExample: `" + getPGuildPrefix() + getCommandName() + " " + ECommand.SOFTBAN.getName() + "`");
         // @formatter:on
     }
 
@@ -68,7 +68,7 @@ public class Help extends ACommand {
         // @formatter:off
         sendHelpEmbed(
                 getCommandsByCategory(ECategory.UTILITY)
-                + "\n\nExample: `" + getGuildPrefix() + getCommandName() + " " + ECommand.GUILDINFO.getName() + "`");
+                + "\n\nExample: `" + getPGuildPrefix() + getCommandName() + " " + ECommand.GUILDINFO.getName() + "`");
         // @formatter:on
     }
 
@@ -76,7 +76,7 @@ public class Help extends ACommand {
         // @formatter:off
         sendHelpEmbed(
                 getCommandsByCategory(ECategory.MEME)
-                + "\n\nExample: `" + getGuildPrefix() + getCommandName() + " " + ECommand.ISSOU.getName() + "`");
+                + "\n\nExample: `" + getPGuildPrefix() + getCommandName() + " " + ECommand.ISSOU.getName() + "`");
         // @formatter:on
     }
 

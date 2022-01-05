@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class LeaveMessage extends ACommand {
 
-    public LeaveMessage(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public LeaveMessage(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public LeaveMessage(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public LeaveMessage(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LeaveMessage extends ACommand {
             leaveChannelDao.update(leaveChannel);
             sendMessage("Leaving message has been successfully defined.");
         } else {
-            sendMessage("In order to create a leaving message, please select your leaving channel first using `" + getGuildPrefix() + ECommand.LEAVECHAN.getName() + " #aTextChannel`.");
+            sendMessage("In order to create a leaving message, please select your leaving channel first using `" + getPGuildPrefix() + ECommand.LEAVECHAN.getName() + " #aTextChannel`.");
         }
     }
 
@@ -45,13 +45,13 @@ public class LeaveMessage extends ACommand {
         if (embedState) {
             // @formatter:off
             sendHelpEmbed(
-                    "Set the leaving message.\n\nExample: `" + getGuildPrefix() + getCommandName()
+                    "Set the leaving message.\n\nExample: `" + getPGuildPrefix() + getCommandName()
                     + " Bye bye [member] !`\n\n*Add `[member]` if you want the bot to mention the leaving member*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
-                    "Set the leaving message. **Example:** `" + getGuildPrefix() + getCommandName()
+                    "Set the leaving message. **Example:** `" + getPGuildPrefix() + getCommandName()
                     + " Bye bye [member] !`\n*Add `[member]` if you want the bot to mention the leaving member*.");
             // @formatter:on
         }

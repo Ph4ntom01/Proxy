@@ -12,12 +12,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class DefaultRole extends ACommand {
 
-    public DefaultRole(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public DefaultRole(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public DefaultRole(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public DefaultRole(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DefaultRole extends ACommand {
         if (Objects.equals(role.getIdLong(), getPGuild().getDefaultRole())) {
             sendMessage("Default role **" + role.getName() + "** has already been defined.");
         } else {
-            ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+            ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
             getPGuild().setDefaultRole(role.getIdLong());
             guildDao.update(getPGuild());
             sendMessage("Default role is now **" + role.getName() + "**.");
@@ -40,11 +40,11 @@ public class DefaultRole extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Automatically assign a role when a member joins the server.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aRole`\n\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aRole`\n\n"
                     + "*You can also mention a role by his ID*.");
             // @formatter:on
         } else {
-            sendMessage("Automatically assign a role when a member joins the server. **Example:** `" + getGuildPrefix() + getCommandName() + " @aRole`.");
+            sendMessage("Automatically assign a role when a member joins the server. **Example:** `" + getPGuildPrefix() + getCommandName() + " @aRole`.");
         }
     }
 

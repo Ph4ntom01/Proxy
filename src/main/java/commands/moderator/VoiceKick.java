@@ -12,12 +12,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class VoiceKick extends ACommand {
 
-    public VoiceKick(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public VoiceKick(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public VoiceKick(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public VoiceKick(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -47,14 +47,14 @@ public class VoiceKick extends ACommand {
             // @formatter:off
             sendHelpEmbed(
                     "Kick a specified member from the voice channel he is in.\n\n"
-                    + "Example: `" + getGuildPrefix() + getCommandName() + " @aMember`\n"
+                    + "Example: `" + getPGuildPrefix() + getCommandName() + " @aMember`\n"
                     + "*You can also mention a member by his ID*.");
             // @formatter:on
         } else {
             // @formatter:off
             sendMessage(
                     "Kick a specified member from the voice channel he is in. "
-                    + "**Example:** `" + getGuildPrefix() + getCommandName() + " @aMember`.");
+                    + "**Example:** `" + getPGuildPrefix() + getCommandName() + " @aMember`.");
             // @formatter:on
         }
     }

@@ -18,12 +18,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 public class Banlist extends ACommand {
 
-    public Banlist(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Banlist(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Banlist(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Banlist(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Banlist extends ACommand {
                 for (int i = 0; i < banlist.size(); i++) {
                     embed.addField("", "**" + (i + 1) + ". " + banlist.get(i).getUser().getName() + "**", false);
                 }
-                embed.addField("", "**" + getGuildPrefix() + "banlist [a number]**", true);
+                embed.addField("", "**" + getPGuildPrefix() + "banlist [a number]**", true);
                 sendEmbed(embed);
             }
         });
@@ -80,9 +80,9 @@ public class Banlist extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Display the banned members.\n\nExample: `" + getGuildPrefix() + getCommandName() + "`.");
+            sendHelpEmbed("Display the banned members.\n\nExample: `" + getPGuildPrefix() + getCommandName() + "`.");
         } else {
-            sendMessage("Display the banned members. **Example:** `" + getGuildPrefix() + getCommandName() + "`.");
+            sendMessage("Display the banned members. **Example:** `" + getPGuildPrefix() + getCommandName() + "`.");
         }
     }
 

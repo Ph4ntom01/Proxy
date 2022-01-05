@@ -9,12 +9,12 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class Slowmode extends ACommand {
 
-    public Slowmode(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild guild) {
-        super(event, args, command, guild);
+    public Slowmode(GuildMessageReceivedEvent event, String[] args, ECommand command, PGuild pguild) {
+        super(event, args, command, pguild);
     }
 
-    public Slowmode(GuildMessageReceivedEvent event, ECommand command, PGuild guild) {
-        super(event, command, guild);
+    public Slowmode(GuildMessageReceivedEvent event, ECommand command, PGuild pguild) {
+        super(event, command, pguild);
     }
 
     @Override
@@ -49,9 +49,9 @@ public class Slowmode extends ACommand {
     @Override
     public void help(boolean embedState) {
         if (embedState) {
-            sendHelpEmbed("Change the slowmode amount on the current channel.\n\nExample: `" + getGuildPrefix() + getCommandName() + " 5`");
+            sendHelpEmbed("Change the slowmode amount on the current channel.\n\nExample: `" + getPGuildPrefix() + getCommandName() + " 5`");
         } else {
-            sendMessage("Change the slowmode amount on the current channel. **Example:** `" + getGuildPrefix() + getCommandName() + " 5`.");
+            sendMessage("Change the slowmode amount on the current channel. **Example:** `" + getPGuildPrefix() + getCommandName() + " 5`.");
         }
     }
 
