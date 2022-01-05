@@ -2,7 +2,7 @@ package configuration.constant;
 
 public enum EFolder {
 
-    RESOURCES("/home/orlando/discordbots/proxy/resources/"), IMG("img/"), TEMPLATE("img/templates/"), ISSOU("img/issou/");
+    RESOURCES("resources/"), IMG("img/"), TEMPLATE("img/templates/"), ISSOU("img/issou/");
 
     private final String name;
 
