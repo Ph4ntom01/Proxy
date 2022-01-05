@@ -9,8 +9,8 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import configuration.constant.EID;
 import configuration.constant.EPermission;
-import configuration.file.Config;
 import configuration.file.ConfigFactory;
+import configuration.file.TOMLConfig;
 import dao.database.ADao;
 import dao.database.DaoFactory;
 import dao.pojo.PGuildMember;
@@ -23,11 +23,11 @@ public enum EGuildMemberCache {
     private final AsyncLoadingCache<Member, PGuildMember> cache;
 
     private EGuildMemberCache() {
-        Config conf = ConfigFactory.getConf();
+        TOMLConfig file = ConfigFactory.getProxy();
         // @formatter:off
         cache = Caffeine.newBuilder()
-                .maximumSize(conf.getLong("cache.guildMember.maxSize"))
-                .expireAfterWrite(conf.getLong("cache.guildMember.expireAfter"), conf.getTimeUnit("cache.guildMember.timeUnit"))
+                .maximumSize(file.getLong("cache.guildMember.maxSize"))
+                .expireAfterWrite(file.getLong("cache.guildMember.expireAfter"), file.getTimeUnit("cache.guildMember.timeUnit"))
                 .buildAsync(this::find);
         // @formatter:on
     }
@@ -42,18 +42,18 @@ public enum EGuildMemberCache {
      */
     @Nullable
     private PGuildMember find(Member member) {
-        ADao<PGuildMember> gMemberDao = DaoFactory.getGuildMemberDAO();
+        ADao<PGuildMember> pguildMemberDao = DaoFactory.getPGuildMemberDAO();
         // Find the member with his guild id AND id.
-        PGuildMember gMember = gMemberDao.find(member.getGuild().getIdLong(), member.getUser().getIdLong());
+        PGuildMember pguildMember = pguildMemberDao.find(member.getGuild().getIdLong(), member.getUser().getIdLong());
         // If the member is not yet registered in the database.
-        if (gMember.isEmpty()) {
-            gMember.setGuildId(member.getGuild().getIdLong());
-            gMember.setId(member.getIdLong());
-            gMember.setName(member.getUser().getName());
-            gMember.setPermission(checkPermission(member));
-            gMemberDao.create(gMember);
+        if (pguildMember.isEmpty()) {
+            pguildMember.setGuildId(member.getGuild().getIdLong());
+            pguildMember.setId(member.getIdLong());
+            pguildMember.setName(member.getUser().getName());
+            pguildMember.setPermission(checkPermission(member));
+            pguildMemberDao.create(pguildMember);
         }
-        return gMember;
+        return pguildMember;
     }
 
     private EPermission checkPermission(Member member) {
@@ -77,7 +77,7 @@ public enum EGuildMemberCache {
      *      AsyncLoadingCache.get(Member key)
      */
     @Nullable
-    public CompletableFuture<PGuildMember> getGuildMemberAsync(Member member) {
+    public CompletableFuture<PGuildMember> getPGuildMemberAsync(Member member) {
         return cache.get(member);
     }
 
@@ -92,7 +92,7 @@ public enum EGuildMemberCache {
      * 
      * @see java.util.concurrent.CompletableFuture#join() CompletableFuture.join
      */
-    public PGuildMember getGuildMember(Member member) {
+    public PGuildMember getPGuildMember(Member member) {
         return cache.get(member).join();
     }
 

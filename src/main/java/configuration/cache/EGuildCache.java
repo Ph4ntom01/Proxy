@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import configuration.file.Config;
 import configuration.file.ConfigFactory;
+import configuration.file.TOMLConfig;
 import dao.database.ADao;
 import dao.database.DaoFactory;
 import dao.pojo.PGuild;
@@ -20,11 +20,11 @@ public enum EGuildCache {
     private final AsyncLoadingCache<Long, PGuild> cache;
 
     private EGuildCache() {
-        Config conf = ConfigFactory.getConf();
+        TOMLConfig file = ConfigFactory.getProxy();
         // @formatter:off
         cache = Caffeine.newBuilder()
-                .maximumSize(conf.getLong("cache.guild.maxSize"))
-                .expireAfterWrite(conf.getLong("cache.guild.expireAfter"), conf.getTimeUnit("cache.guild.timeUnit"))
+                .maximumSize(file.getLong("cache.guild.maxSize"))
+                .expireAfterWrite(file.getLong("cache.guild.expireAfter"), file.getTimeUnit("cache.guild.timeUnit"))
                 .buildAsync(this::find);
         // @formatter:on
     }
@@ -38,7 +38,7 @@ public enum EGuildCache {
      */
     @Nullable
     private PGuild find(Long guildId) {
-        ADao<PGuild> guildDao = DaoFactory.getGuildDAO();
+        ADao<PGuild> guildDao = DaoFactory.getPGuildDAO();
         return guildDao.find(guildId);
     }
 
@@ -54,7 +54,7 @@ public enum EGuildCache {
      *      key)
      */
     @Nullable
-    public CompletableFuture<PGuild> getGuildAsync(Long guildId) {
+    public CompletableFuture<PGuild> getPGuildAsync(Long guildId) {
         return cache.get(guildId);
     }
 
@@ -68,7 +68,7 @@ public enum EGuildCache {
      * 
      * @see java.util.concurrent.CompletableFuture#join() CompletableFuture.join
      */
-    public PGuild getGuild(Long guildId) {
+    public PGuild getPGuild(Long guildId) {
         return cache.get(guildId).join();
     }
 
