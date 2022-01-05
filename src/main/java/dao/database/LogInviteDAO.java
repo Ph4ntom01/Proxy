@@ -28,7 +28,7 @@ public class LogInviteDAO extends ADao<PLogInvite> {
     public boolean create(PLogInvite log) {
         String query = "INSERT INTO log_invite(guild) VALUES(to_jsonb(?::JSON));";
         try (Connection conn = datasource.getConnection(); PreparedStatement pst = conn.prepareStatement(query);) {
-            pst.setString(1, log.getGuild());
+            pst.setString(1, log.getGuildLog());
             pst.executeUpdate();
         } catch (SQLException e) {
             LOG.error(e.getMessage());
