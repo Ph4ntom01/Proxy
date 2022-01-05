@@ -8,8 +8,8 @@ public class ConfigFactory {
 
     private ConfigFactory() {}
 
-    public static Config getConf() {
-        return new Config(PATH + "conf.toml");
+    public static TOMLConfig getProxy() {
+        return new TOMLConfig(PATH + "proxy.toml");
     }
 
 }

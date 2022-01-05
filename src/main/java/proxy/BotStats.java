@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import configuration.constant.EID;
-import configuration.file.Config;
+import configuration.file.TOMLConfig;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,11 +19,11 @@ public class BotStats {
 
     private static final Logger LOG = LoggerFactory.getLogger(BotStats.class);
 
-    private Config conf;
+    private TOMLConfig file;
     private int guildCount;
 
-    public BotStats(Config conf, int guildCount) {
-        this.conf = conf;
+    public BotStats(TOMLConfig file, int guildCount) {
+        this.file = file;
         this.guildCount = guildCount;
     }
 
@@ -33,7 +33,7 @@ public class BotStats {
     public void setDiscordBotListGuildCount() {
         // @formatter:off
         new DiscordBotListAPI.Builder()
-            .token(conf.getString("token.dbl"))
+            .token(file.getString("token.dbl"))
             .botId(EID.BOT_ID.getId())
             .build()
             .setStats(guildCount);
@@ -52,7 +52,7 @@ public class BotStats {
         // @formatter:off
         Request request = new Request.Builder()
                 .url("https://bots.ondiscord.xyz/bot-api/bots/" + EID.BOT_ID.getId() + "/guilds")
-                .addHeader("Authorization", conf.getString("token.bod"))
+                .addHeader("Authorization", file.getString("token.bod"))
                 .post(body)
                 .build();
         // @formatter:on
@@ -60,7 +60,7 @@ public class BotStats {
             if (response.isSuccessful()) {
                 LOG.info("Successfully sent guild count to API.");
             } else {
-                LOG.error("An error occurred (Response : {})", response.body().string());
+                LOG.error("An error occurred (Response : {})", response.body());
             }
         } catch (IOException e) {
             LOG.error(e.getMessage());

@@ -3,7 +3,7 @@ package dao.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import configuration.file.Config;
+import configuration.file.TOMLConfig;
 import configuration.file.ConfigFactory;
 
 public enum EDBService {
@@ -13,7 +13,7 @@ public enum EDBService {
     private final HikariDataSource datasource;
 
     private EDBService() {
-        Config conf = ConfigFactory.getConf();
+        TOMLConfig conf = ConfigFactory.getProxy();
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName(conf.getString("database.className"));
         config.setUsername(conf.getString("database.username"));
