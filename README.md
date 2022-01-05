@@ -1,9 +1,7 @@
 # **Proxy**
 
-[![Discord Bots](https://top.gg/api/widget/status/592680274962415635.svg)](https://top.gg/bot/592680274962415635)
-[![Discord Bots](https://top.gg/api/widget/servers/592680274962415635.svg)](https://top.gg/bot/592680274962415635)
-[![Discord Bots](https://top.gg/api/widget/lib/592680274962415635.svg)](https://top.gg/bot/592680274962415635)
-[![Discord Bots](https://top.gg/api/widget/owner/592680274962415635.svg)](https://top.gg/bot/592680274962415635)
+[![Discord Bots](https://top.gg/api/widget/servers/592680274962415635.svg?noavatar=true)](https://top.gg/bot/592680274962415635)
+[![Discord Bots](https://top.gg/api/widget/owner/592680274962415635.svg?noavatar=true)](https://top.gg/bot/592680274962415635)
 
 ## **Commands**
 
