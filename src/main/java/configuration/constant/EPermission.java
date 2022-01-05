@@ -28,4 +28,10 @@ public enum EPermission {
         return EPermission.USER;
     }
 
+    public static EPermission getPermission(ECommand command) {
+        if (command == ECommand.SETADMIN) { return EPermission.ADMINISTRATOR; }
+        if (command == ECommand.SETMODO) { return EPermission.MODERATOR; }
+        return EPermission.USER;
+    }
+
 }
